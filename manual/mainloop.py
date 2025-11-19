@@ -6,7 +6,6 @@ from manual.screens.arena import ArenaScreen
 from manual.screens.menu import MenuScreen
 from manual.screens.gameloader import GameLoader
 
-
 start = True
 
 pygame.init()

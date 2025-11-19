@@ -1,5 +1,6 @@
 import pygame
 
+
 class Button:
     def __init__(self, rect, callback, normal_image, hover_image, hover_callback=None):
         self.rect = pygame.Rect(rect)
@@ -27,3 +28,4 @@ class Button:
     def draw(self, surf):
         image = self.hover_image if self.hover else self.normal_image
         surf.blit(image, self.rect)
+        pygame.draw.rect(surf, (255, 0, 0), self.rect, 2)
