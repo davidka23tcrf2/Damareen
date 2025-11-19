@@ -31,25 +31,18 @@ def run_automated_test(test_dir_path):
                 with open(f'{sys.argv[1]}/{line[2]}', 'w') as file:
                     file.write(f'harc kezdodik;{line[1]}\n\n')
                     e = [i for i in enemies if i.name == line[1]][0]  # enemy
-                    b, c = fight.attack(e.pack, playerpack, file) #win/lose, card
+                    win, winning_card = fight.attack(e.pack, playerpack, file) #win/lose, card
                     file.write('\n')
-                    if not b:
-                        quit()
+                    if not win:
+                        pass
                     else:
                         if e.type == 'egyszeru' or e.type == 'kis':
                             if e.reward == 'eletero':
-                                c.basehp+=2
-                                for i in playercards:
-                                    if i.name == c.name:
-                                        i.basehp += 2
-                                file.write(f'jatekos nyert;eletero;{c.name}\n')
+                                winning_card.basehp+=2
+                                file.write(f'jatekos nyert;eletero;{winning_card.name}\n')
                             else:
-                                c.dmg += 1
-                                for i in playercards:
-                                    if i.name == c.name:
-                                        i.dmg += 1
-                                file.write(f'jatekos nyert;sebzes;{c.name}\n')
-
+                                winning_card.dmg += 1
+                                file.write(f'jatekos nyert;sebzes;{winning_card.name}\n')
                         else:
                             for i in world_cards:
                                 v = False
@@ -61,15 +54,10 @@ def run_automated_test(test_dir_path):
                                     playercards.append(copy.deepcopy(i))
                                     file.write(f'jatekos nyert;{i.name}\n')
                                     break
-                for i in playerpack:
-                    i.reset()
                 for i in playercards:
                     i.reset()
                 for i in e.pack:
                     i.reset()
-                if c == False:
-                    quit()
-
             elif line[0] == 'uj kartya':
                 world_cards.append(card.Card('kartya',line[1], int(line[2]), int(line[3]), line[4]))
 
@@ -94,9 +82,9 @@ def run_automated_test(test_dir_path):
             elif line[0] == 'uj pakli':
                 k = line[1].split(',')
                 for i in k:
-                    for j in world_cards:
+                    for j in playercards:
                         if j.name == i:
-                            playerpack.append(copy.deepcopy(j))
+                            playerpack.append(j)
                             break
 
             elif line[0] == 'uj kazamata':
