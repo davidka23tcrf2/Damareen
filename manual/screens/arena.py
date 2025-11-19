@@ -5,7 +5,6 @@ class ArenaScreen:
     def __init__(self, goto_shop, state):
         self.elements = []
         self.state = state
-        self.elements.append(Button((980,600,220,48), "Shop", goto_shop))
     def handle_event(self, e):
         for el in self.elements: el.handle_event(e)
     def update(self, dt):

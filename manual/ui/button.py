@@ -1,21 +1,29 @@
 import pygame
+
 class Button:
-    def __init__(self, rect, text, callback):
+    def __init__(self, rect, callback, normal_image, hover_image, hover_callback=None):
         self.rect = pygame.Rect(rect)
-        self.text = text
         self.callback = callback
-        self.font = pygame.font.SysFont(None, 28)
+        self.hover_callback = hover_callback
+        self.normal_image = normal_image
+        self.hover_image = hover_image
         self.hover = False
+
     def handle_event(self, e):
-        if e.type == pygame.MOUSEMOTION:
-            self.hover = self.rect.collidepoint(e.pos)
+        is_hovering = self.rect.collidepoint(pygame.mouse.get_pos())
+        if is_hovering and not self.hover:
+            self.hover = True
+            if self.hover_callback:
+                self.hover_callback()
+        elif not is_hovering and self.hover:
+            self.hover = False
         if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
             if self.rect.collidepoint(e.pos):
                 self.callback()
+
     def update(self, dt):
         pass
+
     def draw(self, surf):
-        color = (180,180,180) if self.hover else (120,120,120)
-        pygame.draw.rect(surf, color, self.rect, border_radius=6)
-        t = self.font.render(self.text, True, (255,255,255))
-        surf.blit(t, t.get_rect(center=self.rect.center))
+        image = self.hover_image if self.hover else self.normal_image
+        surf.blit(image, self.rect)
