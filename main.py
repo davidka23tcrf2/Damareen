@@ -2,6 +2,7 @@ import sys
 from pathlib import Path
 from auto import card, enemy, fight
 import copy
+from manual import mainloop
 
 def main():
     if len(sys.argv) == 1:
@@ -13,7 +14,7 @@ def main():
     else:
         run_automated_test(sys.argv[1])
 def run_ui():
-    pass
+    mainloop.ml()
 def run_automated_test(test_dir_path):
     world_cards = []  # jatekban levo kartyak
     enemies = []  # kazamata
