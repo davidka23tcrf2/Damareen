@@ -1,4 +1,5 @@
 from auto import card
+import math
 
 def attack(Enemy, Player, file):
     Round = 1
@@ -25,7 +26,7 @@ def attack(Enemy, Player, file):
 
         if not playedoutE:
             damge = card.get_type_multiplier(Enemy[j].power, Player[i].power)
-            Player[i].hp -= Enemy[j].dmg * damge
+            Player[i].hp -= math.floor(Enemy[j].dmg * damge)
             file.write(
                 f"{Round}.kor;kazamata;tamad;{Enemy[j].name};"
                 f"{damge * Enemy[j].dmg};{Player[i].name};{Player[i].hp}\n"
@@ -44,8 +45,8 @@ def attack(Enemy, Player, file):
             playedoutE = False
 
         if not playedoutP:
-
-            Enemy[j].hp -= damge * Player[i].dmg
+            damge = card.get_type_multiplier(Enemy[j].power, Player[i].power)
+            Enemy[j].hp -= math.floor(damge * Player[i].dmg)
             file.write(
                 f"{Round}.kor;jatekos;tamad;{Player[i].name};"
                 f"{damge * Player[i].dmg};{Enemy[j].name};{Enemy[j].hp}\n"
