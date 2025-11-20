@@ -2,10 +2,10 @@ class Card:
     def __init__(self, type_, name, dmg, hp, power):
         self.type = type_ #lehet "kartya" | vezer"
         self.name = name
-        self.dmg = dmg
-        self.basehp = hp
+        self.dmg = int(dmg)
+        self.basehp = int(hp)
         self.power = power #powers = ["fold", "viz", "tuz", "levego"]
-        self.hp = hp
+        self.hp = int(hp)
 
     def reset(self): #resets card's hp
         self.hp = self.basehp
