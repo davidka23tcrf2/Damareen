@@ -1,4 +1,6 @@
 import pygame, sys, json
+
+from manual.screens.configure import CONFIGURE
 from manual.screens.start import StartScreen
 from manual.ui.ui_manager import UIStateManager
 from manual.screens.shop import ShopScreen
@@ -26,12 +28,14 @@ def goto_shop(): ui.set("SHOP")
 def goto_arena(): ui.set("ARENA")
 def goto_menu(): ui.set("MENU")
 def goto_gameloader(): ui.set("GAMELOADER")
+def goto_configure(): ui.set("CONFIGURE")
 
 ui.add("SHOP", ShopScreen(goto_arena, state))
 ui.add("ARENA", ArenaScreen(goto_shop, state))
 ui.add("MENU", MenuScreen(goto_arena, goto_shop))
-ui.add("START", StartScreen(goto_menu, goto_gameloader))
+ui.add("START", StartScreen(goto_configure, goto_gameloader))
 ui.add("GAMELOADER", GameLoader(goto_menu))
+ui.add("CONFIGURE", CONFIGURE(goto_menu))
 
 ui.set("START")
 

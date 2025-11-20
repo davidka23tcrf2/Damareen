@@ -1,24 +1,27 @@
-import pygame
 from manual.ui.button import Button
 from manual.ui.label import Label
 from manual.assets.assets import load_asset
+from manual.assets.assets import ASSETS_DIR
+import os, pygame
+pygame.init()
+BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 32)
 
 class StartScreen:
-    def __init__(self, start_new_game, load_game):
+    def __init__(self, config, load_game):
         self.elements = []
 
+        self.BG = load_asset("startbg.png", "start")
+
         # Load button images
-        normal_btn_img = load_asset("button.png")
-        hover_btn_img = load_asset("button.png")
+        btn = load_asset("button.png", "start")
+        btnhover = load_asset("buttonhover.png", "start")
 
         # Buttons
-        self.elements.append(Button((400, 200, 200, 50), start_new_game,
-                                    normal_btn_img, hover_btn_img))
-        self.elements.append(Button((400, 300, 200, 50), load_game,
-                                    normal_btn_img, hover_btn_img))
+        self.elements.append(Button((0, 300, 350, 125), load_game,btn, btnhover, "Load Enviroment", font_size=50, font=BP, center_x=True))
+        self.elements.append(Button((0, 450, 350, 125), config,btn, btnhover, "Config Enviroment", font_size=50, font=BP, center_x=True))
 
         # Labels
-        self.title = Label((400, 50, 200, 50), "My Game", font_size=40)
+        self.title = Label((400, 50, 200, 50), "Damareen", font_size=40)
 
     def handle_event(self, e):
         for el in self.elements:
@@ -29,7 +32,6 @@ class StartScreen:
             el.update(dt)
 
     def draw(self, surf):
-        surf.fill((30, 20, 40))
-        self.title.draw(surf)
+        surf.blit(self.BG, (0, 0))
         for el in self.elements:
             el.draw(surf)

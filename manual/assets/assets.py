@@ -1,13 +1,10 @@
 import pygame
 import os
 
-ASSETS_DIR = os.path.dirname(__file__)  # the folder containing your assets
+ASSETS_DIR = os.path.dirname(__file__)  # folder containing this file
 
-def load_asset(name):
-    """
-    Load any asset from the assets folder by just providing the filename.
-    """
-    path = os.path.join(ASSETS_DIR, name)
+def load_asset(name, subfolder=""):
+    path = os.path.join(ASSETS_DIR, subfolder, name) if subfolder else os.path.join(ASSETS_DIR, name)
     if not os.path.exists(path):
-        raise FileNotFoundError(f"Asset '{name}' not found in {ASSETS_DIR}")
+        raise FileNotFoundError(f"Asset '{name}' not found in {path}")
     return pygame.image.load(path).convert_alpha()

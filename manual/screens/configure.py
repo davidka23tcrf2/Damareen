@@ -2,11 +2,11 @@ import pygame
 from manual.ui.button import Button
 from manual.ui.label import Label
 
-class GameLoader:
+class CONFIGURE:
     def __init__(self, goto_menu):
         self.elements = []
 
-        self.title = Label((540, 100, 200, 50), "Load new game from a saved enviroment", font_size=48)
+        self.title = Label((540, 100, 200, 50), "Configure a new game env", font_size=48)
 
         # Simple start button to go to menu
         normal_img = pygame.Surface((200, 50))
