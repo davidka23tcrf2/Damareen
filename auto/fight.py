@@ -11,6 +11,7 @@ def attack(Enemy, Player, file):
     while i < len(Player) and j < len(Enemy):
 
         if Round == 1:
+
             file.write(
                 f"{Round}.kor;kazamata;kijatszik;{Enemy[j].name};"
                 f"{Enemy[j].dmg};{Enemy[j].hp};{Enemy[j].power}\n"

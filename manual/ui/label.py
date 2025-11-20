@@ -45,3 +45,5 @@ class Label:
 
     def update(self, dt):
         pass
+
+

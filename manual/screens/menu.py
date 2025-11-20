@@ -10,7 +10,7 @@ class MenuScreen:
         hover_btn_img = load_asset("button.png")
 
         # Buttons
-        self.elements.append(Button((400, 200, 200, 50), goto_arena,
+        self.elements.append(Button((400, 200, 200, 50), goto_shop,
                                     normal_btn_img, hover_btn_img))
     def handle_event(self, e):
         for el in self.elements: el.handle_event(e)
