@@ -13,6 +13,7 @@ start = True
 pygame.init()
 SCREEN = pygame.display.set_mode((1280,720))
 CLOCK = pygame.time.Clock()
+pygame.display.set_caption("Damareen")
 
 def load_state():
     try:
@@ -29,12 +30,13 @@ def goto_arena(): ui.set("ARENA")
 def goto_menu(): ui.set("MENU")
 def goto_gameloader(): ui.set("GAMELOADER")
 def goto_configure(): ui.set("CONFIGURE")
+def goto_start(): ui.set("START")
 
 ui.add("SHOP", ShopScreen(goto_arena, state))
 ui.add("ARENA", ArenaScreen(goto_shop, state))
 ui.add("MENU", MenuScreen(goto_arena, goto_shop))
 ui.add("START", StartScreen(goto_configure, goto_gameloader))
-ui.add("GAMELOADER", GameLoader(goto_menu))
+ui.add("GAMELOADER", GameLoader(goto_menu, goto_start))
 ui.add("CONFIGURE", CONFIGURE(goto_menu))
 
 ui.set("START")

@@ -1,0 +1,46 @@
+save1_38_6.txt38
+sima;Cindral;1;7;levego
+sima;Havric;1;8;viz
+sima;Ulric;1;7;fold
+sima;Merric;1;6;fold
+sima;Ivara;1;7;levego
+sima;Arin;2;5;fold
+sima;Fenric;2;6;tuz
+sima;Wynor;2;6;levego
+sima;Zerra;2;5;tuz
+sima;Prynn;2;5;viz
+vezer;Havric Titan;1;16;viz
+sima;Glynn;3;3;levego
+sima;Veyra;3;3;tuz
+sima;Erynn;3;3;levego
+sima;Orynn;3;4;levego
+sima;Alric;3;4;levego
+sima;Draxen;3;4;viz
+sima;Jorvik;3;5;tuz
+sima;Hyrik;3;5;tuz
+sima;Rylor;3;6;tuz
+vezer;Glynn Prime;6;3;levego
+sima;Bralor;4;2;tuz
+sima;Nivor;4;2;tuz
+sima;Cyris;4;2;fold
+sima;Ilyra;4;3;fold
+sima;Tavric;4;3;viz
+sima;Lyssa;5;2;viz
+sima;Elvior;5;1;fold
+sima;Quillan;5;1;fold
+sima;Fayric;5;1;viz
+vezer;Darth Arin;4;5;fold
+vezer;Lord Bralor;4;4;tuz
+vezer;Prime Cindral;1;14;levego
+vezer;Shadow Draxen;6;4;viz
+vezer;Elvior the Mighty;10;1;fold
+vezer;Fenric the Iron;2;12;tuz
+vezer;Lyssa Vortex;10;2;viz
+vezer;Quillan Rex;10;1;fold
+6
+egyszeru;Gob;Cindral;sebzes
+egyszeru;Imp;Havric;eletero
+kozepes;Cap;Ulric;Merric;Ivara;Havric Titan;sebzes
+kozepes;Cmdr;Arin;Fenric;Wynor;Glynn Prime;eletero
+nagy;Dragon;Bralor;Nivor;Cyris;Ilyra;Tavric;Darth Arin
+nagy;Titan;Lyssa;Elvior;Quillan;Fayric;Lord Bralor

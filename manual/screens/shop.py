@@ -18,10 +18,10 @@ class ShopScreen:
             ["Mellvért", 30]
         ]
 
-        self.bg_img = load_asset("WeaponMarket.png")
-        normal = load_asset("armors.png")
+        self.bg_img = load_asset("WeaponMarket.png", "shop")
+        normal = load_asset("armors.png", "shop")
 
-        self.item_img = load_asset("itemstable.png")
+        self.item_img = load_asset("itemstable.png", "shop")
         self.iw = int(self.item_img.get_width() * 0.25)
         self.ih = int(self.item_img.get_height() * 0.25)
         self.item_img = pygame.transform.scale(self.item_img, (self.iw, self.ih))

@@ -13,7 +13,7 @@ def save_game():
     else:
         next_num = 1
 
-    filename = f"save{next_num}_{inventory.GAMECARDS}_{len(inventory.ENEMIES)}.txt"
+    filename = f"save{next_num}_{len(inventory.GAMECARDS)}_{len(inventory.ENEMIES)}.txt"
     path = os.path.join(SAVES_DIR, filename)
 
     with open(path, "w") as f:
@@ -27,4 +27,7 @@ def save_game():
         f.write(f'{len(inventory.ENEMIES)}\n')
         for i in inventory.ENEMIES:
             deck = ";".join([j.name for j in i.deck])
-            f.write(f'{i.type};{i.name};{deck}\n')
+            if i.reward:
+                f.write(f'{i.type};{i.name};{deck};{i.reward}\n')
+            else:
+                f.write(f'{i.type};{i.name};{deck}\n')

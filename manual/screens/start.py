@@ -3,9 +3,9 @@ from manual.ui.label import Label
 from manual.assets.assets import load_asset
 from manual.assets.assets import ASSETS_DIR
 import os, pygame
-pygame.init()
-BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 32)
 
+pygame.init()
+BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "PublicPixel.ttf"), 13)
 class StartScreen:
     def __init__(self, config, load_game):
         self.elements = []
@@ -17,8 +17,8 @@ class StartScreen:
         btnhover = load_asset("buttonhover.png", "start")
 
         # Buttons
-        self.elements.append(Button((0, 300, 350, 125), load_game,btn, btnhover, "Load Enviroment", font_size=50, font=BP, center_x=True))
-        self.elements.append(Button((0, 450, 350, 125), config,btn, btnhover, "Config Enviroment", font_size=50, font=BP, center_x=True))
+        self.elements.append(Button((0, 300, 350, 125), load_game,btn, btnhover, "Környezet betöltése", font=BP, center_x=True))
+        self.elements.append(Button((0, 450, 350, 125), config,btn, btnhover, "Környezet konfigurálása", font=BP, center_x=True))
 
         # Labels
         self.title = Label((400, 50, 200, 50), "Damareen", font_size=40)

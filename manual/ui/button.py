@@ -11,41 +11,49 @@ class Button:
         self.hover_callback = hover_callback
         self.normal_image = normal_image
         self.hover_image = hover_image
+
         self.hover = False
+        self._prev_hover = False
 
         self.text = text
         self.text_color = text_color
 
-        # If font is a pygame.font.Font object, use it directly
-        # If font is a string, create a SysFont with the given size
         if isinstance(font, pygame.font.Font):
             self.font = font
         else:
             self.font = pygame.font.SysFont(font or "Arial", font_size)
 
     def handle_event(self, e):
-        is_hovering = self.rect.collidepoint(pygame.mouse.get_pos())
-        if is_hovering and not self.hover:
-            self.hover = True
-            if self.hover_callback:
-                self.hover_callback()
-        elif not is_hovering and self.hover:
-            self.hover = False
         if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
             if self.rect.collidepoint(e.pos):
                 self.callback()
 
     def update(self, dt):
-        pass
+        pos = pygame.mouse.get_pos()
+        is_hovering = self.rect.collidepoint(pos)
+        if is_hovering and not self._prev_hover:
+            if self.hover_callback:
+                self.hover_callback()
+        self.hover = is_hovering
+        self._prev_hover = is_hovering
 
     def draw(self, surf):
         image = self.hover_image if self.hover else self.normal_image
         surf.blit(image, self.rect)
 
         if self.text:
-            text_surf = self.font.render(self.text, True, self.text_color)
-            text_rect = text_surf.get_rect(center=self.rect.center)
-            surf.blit(text_surf, text_rect)
+            lines = self.text.split("\n")
 
-        # Debug border
+            # vertical positioning
+            total_height = sum(self.font.size(line)[1] for line in lines)
+            start_y = self.rect.centery - total_height // 2
+
+            # draw each line centered
+            for line in lines:
+                text_surf = self.font.render(line, True, self.text_color)
+                text_rect = text_surf.get_rect(center=(self.rect.centerx, start_y))
+                surf.blit(text_surf, text_rect)
+                start_y += self.font.size(line)[1]
+
         pygame.draw.rect(surf, (255, 0, 0), self.rect, 2)
+
