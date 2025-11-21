@@ -20,6 +20,16 @@ GAMECARDS = [
 ENEMIES = [
 ]
 
+#all armor ingame
+ARMOR = [
+
+]
+
+#armor the player has
+PLAYERARMOR = [
+
+]
+
 #all accessories ingame
 ACCESSORIES = [
 
