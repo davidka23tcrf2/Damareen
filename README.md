@@ -1,9 +1,19 @@
 # Damareen
-A könyvtárak automatikus feltelepítéséhez futtassa le ezt a parancsot a projektmappában:\
-<pre>```pip install -r ./requirements.txt```</pre>
 
-A program futtatása **játék módban**:\
-<pre>py main.py --ui</pre>
+A könyvtárak automatikus feltelepítéséhez futtassa le ezt a parancsot a projektmappában:
 
-A program futtatása **teszt módban**:\
-<pre>py main.py &lt;teszteset fájlja&gt</pre>
+```bash
+pip install -r ./requirements.txt
+```
+
+A program futtatása játék módban:
+
+```bash
+py main.py --ui
+```
+
+A program futtatása teszt módban:
+
+```bash
+py main.py <teszteset fájlja>
+```
