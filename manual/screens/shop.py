@@ -1,8 +1,9 @@
-import pygame
+import pygame, os
 from ..ui.button import Button
 from ..ui.label import Label
-from manual.assets.assets import load_asset
+from manual.assets.assets import load_asset, ASSETS_DIR
 
+BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 32)
 
 
 
@@ -18,10 +19,10 @@ class ShopScreen:
             ["Mellvért", 30]
         ]
 
-        self.bg_img = load_asset("WeaponMarket.png")
-        normal = load_asset("armors.png")
+        self.bg_img = load_asset("WeaponMarket.png", "shop")
+        normal = load_asset("armors.png", "shop")
 
-        self.item_img = load_asset("itemstable.png")
+        self.item_img = load_asset("itemstable.png", "shop")
         self.iw = int(self.item_img.get_width() * 0.25)
         self.ih = int(self.item_img.get_height() * 0.25)
         self.item_img = pygame.transform.scale(self.item_img, (self.iw, self.ih))
@@ -63,26 +64,20 @@ class ShopScreen:
             el.draw(surf)
 
     def CaItemSlot(self, name, x, y):
-        self.my_label = Label(
-            rect=(x, y+170, self.iw, 30),
-            text=name,
-            font_name="ButtonText.ttf",
-            font_size=20,
-            color=(255, 255, 255)
-        )
 
         self.button = Button(
             rect=(x, y + 35, self.iw, self.ih - 40),
             callback=lambda: print("fasz"),
             normal_image=self.item_img,
             hover_image=self.item_img,
+            text=name
         )
 
         self.elements.append(self.button)
-        self.elements.append(self.my_label)
+
         self.item_slots.append(self.button)
-        self.item_slots.append(self.my_label)
-        return self.my_label, name
+
+        return name
 
 
     def OpenMarket(self):
@@ -91,9 +86,6 @@ class ShopScreen:
             for i in self.item_slots:
                 self.elements.remove(i)
                 self.item_slots = []
-            for i in self.item_labels:
-                self.elements.remove(i)
-                self.item_labels = []
 
         else:
             self.CaItemSlot(str(self.items[0][0]), 212, 200)
