@@ -42,11 +42,26 @@ class CardPopup:
         # --- CREATE BUTTON ---
         create_w, create_h = 350, 100
         create_x = 430
-        create_y = 340
+        create_y = 320
 
         create_img = pygame.Surface((create_w, create_h), pygame.SRCALPHA)
-        create_img.fill((220, 220, 220))
-        pygame.draw.rect(create_img, (0, 0, 0), create_img.get_rect(), 3)
+
+        # green rounded rect background
+        pygame.draw.rect(
+            create_img,
+            (50, 200, 50),                      # green fill
+            create_img.get_rect(),
+            border_radius=25                    # rounded corners
+        )
+
+        # black outline
+        pygame.draw.rect(
+            create_img,
+            (0, 0, 0),                          # border color
+            create_img.get_rect(),
+            width=4,
+            border_radius=25
+        )
 
         label = BP26.render("létrehozás", True, (0, 0, 0))
         label_rect = label.get_rect(center=(create_w // 2, create_h // 2))
@@ -185,7 +200,7 @@ class CardPopup:
         hp = int(hp_txt) if hp_txt.isdigit() else 0
 
         # Hungarian element names according to index:
-        element_names = ["fold", "viz", "levego", "tuz"]
+        element_names = ["fold", "viz", "levegő", "tuz"]
         element_name = element_names[self.selected_index] if 0 <= self.selected_index < len(element_names) else "fold"
 
         data = {
@@ -399,7 +414,7 @@ class CardPopup:
         # --- STATUS TEXT ("card created") ---
         if self.status_counter > 0:
             status_surf = BP.render("Kártya létrehozva!", True, (0, 255, 0))
-            status_rect = status_surf.get_rect(midbottom=(self.rect.x + 550, self.rect.y + 330))
+            status_rect = status_surf.get_rect(midbottom=(self.rect.x + 600, self.rect.y + 375))
             surf.blit(status_surf, status_rect)
 
     def close(self):
