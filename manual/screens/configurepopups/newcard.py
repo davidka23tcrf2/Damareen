@@ -1,3 +1,4 @@
+from manual.inventory import inventory, objects
 import pygame
 import os
 from manual.ui.button import Button
@@ -9,6 +10,7 @@ sf = "configure"
 pygame.init()
 BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "PublicPixel.ttf"), 20)
 BP26 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "PublicPixel.ttf"), 26)
+BP_BIG = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "PublicPixel.ttf"), 32)  # big dmg/hp
 
 
 class CardPopup:
@@ -34,6 +36,32 @@ class CardPopup:
         self.text_entries = []     # TextEntry objects
         self.grid_buttons = []     # the 4 grid buttons
 
+        # For card preview
+        self.preview_icons = []
+
+        # --- CREATE BUTTON ---
+        create_w, create_h = 350, 100
+        create_x = 430
+        create_y = 340
+
+        create_img = pygame.Surface((create_w, create_h), pygame.SRCALPHA)
+        create_img.fill((220, 220, 220))
+        pygame.draw.rect(create_img, (0, 0, 0), create_img.get_rect(), 3)
+
+        label = BP26.render("létrehozás", True, (0, 0, 0))
+        label_rect = label.get_rect(center=(create_w // 2, create_h // 2))
+        create_img.blit(label, label_rect)
+
+        self.create_btn = Button(
+            (create_x, create_y, create_w, create_h),
+            self.create_card,
+            create_img
+        )
+        self.elements.append(self.create_btn)
+
+        # --- STATUS TEXT STATE (NOT a Label) ---
+        self.status_counter = 0    # frames left to display "card created"
+
         # Close button (top-left inside popup)
         closebtn = load_asset("closebutton.png", sf)
         self.close_btn = Button((0, 0, 98, 98), close_callback, closebtn)
@@ -49,7 +77,7 @@ class CardPopup:
         y_positions = [150, 200, 250]
         for i, y_pos in enumerate(y_positions):
             if i == 0:
-                entry = TextEntry((500, y_pos, 320, 40), font=BP26, max_length=12, letters_only=True)
+                entry = TextEntry((500, y_pos, 320, 40), font=BP26, max_length=8, letters_only=True)
             else:
                 entry = TextEntry((730, y_pos, 90, 40), font=BP26, max_length=3, numeric_only=True)
             # store base_pos (relative coordinates inside popup)
@@ -78,10 +106,14 @@ class CardPopup:
             bx = grid_start_x + col * (self.button_size + self.button_spacing)
             by = grid_start_y + row * (self.button_size + self.button_spacing)
 
-            # load and scale image to 1/4 button area (half width/height)
+            # load and scale image to button size
             raw_img = load_asset(img, "elements")
-            scaled_side = int(self.button_size)  # half size -> 1/4 area
+            scaled_side = int(self.button_size)
             icon = pygame.transform.scale(raw_img, (scaled_side, scaled_side))
+
+            # bigger icon for the card preview
+            preview_icon = pygame.transform.scale(raw_img, (96, 96))
+            self.preview_icons.append(preview_icon)
 
             # center icon inside button using image_offset
             offset_x = (self.button_size - scaled_side) // 2
@@ -91,7 +123,6 @@ class CardPopup:
                 (bx, by, self.button_size, self.button_size),
                 lambda i=index: self.on_grid_button_index(i),
                 icon,
-                # no explicit hover image: Button will auto-generate a lighter one
                 image_offset=(offset_x, offset_y),
             )
             btn.base_pos = btn.rect.topleft
@@ -131,6 +162,62 @@ class CardPopup:
     def is_closed(self):
         return not self.opening and not self.closing and self.rect.y >= self.screen_height
 
+    # ---- helper: only enable create when all fields filled ----
+    def is_create_enabled(self):
+        if len(self.text_entries) < 3:
+            return False
+        name = self.text_entries[0].text.strip()
+        dmg = self.text_entries[1].text.strip()
+        hp = self.text_entries[2].text.strip()
+        return bool(name and dmg and hp)
+
+    def create_card(self):
+        """Collects all card fields, saves, clears, shows 'card created', returns dict."""
+        if not self.is_create_enabled():
+            return None
+
+        name = self.text_entries[0].text.strip()
+        dmg_txt = self.text_entries[1].text.strip()
+        hp_txt = self.text_entries[2].text.strip()
+
+        # convert safely
+        dmg = int(dmg_txt) if dmg_txt.isdigit() else 0
+        hp = int(hp_txt) if hp_txt.isdigit() else 0
+
+        # Hungarian element names according to index:
+        element_names = ["fold", "viz", "levego", "tuz"]
+        element_name = element_names[self.selected_index] if 0 <= self.selected_index < len(element_names) else "fold"
+
+        data = {
+            "name": name if name else "???",
+            "dmg": dmg,
+            "hp": hp,
+            "element": element_name,
+        }
+
+        # save to inventory
+        inventory.GAMECARDS.append(
+            objects.Card("kartya", data["name"], data["dmg"], data["hp"], data["element"])
+        )
+
+        # ⬇️ CLEAR TEXT ENTRIES HARD
+        for entry in self.text_entries:
+            # best effort: use set_text if it exists
+            if hasattr(entry, "set_text"):
+                entry.set_text("")
+            else:
+                entry.text = ""
+            if hasattr(entry, "cursor_pos"):
+                entry.cursor_pos = 0
+
+        # reset element index
+        self.selected_index = 0
+
+        # show status "card created" for ~3 seconds
+        self.status_counter = 60  # frames; adjust to your FPS
+
+        return data
+
     def reopen(self):
         if self.is_closed():
             self.rect.y = self.screen_height
@@ -150,6 +237,9 @@ class CardPopup:
 
         # Pass event to elements
         for el in self.elements:
+            # don't let the create button handle events if fields are not filled
+            if el is self.create_btn and not self.is_create_enabled():
+                continue
             el.handle_event(event)
 
         # Pass event to text entries and grid buttons
@@ -206,6 +296,10 @@ class CardPopup:
 
             self.selector_rect.topleft = (round(self.selector_pos.x), round(self.selector_pos.y))
 
+        # --- status timer ---
+        if self.status_counter > 0:
+            self.status_counter -= 1
+
     def draw(self, surf):
         # Skip drawing when off-screen and overlay invisible
         if self.rect.y > self.screen_height and self.overlay_alpha <= 0:
@@ -222,8 +316,73 @@ class CardPopup:
         surf.blit(popup_surface, (self.rect.x, self.rect.y))
         pygame.draw.rect(surf, self.border_color, self.rect, 2)
 
-        # Draw labels / close button
+        # --- CARD PREVIEW (left side) ---
+        card_w, card_h = 240, 320
+        card_x = self.rect.x + 120
+        card_y = self.rect.y + 100
+        card_rect = pygame.Rect(card_x, card_y, card_w, card_h)
+
+        pygame.draw.rect(surf, (255, 255, 255), card_rect)
+        pygame.draw.rect(surf, (0, 0, 0), card_rect, 2)
+
+        # text values
+        name = self.text_entries[0].text.strip() if self.text_entries else ""
+        dmg = self.text_entries[1].text.strip() if len(self.text_entries) > 1 else ""
+        hp = self.text_entries[2].text.strip() if len(self.text_entries) > 2 else ""
+
+        if not name:
+            name = "???"
+        if not dmg:
+            dmg = "?"
+        if not hp:
+            hp = "?"
+
+        # --- name ---
+        name_surf = BP26.render(name, True, (0, 0, 0))
+        base_y = card_rect.y + 80
+        name_rect = name_surf.get_rect(midtop=(card_rect.centerx, base_y))
+        surf.blit(name_surf, name_rect)
+
+        # --- BIG colored DMG / HP as "dmg/hp" ---
+        dmg_surf = BP_BIG.render(str(dmg), True, (255, 50, 50))   # red
+        slash_surf = BP_BIG.render("/", True, (0, 0, 0))          # black slash
+        hp_surf = BP_BIG.render(str(hp), True, (50, 255, 50))     # green
+
+        stats_y = name_rect.bottom + 15
+        inner_spacing = 4  # space around slash
+
+        total_width = (
+            dmg_surf.get_width()
+            + inner_spacing
+            + slash_surf.get_width()
+            + inner_spacing
+            + hp_surf.get_width()
+        )
+
+        start_x = card_rect.centerx - total_width // 2
+
+        dmg_rect = dmg_surf.get_rect(topleft=(start_x, stats_y))
+        slash_rect = slash_surf.get_rect(topleft=(dmg_rect.right + inner_spacing, stats_y))
+        hp_rect = hp_surf.get_rect(topleft=(slash_rect.right + inner_spacing, stats_y))
+
+        surf.blit(dmg_surf, dmg_rect)
+        surf.blit(slash_surf, slash_rect)
+        surf.blit(hp_surf, hp_rect)
+
+        stats_bottom = max(dmg_rect.bottom, slash_rect.bottom, hp_rect.bottom)
+
+        # icon under dmg/hp
+        if self.preview_icons:
+            icon = self.preview_icons[self.selected_index]
+            icon_rect = icon.get_rect(midtop=(card_rect.centerx, stats_bottom + 15))
+            surf.blit(icon, icon_rect)
+        # --- END CARD PREVIEW ---
+
+        # Draw labels / close button / create button
         for el in self.elements:
+            if el is self.create_btn and not self.is_create_enabled():
+                # don't draw create button if fields are empty
+                continue
             el.draw(surf)
 
         # Draw text entries
@@ -236,6 +395,12 @@ class CardPopup:
 
         # Draw selector (outline) – thicker border
         pygame.draw.rect(surf, self.selector_color, self.selector_rect, 3)
+
+        # --- STATUS TEXT ("card created") ---
+        if self.status_counter > 0:
+            status_surf = BP.render("Kártya létrehozva!", True, (0, 255, 0))
+            status_rect = status_surf.get_rect(midbottom=(self.rect.x + 550, self.rect.y + 330))
+            surf.blit(status_surf, status_rect)
 
     def close(self):
         self.closing = True
