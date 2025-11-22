@@ -1,5 +1,6 @@
 from manual.inventory import objects
-
+from manual.assets.assets import load_asset
+SHOP_ENABLED = False
 COINS = 0
 
 #empty from the start
@@ -14,49 +15,34 @@ PLAYERCARDS = [
 
 #all cards ingame
 GAMECARDS = [
-    objects.Card("sima", "Cindral", 1, 7, "levego"),
-    objects.Card("sima", "Havric", 1, 8, "viz"),
-    objects.Card("sima", "Ulric", 1, 7, "fold"),
-    objects.Card("sima", "Merric", 1, 6, "fold"),
-    objects.Card("sima", "Ivara", 1, 7, "levego"),
-    objects.Card("sima", "Arin", 2, 5, "fold"),
-    objects.Card("sima", "Fenric", 2, 6, "tuz"),
-    objects.Card("sima", "Wynor", 2, 6, "levego"),
-    objects.Card("sima", "Zerra", 2, 5, "tuz"),
-    objects.Card("sima", "Prynn", 2, 5, "viz"),
-    objects.Card("vezer", "Havric Titan", 1, 16, "viz"),  # first vezer inserted
-    objects.Card("sima", "Glynn", 3, 3, "levego"),
-    objects.Card("sima", "Veyra", 3, 3, "tuz"),
-    objects.Card("sima", "Erynn", 3, 3, "levego"),
-    objects.Card("sima", "Orynn", 3, 4, "levego"),
-    objects.Card("sima", "Alric", 3, 4, "levego"),
-    objects.Card("sima", "Draxen", 3, 4, "viz"),
-    objects.Card("sima", "Jorvik", 3, 5, "tuz"),
-    objects.Card("sima", "Hyrik", 3, 5, "tuz"),
-    objects.Card("sima", "Rylor", 3, 6, "tuz"),
-    objects.Card("vezer", "Glynn Prime", 6, 3, "levego"),  # second vezer
-    objects.Card("sima", "Bralor", 4, 2, "tuz"),
-    objects.Card("sima", "Nivor", 4, 2, "tuz"),
-    objects.Card("sima", "Cyris", 4, 2, "fold"),
-    objects.Card("sima", "Ilyra", 4, 3, "fold"),
-    objects.Card("sima", "Tavric", 4, 3, "viz"),
-    objects.Card("sima", "Lyssa", 5, 2, "viz"),
-    objects.Card("sima", "Elvior", 5, 1, "fold"),
-    objects.Card("sima", "Quillan", 5, 1, "fold"),
-    objects.Card("sima", "Fayric", 5, 1, "viz"),
-    objects.Card("vezer", "Darth Arin", 4, 5, "fold"),  # third vezer
-    objects.Card("vezer", "Lord Bralor", 4, 4, "tuz"),
-    objects.Card("vezer", "Prime Cindral", 1, 14, "levego"),
-    objects.Card("vezer", "Shadow Draxen", 6, 4, "viz"),
-    objects.Card("vezer", "Elvior the Mighty", 10, 1, "fold"),
-    objects.Card("vezer", "Fenric the Iron", 2, 12, "tuz"),
-    objects.Card("vezer", "Lyssa Vortex", 10, 2, "viz"),
-    objects.Card("vezer", "Quillan Rex", 10, 1, "fold"),
-
 ]
 
 #all enemies ingame
 ENEMIES = [
+]
+
+#all armor ingame
+ARMOR = [
+    objects.Armor("fold", "helmet", load_asset("dirthelmet.png", "armor")),
+    objects.Armor("viz", "helmet", load_asset("waterhelmet.png", "armor")),
+    objects.Armor("tuz", "helmet", load_asset("firehelmet.png", "armor")),
+    objects.Armor("levego", "helmet", load_asset("airhelmet.png", "armor")),
+    objects.Armor("fold", "chestplate", load_asset("dirtchestplate.png", "armor")),
+    objects.Armor("viz", "chestplate", load_asset("waterchestplate.png", "armor")),
+    objects.Armor("tuz", "chestplate", load_asset("firechestplate.png", "armor")),
+    objects.Armor("levego", "chestplate", load_asset("airchestplate.png", "armor")),
+    objects.Armor("fold", "leggings", load_asset("dirtleggings.png", "armor")),
+    objects.Armor("viz", "leggings", load_asset("waterleggings.png", "armor")),
+    objects.Armor("tuz", "leggings", load_asset("fireleggings.png", "armor")),
+    objects.Armor("levego", "leggings", load_asset("airleggings.png", "armor")),
+    objects.Armor("fold", "boots", load_asset("dirtboots.png", "armor")),
+    objects.Armor("viz", "boots", load_asset("waterboots.png", "armor")),
+    objects.Armor("tuz", "boots", load_asset("fireboots.png", "armor")),
+    objects.Armor("levego", "boots", load_asset("airboots.png", "armor")),
+]
+
+#armor the player has
+PLAYERARMOR = [
 
 ]
 

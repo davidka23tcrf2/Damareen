@@ -1,33 +1,78 @@
-import pygame
+from manual.assets.assets import load_asset
 from manual.ui.button import Button
-from manual.ui.label import Label
+from manual.saving import load
+from manual.assets.assets import ASSETS_DIR
+import os, pygame
+
+pygame.init()
+
+sf = "gameloader"
+BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "PublicPixel.ttf"), 12)
 
 class GameLoader:
-    def __init__(self, goto_menu):
+    def __init__(self, goto_menu, goto_start):
         self.elements = []
+        self.goto_menu = goto_menu
 
-        self.title = Label((540, 100, 200, 50), "Load new game from a saved enviroment", font_size=48)
+        self.bg = load_asset("bg.png", sf)
+        back = load_asset("backbutton.png", sf)
+        save = load_asset("save.png", sf)
 
-        # Simple start button to go to menu
-        normal_img = pygame.Surface((200, 50))
-        normal_img.fill((100,100,250))
-        hover_img = pygame.Surface((200, 50))
-        hover_img.fill((150,150,255))
+        self.elements.append(Button((0, 0, 100, 100), goto_start, back))
 
-        self.elements.append(
-            Button((540, 300, 200, 50), goto_menu, normal_img, hover_img)
-        )
+        self.save_buttons = []
+        saves = load.get_save_files()
+
+        start_y = 150  # top margin
+        cols = 6  # max number of columns per row
+        x_spacing = 50  # horizontal spacing between buttons
+        y_spacing = 50  # vertical spacing between buttons
+        button_width, button_height = 144, 182
+
+        for row_index, row_start in enumerate(range(0, len(saves), cols)):
+            row_saves = saves[row_start:row_start + cols]
+            num_in_row = len(row_saves)
+
+            total_width = num_in_row * button_width + (num_in_row - 1) * x_spacing
+            start_x = (1280 - total_width) // 2
+
+            for col_index, s in enumerate(row_saves):
+                save_num = s["save_num"]
+                cards = s["cards"]
+                enemies = s["enemies"]
+                filename = s["file"]
+
+                text = f"Mentés {save_num}\n\n\n{cards} Kártya\n\n\n{enemies} Kazamata"
+
+                x = start_x + col_index * (button_width + x_spacing)
+                y = start_y + row_index * (button_height + y_spacing)
+
+                def make_load_callback(path=filename):
+                    return lambda: self.load_and_go(path)
+
+                btn = Button(
+                    (x, y, button_width, button_height),
+                    make_load_callback(),
+                    save,
+                    text=text,
+                    font=BP,
+                    text_color=(0, 0, 0)
+                )
+                self.save_buttons.append(btn)
+
+    def load_and_go(self, filepath):
+        load.load_game(filepath)
+        self.goto_menu()
 
     def handle_event(self, e):
-        for el in self.elements:
+        for el in self.elements + self.save_buttons:
             el.handle_event(e)
 
     def update(self, dt):
-        for el in self.elements:
+        for el in self.elements + self.save_buttons:
             el.update(dt)
 
     def draw(self, surf):
-        surf.fill((30,30,30))
-        self.title.draw(surf)
-        for el in self.elements:
+        surf.blit(self.bg, (0, 0))
+        for el in self.elements + self.save_buttons:
             el.draw(surf)

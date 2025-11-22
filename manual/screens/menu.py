@@ -1,6 +1,7 @@
 import pygame
 from ..ui.button import Button
 from manual.assets.assets import load_asset
+from manual.inventory import inventory
 
 class MenuScreen:
     def __init__(self, goto_arena, goto_shop):
