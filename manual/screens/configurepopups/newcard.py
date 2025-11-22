@@ -36,8 +36,7 @@ class CardPopup:
 
         # Close button (top-left inside popup)
         closebtn = load_asset("closebutton.png", sf)
-        closebtnhover = load_asset("closebuttonhover.png", sf)
-        self.close_btn = Button((0, 0, 98, 98), close_callback, closebtn, closebtnhover)
+        self.close_btn = Button((0, 0, 98, 98), close_callback, closebtn)
         self.elements.append(self.close_btn)
 
         # Labels (positions are relative inside popup; their base_rect will be recorded)
@@ -65,35 +64,51 @@ class CardPopup:
         grid_start_x = 410
         grid_start_y = 200
 
-        # Unique images for each of the 4 buttons (replace filenames with your assets)
+        # element images
         button_images = [
-            ("new.png", "new.png"),
-            ("new.png", "new.png"),
-            ("new.png", "new.png"),
-            ("new.png", "new.png"),
+            "dirt.png",
+            "water.png",
+            "air.png",
+            "fire.png",
         ]
 
-        for index, (img, img_hover) in enumerate(button_images):
+        for index, img in enumerate(button_images):
             row = index // self.grid_cols
             col = index % self.grid_cols
             bx = grid_start_x + col * (self.button_size + self.button_spacing)
             by = grid_start_y + row * (self.button_size + self.button_spacing)
 
-            normal = load_asset(img, sf)
-            hover = load_asset(img_hover, sf)
+            # load and scale image to 1/4 button area (half width/height)
+            raw_img = load_asset(img, "elements")
+            scaled_side = int(self.button_size)  # half size -> 1/4 area
+            icon = pygame.transform.scale(raw_img, (scaled_side, scaled_side))
 
-            # create button, bind via index to avoid late-binding lambda trap
-            btn = Button((bx, by, self.button_size, self.button_size),
-                         lambda i=index: self.on_grid_button_index(i),
-                         normal, hover)
+            # center icon inside button using image_offset
+            offset_x = (self.button_size - scaled_side) // 2
+            offset_y = (self.button_size - scaled_side) // 2
+
+            btn = Button(
+                (bx, by, self.button_size, self.button_size),
+                lambda i=index: self.on_grid_button_index(i),
+                icon,
+                # no explicit hover image: Button will auto-generate a lighter one
+                image_offset=(offset_x, offset_y),
+            )
             btn.base_pos = btn.rect.topleft
             self.grid_buttons.append(btn)
 
         # Selector (highlight) that indicates currently selected button
         self.selector_color = (255, 255, 0)
         self.selected_index = 0
-        # selector_rect top-left will be synced in update() to selected button position
-        self.selector_rect = pygame.Rect((0, 0), (self.button_size, self.button_size))
+
+        if self.grid_buttons:
+            start = self.grid_buttons[self.selected_index].base_pos
+        else:
+            start = (grid_start_x, grid_start_y)
+
+        self.selector_rect = pygame.Rect(start, (self.button_size, self.button_size))
+        # use float position for smooth sliding
+        self.selector_pos = pygame.math.Vector2(self.selector_rect.topleft)
 
         # Animation & overlay
         self.opening = True
@@ -109,17 +124,9 @@ class CardPopup:
         for el in self.elements:
             el.base_rect = el.rect.copy()
 
-        # initialize selector position (will be corrected in first update)
-        if self.grid_buttons:
-            self.selector_rect.topleft = self.grid_buttons[self.selected_index].base_pos
-
     def on_grid_button_index(self, index):
         """Called when a grid button is clicked (index 0..3)."""
         self.selected_index = index
-        # selector_rect will be moved in update() to match actual button rect
-        # you can add additional logic here (e.g., set a value, preview, etc.)
-        # Example debug:
-        # print("Selected grid button:", index)
 
     def is_closed(self):
         return not self.opening and not self.closing and self.rect.y >= self.screen_height
@@ -170,9 +177,8 @@ class CardPopup:
                 self.closing = False
                 self.active = False
 
-        # Update elements' positions relative to popup (use their stored base_rect)
+        # Update elements' positions relative to popup
         for el in self.elements:
-            # base_rect should be the original rect, don't overwrite it here
             el.rect.topleft = (self.rect.x + el.base_rect.x, self.rect.y + el.base_rect.y)
             el.update(dt)
 
@@ -186,11 +192,19 @@ class CardPopup:
             btn.rect.topleft = (self.rect.x + btn.base_pos[0], self.rect.y + btn.base_pos[1])
             btn.update(dt)
 
-        # Sync selector to the currently selected button's actual rect
+        # --- Selector movement ---
         if self.grid_buttons:
-            sel_btn_rect = self.grid_buttons[self.selected_index].rect
-            # Smoothly move selector to match (optional snap; here we snap)
-            self.selector_rect.topleft = sel_btn_rect.topleft
+            if self.opening or self.closing:
+                # While popup is moving, lock selector to button (no smoothing)
+                self.selector_pos = pygame.math.Vector2(
+                    self.grid_buttons[self.selected_index].rect.topleft
+                )
+            else:
+                # Popup is stationary -> smooth slide between buttons
+                target = pygame.math.Vector2(self.grid_buttons[self.selected_index].rect.topleft)
+                self.selector_pos += (target - self.selector_pos) * 0.3
+
+            self.selector_rect.topleft = (round(self.selector_pos.x), round(self.selector_pos.y))
 
     def draw(self, surf):
         # Skip drawing when off-screen and overlay invisible
@@ -208,15 +222,6 @@ class CardPopup:
         surf.blit(popup_surface, (self.rect.x, self.rect.y))
         pygame.draw.rect(surf, self.border_color, self.rect, 2)
 
-        # Draw selector (outline) relative to popup
-        sel_draw_rect = pygame.Rect(self.selector_rect)
-        sel_draw_rect.topleft = (self.selector_rect.x, self.selector_rect.y)
-        # selector_rect currently stores absolute popup-relative coordinates via btn.base_pos + popup offset,
-        # but to be safe compute draw position from the selected button's rect:
-        if self.grid_buttons:
-            sel_draw_rect = self.grid_buttons[self.selected_index].rect.copy()
-        pygame.draw.rect(surf, self.selector_color, sel_draw_rect, 3)
-
         # Draw labels / close button
         for el in self.elements:
             el.draw(surf)
@@ -228,6 +233,9 @@ class CardPopup:
         # Draw grid buttons on top
         for btn in self.grid_buttons:
             btn.draw(surf)
+
+        # Draw selector (outline) – thicker border
+        pygame.draw.rect(surf, self.selector_color, self.selector_rect, 3)
 
     def close(self):
         self.closing = True

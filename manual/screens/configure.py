@@ -17,7 +17,6 @@ class CONFIGURE:
         self.elements = []
 
         back = load_asset("backbutton.png", sf)
-        back_hover = load_asset("backbuttonhover.png", sf)
         self.paper = load_asset("paper.png", sf)
         self.paper = pygame.transform.scale(self.paper, (1000, 720))
         self.bg = load_asset("bg.png", sf)
@@ -27,12 +26,11 @@ class CONFIGURE:
 
         self.switch = Switch((325, 50, 120, 50), callback=self.on_toggle, initial=False)
 
-        self.elements.append(Button((0, 0, 100, 100), goto_start, back, back_hover))
+        self.elements.append(Button((0, 0, 100, 100), goto_start, back))
 
         # Button to open the popup
         popup_icon = load_asset("new.png", sf)
-        popup_hover = load_asset("newhover.png", sf)
-        self.elements.append(Button((975, 35, 75, 75), self.toggle_popup, popup_icon, popup_hover, image_offset=(-13, -11)))
+        self.elements.append(Button((975, 35, 75, 75), self.toggle_popup, popup_icon, image_offset=(-13, -11)))
 
         self.card_popup = None
 
