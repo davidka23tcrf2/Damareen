@@ -61,7 +61,7 @@ class CardPopup:
         self.grid_rows = 2
         self.grid_cols = 2
         self.button_size = 50
-        self.button_spacing = 20
+        self.button_spacing = 5
         grid_start_x = 410
         grid_start_y = 200
 
