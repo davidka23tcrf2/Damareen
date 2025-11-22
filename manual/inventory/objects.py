@@ -23,7 +23,7 @@ class Enemy:
             i.reset()
 
 class Armor: #boost defense (less dmg taken) by some percent
-    def __init__(self, tpye, what, img, defense = None):
+    def __init__(self, type, what, img, defense = None):
         self.type = type #fold/viz.tuz...
         self.what = what #leggings/boots/chestplate...
         self.img = img #the image of the said armorpiece
