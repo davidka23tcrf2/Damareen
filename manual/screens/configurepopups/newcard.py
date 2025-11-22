@@ -88,6 +88,18 @@ class CardPopup:
         self.elements.append(Label((630, 220, 0, 0), "Sebzés", font=BP26, color=(255, 255, 255)))
         self.elements.append(Label((630, 270, 0, 0), "Életerő", font=BP26, color=(255, 255, 255)))
 
+        # --- NAME TAKEN LABEL (above name textbox) ---
+        # starts empty / hidden
+        self.name_taken_label = Label(
+            (525, 125, 0, 0),  # slightly above the name TextEntry at y=150
+            "",
+            font=BP,
+            color=(255, 50, 50),
+        )
+        self.name_taken_visible = False
+        self.last_name_checked = ""
+        self.elements.append(self.name_taken_label)
+
         # Text entries (first = name, letters only; second = damage; third = health)
         y_positions = [150, 200, 250]
         for i, y_pos in enumerate(y_positions):
@@ -195,6 +207,21 @@ class CardPopup:
         dmg_txt = self.text_entries[1].text.strip()
         hp_txt = self.text_entries[2].text.strip()
 
+        # final name that will be used
+        final_name = name if name else "???"
+        normalized_new = final_name.strip().lower()
+
+        # 🔒 DUPLICATE CHECK: prevent card with same name
+        for card in inventory.GAMECARDS:
+            existing_name = getattr(card, "name", None)
+            if isinstance(existing_name, str):
+                if existing_name.strip().lower() == normalized_new:
+                    # same name already exists -> show label and block creation
+                    self.name_taken_label.set_text("Név foglalt")
+                    self.name_taken_visible = True
+                    self.last_name_checked = normalized_new
+                    return None
+
         # convert safely
         dmg = int(dmg_txt) if dmg_txt.isdigit() else 0
         hp = int(hp_txt) if hp_txt.isdigit() else 0
@@ -204,7 +231,7 @@ class CardPopup:
         element_name = element_names[self.selected_index] if 0 <= self.selected_index < len(element_names) else "fold"
 
         data = {
-            "name": name if name else "???",
+            "name": final_name,
             "dmg": dmg,
             "hp": hp,
             "element": element_name,
@@ -227,6 +254,11 @@ class CardPopup:
 
         # reset element index
         self.selected_index = 0
+
+        # hide "name taken" if it was visible
+        self.name_taken_visible = False
+        self.name_taken_label.set_text("")
+        self.last_name_checked = ""
 
         # show status "card created" for ~3 seconds
         self.status_counter = 60  # frames; adjust to your FPS
@@ -315,6 +347,14 @@ class CardPopup:
         if self.status_counter > 0:
             self.status_counter -= 1
 
+        # --- hide "name taken" if user changed the name ---
+        if self.name_taken_visible and self.text_entries:
+            current_name = self.text_entries[0].text.strip().lower()
+            if current_name != self.last_name_checked:
+                self.name_taken_visible = False
+                self.name_taken_label.set_text("")
+                self.last_name_checked = ""
+
     def draw(self, surf):
         # Skip drawing when off-screen and overlay invisible
         if self.rect.y > self.screen_height and self.overlay_alpha <= 0:
@@ -393,10 +433,13 @@ class CardPopup:
             surf.blit(icon, icon_rect)
         # --- END CARD PREVIEW ---
 
-        # Draw labels / close button / create button
+        # Draw labels / close button / create button / name-taken label
         for el in self.elements:
             if el is self.create_btn and not self.is_create_enabled():
                 # don't draw create button if fields are empty
+                continue
+            if el is self.name_taken_label and not self.name_taken_visible:
+                # draw name-taken only when visible
                 continue
             el.draw(surf)
 
