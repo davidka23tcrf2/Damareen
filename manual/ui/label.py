@@ -2,55 +2,53 @@ import pygame
 
 class Label:
     def __init__(self, rect, text, font, color=(0, 0, 0)):
-        """
-        Creates a text label for Pygame using a rectangle for position/size.
-
-        Args:
-            rect (tuple): (x, y, width, height) for the label area.
-            text (str): The text to display.
-            font (pygame.font.Font): Preloaded Pygame font object.
-            color (tuple): RGB color of the text.
-        """
         self.rect = pygame.Rect(rect)
         self.text = text
         self.color = color
         self.font = font
 
-        # Save initial rect for popup-relative movement
         self.base_rect = self.rect.copy()
 
-        # Render text surface
-        self.rendered_text = self.font.render(self.text, True, self.color)
-        self.text_rect = self.rendered_text.get_rect(center=self.rect.center)
+        # NEW: render multiline
+        self._render_multiline()
+
+    def _render_multiline(self):
+        """Render text with newline support, but change nothing else."""
+        lines = self.text.split("\n")
+
+        # Render each line
+        self.rendered_lines = [self.font.render(line, True, self.color) for line in lines]
+
+        # Compute total height
+        total_height = sum(line.get_height() for line in self.rendered_lines)
+        y = self.rect.centery - total_height // 2
+
+        # Compute rects for each line
+        self.text_rects = []
+        for surf in self.rendered_lines:
+            rect = surf.get_rect(center=(self.rect.centerx, y + surf.get_height() // 2))
+            self.text_rects.append(rect)
+            y += surf.get_height()
 
     def set_text(self, new_text):
-        """Update the label's text."""
         self.text = new_text
-        self.rendered_text = self.font.render(self.text, True, self.color)
-        self.update(0)  # update text_rect
+        self._render_multiline()
 
     def set_color(self, new_color):
-        """Change text color."""
         self.color = new_color
-        self.rendered_text = self.font.render(self.text, True, self.color)
-        self.update(0)
+        self._render_multiline()
 
     def set_position(self, x, y):
-        """Set the top-left position of the label."""
         self.rect.topleft = (x, y)
-        self.update(0)
+        self._render_multiline()
 
     def update(self, dt):
-        """
-        Call every frame. Keeps the text centered in the current rect.
-        Also useful if the label is moving with a popup.
-        """
-        self.text_rect = self.rendered_text.get_rect(center=self.rect.center)
+        # keeps compatibility
+        self._render_multiline()
 
     def draw(self, surface):
-        """Draw the label on the given surface."""
-        surface.blit(self.rendered_text, self.text_rect)
+        for surf, rect in zip(self.rendered_lines, self.text_rects):
+            surface.blit(surf, rect)
 
-    # Optional stubs for interface compatibility with buttons
     def handle_event(self, e):
         pass

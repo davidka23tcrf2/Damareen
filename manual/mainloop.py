@@ -28,7 +28,7 @@ ui.add("START", StartScreen(goto_configure, goto_gameloader))
 ui.add("GAMELOADER", GameLoader(goto_menu, goto_start))
 ui.add("CONFIGURE", CONFIGURE(goto_start, goto_menu))
 
-ui.set("SHOP")
+ui.set("START")
 
 def ml():
     while True:
