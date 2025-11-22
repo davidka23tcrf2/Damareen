@@ -2,7 +2,7 @@ import pygame
 
 class Button:
     def __init__(self, rect, callback, normal_image, hover_image, text="", font=None, font_size=28, text_color=(255,255,255),
-                 center_x=False, hover_callback=None, screen_width=1280):
+                 center_x=False, hover_callback=None, screen_width=1280, image_offset=(0,0)):
         self.rect = pygame.Rect(rect)
         if center_x:
             self.rect.x = screen_width // 2 - self.rect.width // 2
@@ -17,6 +17,8 @@ class Button:
 
         self.text = text
         self.text_color = text_color
+
+        self.image_offset = image_offset  # (x_offset, y_offset)
 
         if isinstance(font, pygame.font.Font):
             self.font = font
@@ -39,7 +41,8 @@ class Button:
 
     def draw(self, surf):
         image = self.hover_image if self.hover else self.normal_image
-        surf.blit(image, self.rect)
+        # Draw the image at rect.topleft + optional offset
+        surf.blit(image, (self.rect.x + self.image_offset[0], self.rect.y + self.image_offset[1]))
 
         if self.text:
             lines = self.text.split("\n")
@@ -56,4 +59,5 @@ class Button:
                 start_y += self.font.size(line)[1]
 
         pygame.draw.rect(surf, (255, 0, 0), self.rect, 2)
+
 

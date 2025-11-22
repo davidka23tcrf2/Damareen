@@ -2,9 +2,8 @@ import pygame
 from ..ui.button import Button
 
 class ArenaScreen:
-    def __init__(self, goto_shop, state):
+    def __init__(self, goto_shop):
         self.elements = []
-        self.state = state
     def handle_event(self, e):
         for el in self.elements: el.handle_event(e)
     def update(self, dt):

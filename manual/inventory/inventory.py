@@ -1,5 +1,5 @@
 from manual.inventory import objects
-
+SHOP_ENABLED = False
 COINS = 0
 
 #empty from the start

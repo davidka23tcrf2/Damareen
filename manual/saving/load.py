@@ -1,6 +1,7 @@
 import os, re
 from manual.inventory import inventory
 from manual.inventory import objects
+from manual.inventory.inventory import SHOP_ENABLED
 
 SAVES_DIR = os.path.join(os.path.dirname(__file__), "saves")
 
@@ -36,6 +37,9 @@ def parse_save_filename(filename):
     }
 
 def load_game(filename):
+    inventory.ENEMIES.clear()
+    inventory.PLAYERCARDS.clear()
+    inventory.GAMECARDS.clear()
     path = os.path.join(SAVES_DIR, filename)
     with open(path, "r", encoding="utf-8") as f:
         line = f.readline()
@@ -58,3 +62,12 @@ def load_game(filename):
                         if line[ci] == wc.name:
                             deck.append(wc)
                 inventory.ENEMIES.append(objects.Enemy(line[0], line[1], deck, line[len(line)-1]))
+        line = f.readline()
+        if int(line):
+            inventory.SHOP_ENABLED = True
+        line = f.readline().split(";")
+        if line[0] != '':
+            for i in line:
+                for j in inventory.GAMECARDS:
+                    if j.name == i:
+                        inventory.PLAYERCARDS.append(j)

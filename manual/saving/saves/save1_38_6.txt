@@ -44,3 +44,5 @@ kozepes;Cap;Ulric;Merric;Ivara;Havric Titan;sebzes
 kozepes;Cmdr;Arin;Fenric;Wynor;Glynn Prime;eletero
 nagy;Dragon;Bralor;Nivor;Cyris;Ilyra;Tavric;Darth Arin
 nagy;Titan;Lyssa;Elvior;Quillan;Fayric;Lord Bralor
+1
+Cindral;Havric;Ulric;Merrick;Ivara;Arin;Fenric:Wynor;Zerra;Prynn;Havric Titan

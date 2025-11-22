@@ -8,9 +8,8 @@ from manual.assets.assets import load_asset
 
 
 class ShopScreen:
-    def __init__(self, goto_arena, state):
+    def __init__(self, goto_arena):
         self.elements = []
-        self.state = state
         self.item_slots = []
         self.item_labels = []
         self.items = [

@@ -31,3 +31,11 @@ def save_game():
                 f.write(f'{i.type};{i.name};{deck};{i.reward}\n')
             else:
                 f.write(f'{i.type};{i.name};{deck}\n')
+        if inventory.SHOP_ENABLED:
+            f.write(f"1\n")
+        else:
+            f.write(f"0\n")
+        cards = []
+        for i in inventory.PLAYERCARDS:
+            cards.append(i.name)
+        f.write(f"{';'.join(cards)}\n")

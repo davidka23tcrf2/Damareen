@@ -1,5 +1,4 @@
-import pygame, sys, json
-
+import pygame, sys, json, os
 from manual.screens.configure import CONFIGURE
 from manual.screens.start import StartScreen
 from manual.ui.ui_manager import UIStateManager
@@ -8,36 +7,26 @@ from manual.screens.arena import ArenaScreen
 from manual.screens.menu import MenuScreen
 from manual.screens.gameloader import GameLoader
 
-start = True
-
 pygame.init()
-SCREEN = pygame.display.set_mode((1280,720))
+SCREEN_SIZE = (1280, 720)
+SCREEN = pygame.display.set_mode(SCREEN_SIZE)
 CLOCK = pygame.time.Clock()
 pygame.display.set_caption("Damareen")
+ui = UIStateManager(SCREEN_SIZE)
 
-def load_state():
-    try:
-        with open("save.json","r") as f:
-            return json.load(f)
-    except:
-        return {"currency":100,"inventory":[]}
+def goto_shop(): ui.switch_to("SHOP", duration=0.5)
+def goto_arena(): ui.switch_to("ARENA", duration=0.5)
+def goto_menu(): ui.switch_to("MENU", duration=0.5)
+def goto_gameloader(): ui.switch_to("GAMELOADER", duration=0.5)
+def goto_configure(): ui.switch_to("CONFIGURE", duration=0.5)
+def goto_start(): ui.switch_to("START", duration=0.5)
 
-state = load_state()
-ui = UIStateManager()
-
-def goto_shop(): ui.set("SHOP")
-def goto_arena(): ui.set("ARENA")
-def goto_menu(): ui.set("MENU")
-def goto_gameloader(): ui.set("GAMELOADER")
-def goto_configure(): ui.set("CONFIGURE")
-def goto_start(): ui.set("START")
-
-ui.add("SHOP", ShopScreen(goto_arena, state))
-ui.add("ARENA", ArenaScreen(goto_shop, state))
+ui.add("SHOP", ShopScreen(goto_arena))
+ui.add("ARENA", ArenaScreen(goto_shop))
 ui.add("MENU", MenuScreen(goto_arena, goto_shop))
 ui.add("START", StartScreen(goto_configure, goto_gameloader))
 ui.add("GAMELOADER", GameLoader(goto_menu, goto_start))
-ui.add("CONFIGURE", CONFIGURE(goto_menu))
+ui.add("CONFIGURE", CONFIGURE(goto_start, goto_menu))
 
 ui.set("START")
 
@@ -49,6 +38,5 @@ def ml():
                 pygame.quit(); sys.exit()
             ui.handle_event(e)
         ui.update(dt)
-        SCREEN.fill((30,30,30))
         ui.draw(SCREEN)
         pygame.display.flip()
