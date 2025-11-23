@@ -16,10 +16,14 @@ class GameLoader:
 
         self.bg = load_asset("bg.png", sf)
         back = load_asset("backbutton.png", sf)
-        save = load_asset("save.png", sf)
+        self.save_img = load_asset("save.png", sf)
 
         self.elements.append(Button((0, 0, 100, 100), goto_start, back))
+        
+        self.save_buttons = []
+        self.reload_saves()
 
+    def reload_saves(self):
         self.save_buttons = []
         saves = load.get_save_files()
 
@@ -53,7 +57,7 @@ class GameLoader:
                 btn = Button(
                     (x, y, button_width, button_height),
                     make_load_callback(),
-                    save,
+                    self.save_img,
                     text=text,
                     font=BP,
                     text_color=(0, 0, 0)

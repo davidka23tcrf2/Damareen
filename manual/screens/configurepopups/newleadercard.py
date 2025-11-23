@@ -10,6 +10,7 @@ sf = "configure"
 pygame.init()
 BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "PublicPixel.ttf"), 20)
 BP15 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "PublicPixel.ttf"), 15)
+BP12 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "PublicPixel.ttf"), 12)
 BP26 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "PublicPixel.ttf"), 26)
 BP_BIG = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "PublicPixel.ttf"), 32)
 
@@ -53,8 +54,8 @@ class NewLeaderCardPopup:
         pygame.draw.rect(create_img, (50, 200, 50), create_img.get_rect(), border_radius=25)
         pygame.draw.rect(create_img, (0, 0, 0), create_img.get_rect(), width=4, border_radius=25)
         
-        # User requested "smalles so text fits" -> Using BP15
-        label = BP15.render("Vezérkártya létrehozása", True, (0, 0, 0))
+        # User requested "smalles so text fits" -> Using BP12
+        label = BP12.render("Vezérkártya létrehozása", True, (0, 0, 0))
         label_rect = label.get_rect(center=(create_w // 2, create_h // 2))
         create_img.blit(label, label_rect)
 
@@ -83,15 +84,25 @@ class NewLeaderCardPopup:
         # User said "elonev til doesnt align up with the textentry".
         # Let's try moving label Y to 142 to center it better visually with the text entry text.
         self.elements.append(Label((550, 150, 0, 0), "Előnév:", font=BP, color=(255, 255, 255)))
-        self.prefix_entry = TextEntry((620, 130, 180, 40), font=BP26, max_length=6, letters_only=True)
+        # User requested: more chars, smaller font, still no spaces
+        self.prefix_entry = TextEntry((620, 130, 180, 40), font=BP15, max_length=11, letters_only=True)
         self.prefix_entry.base_pos = self.prefix_entry.rect.topleft
         self.text_entries.append(self.prefix_entry)
+        
+        # Error label for duplicate name
+        # Position above text entry (y=130), so maybe y=100
+        self.error_label = Label((620, 100, 0, 0), "", font=BP12, color=(255, 0, 0))
+        self.elements.append(self.error_label)
 
         # Card Selection List
         # Adjusted width to match buttons
         self.card_list_area = pygame.Rect(50, 100, 360, 300)
         self.selected_card = None
+        self.card_list_area = pygame.Rect(50, 100, 360, 300)
+        self.selected_card = None
         self.scroll_y = 0
+        self.scroll_speed = 20
+        self.max_scroll = 0
         
         # Type selection (Damage vs HP)
         self.selected_type = "damage" # or "hp"
@@ -106,7 +117,8 @@ class NewLeaderCardPopup:
         dmg_img = pygame.Surface((btn_w, btn_h), pygame.SRCALPHA)
         pygame.draw.rect(dmg_img, (200, 50, 50), dmg_img.get_rect(), border_radius=10)
         pygame.draw.rect(dmg_img, (0,0,0), dmg_img.get_rect(), width=2, border_radius=10)
-        dmg_txt = BP.render("Sebzés", True, (0,0,0)) 
+        # Smaller font
+        dmg_txt = BP15.render("Sebzés", True, (0,0,0)) 
         dmg_img.blit(dmg_txt, dmg_txt.get_rect(center=(btn_w//2, btn_h//2)))
         
         self.dmg_btn = Button((450, btn_y, btn_w, btn_h), lambda: self.set_type("damage"), dmg_img)
@@ -117,7 +129,8 @@ class NewLeaderCardPopup:
         hp_img = pygame.Surface((btn_w, btn_h), pygame.SRCALPHA)
         pygame.draw.rect(hp_img, (50, 200, 50), hp_img.get_rect(), border_radius=10)
         pygame.draw.rect(hp_img, (0,0,0), hp_img.get_rect(), width=2, border_radius=10)
-        hp_txt = BP.render("Életerő", True, (0,0,0))
+        # Smaller font
+        hp_txt = BP15.render("Életerő", True, (0,0,0))
         hp_img.blit(hp_txt, hp_txt.get_rect(center=(btn_w//2, btn_h//2)))
 
         self.hp_btn = Button((450 + btn_w, btn_y, btn_w, btn_h), lambda: self.set_type("hp"), hp_img)
@@ -177,8 +190,18 @@ class NewLeaderCardPopup:
             # We need to capture 'i' and 'card'
             btn = Button((bx, by, w, h), lambda c=card, idx=i: self.select_card(c, idx), surf)
             btn.base_pos = (bx, by)
+            btn.base_pos = (bx, by)
             self.card_buttons.append(btn)
             y_off += 40 # tighter spacing
+            
+        # Calculate max scroll
+        total_height = y_off
+        self.max_scroll = max(0, total_height - self.card_list_area.height)
+
+        # Auto-select first card if none selected and list is not empty
+        if self.card_buttons and not self.selected_card:
+            if cards: # Ensure cards list corresponds to buttons
+                self.select_card(cards[0], 0)
 
     def select_card(self, card, index):
         self.selected_card = card
@@ -208,6 +231,16 @@ class NewLeaderCardPopup:
         original = self.selected_card
         new_name = f"{prefix} {original.name}"
         
+        # Check for duplicates
+        for c in inventory.GAMECARDS:
+            if c.name == new_name:
+                # Name already exists
+                self.error_label.set_text("Név már létezik!")
+                return
+        
+        # Clear error if valid
+        self.error_label.set_text("")
+        
         # Logic update:
         # Power remains the same as original.
         # If "damage" selected -> double damage.
@@ -233,6 +266,7 @@ class NewLeaderCardPopup:
         # Feedback
         self.status_counter = 60
         self.prefix_entry.set_text("")
+        self.error_label.set_text("")
         self.selected_card = None
         self.selected_card_index = -1
         self.selector_rect = None
@@ -247,6 +281,7 @@ class NewLeaderCardPopup:
             self.closing = False
             self.overlay_alpha = 0
             self.active = True
+            self.error_label.set_text("") # Clear error on reopen
             self.refresh_card_list() # Refresh list on reopen
 
     def is_closed(self):
@@ -272,9 +307,36 @@ class NewLeaderCardPopup:
         for btn in self.type_buttons:
             btn.handle_event(event)
             
+        # Handle scrolling
+        if event.type == pygame.MOUSEWHEEL:
+            if self.rect.collidepoint(pygame.mouse.get_pos()):
+                 # Check if mouse is over list area (relative to screen)
+                m_pos = pygame.mouse.get_pos()
+                list_rect_screen = pygame.Rect(
+                    self.rect.x + self.card_list_area.x,
+                    self.rect.y + self.card_list_area.y,
+                    self.card_list_area.width,
+                    self.card_list_area.height
+                )
+                if list_rect_screen.collidepoint(m_pos):
+                    self.scroll_y -= event.y * self.scroll_speed
+                    self.scroll_y = max(0, min(self.scroll_y, self.max_scroll))
+                    return True
+
         # Handle card list buttons
-        # We might need to handle scrolling if list is long, but for now just list them
+        # We need to adjust event pos or button rects for scrolling?
+        # Easier: Update button rects in update() based on scroll, then handle event normally.
+        # BUT we must only handle click if within list area.
+        
         for btn in self.card_buttons:
+            # Only handle event if button is visible in list area
+            # We can check this by checking if the mouse click is within the list area
+            if event.type in [pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP]:
+                if not self.card_list_area.collidepoint(
+                    event.pos[0] - self.rect.x, 
+                    event.pos[1] - self.rect.y
+                ):
+                    continue
             btn.handle_event(event)
 
         return True
@@ -309,7 +371,11 @@ class NewLeaderCardPopup:
             btn.update(dt)
             
         for btn in self.card_buttons:
-            btn.rect.topleft = (self.rect.x + btn.base_pos[0], self.rect.y + btn.base_pos[1])
+            # Apply scroll offset
+            btn.rect.topleft = (
+                self.rect.x + btn.base_pos[0], 
+                self.rect.y + btn.base_pos[1] - self.scroll_y
+            )
             btn.update(dt)
 
         if self.status_counter > 0:
@@ -380,20 +446,30 @@ class NewLeaderCardPopup:
             empty_rect = empty_text.get_rect(center=list_bg_rect.center)
             surf.blit(empty_text, empty_rect)
         else:
+            # Clip to list area
+            surf.set_clip(list_bg_rect)
             for btn in self.card_buttons:
                 btn.draw(surf)
+            surf.set_clip(None)
+            
+        # Draw persistent selection highlight for card list
             
         # Draw persistent selection highlight for card list
         if self.selector_rect:
             # selector_rect is relative to popup
+            # Apply scroll to selector
             abs_sel_rect = pygame.Rect(
                 self.rect.x + self.selector_rect.x,
-                self.rect.y + self.selector_rect.y,
+                self.rect.y + self.selector_rect.y - self.scroll_y,
                 self.selector_rect.width,
                 self.selector_rect.height
             )
+            
+            # Clip selector drawing too
+            surf.set_clip(list_bg_rect)
             # User requested "selector red for the cards"
             pygame.draw.rect(surf, (255, 0, 0), abs_sel_rect, 3)
+            surf.set_clip(None)
 
         # Status text
         if self.status_counter > 0:

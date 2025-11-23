@@ -8,11 +8,15 @@ from manual.inventory import inventory
 from manual.screens.configurepopups.newcard import CardPopup
 from manual.screens.configurepopups.deletecard import CardDeletePopup  # <-- new import
 from manual.screens.configurepopups.newleadercard import NewLeaderCardPopup
+from manual.screens.configurepopups.collectionpopup import CollectionPopup
+from manual.screens.configurepopups.newdungeon import NewDungeonPopup
+from manual.screens.configurepopups.deletedungeon import DeleteDungeonPopup
 
 from manual.saving import save as saving  # module with save_game()
 
 pygame.init()
 BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "PublicPixel.ttf"), 20)
+BP_SMALL = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "PublicPixel.ttf"), 12)
 sf = "configure"
 
 
@@ -26,10 +30,10 @@ class CONFIGURE:
         self.paper = pygame.transform.scale(self.paper, (1000, 720))
         self.bg = load_asset("bg.png", sf)
 
-        self.elements.append(Label((250, 70, 0, 0), "Bolt:", font=BP))
+        self.elements.append(Label((250, 150, 0, 0), "Bolt:", font=BP))
         self.elements.append(Label((730, 70, 0, 0), "Kártyák kezelése", font=BP))
 
-        self.switch = Switch((325, 50, 120, 50), callback=self.on_toggle, initial=False)
+        self.switch = Switch((325, 130, 120, 50), callback=self.on_toggle, initial=False)
 
         # back button
         self.elements.append(Button((0, 0, 100, 100), goto_start, back))
@@ -50,10 +54,10 @@ class CONFIGURE:
         delete_icon = load_asset("delete.png", sf)
         delete_icon = pygame.transform.smoothscale(delete_icon, (85, 85))
         self.delete_card_btn = Button(
-            (975, 35, 75, 75),
+            (975, 55, 75, 30),
             self.toggle_delete_popup,
             delete_icon,
-            image_offset=(-5, -5),
+            image_offset=(-5, -26),
         )
         self.elements.append(self.delete_card_btn)
 
@@ -64,10 +68,10 @@ class CONFIGURE:
         self.elements.append(Label((710, 200, 0, 0), "Új vezérkártya", font=BP))
         
         self.new_leader_btn = Button(
-            (870, 170, 60, 60), # Next to the label (label ~200px wide? 680+200=880 -> 900 seems okay)
+            (870, 170, 75, 75), # Next to the label (label ~200px wide? 680+200=880 -> 900 seems okay)
             self.toggle_leader_popup,
             new_icon, # reusing the same new icon
-            image_offset=(-20, -18), # Adjust offset for smaller button if needed, or keep same
+            image_offset=(-13, -11), # Adjust offset for smaller button if needed, or keep same
         )
         self.elements.append(self.new_leader_btn)
 
@@ -139,6 +143,60 @@ class CONFIGURE:
         self.delete_popup = None      # delete-card popup
         self.leader_popup = None      # new-leader-card popup
 
+        # Timer for save message
+        self.save_message_timer = 0
+        self.saved_label = Label((360, 630, 220, 80), "kornyezet elmentve!", font=BP_SMALL)
+
+        # --- COLLECTION CONFIGURATION ---
+        # Gear icon
+        gear_icon = load_asset("gear.png", sf)
+        gear_icon = pygame.transform.smoothscale(gear_icon, (60, 60))
+        
+        # Label "Gyűjtemény konfigurálása"
+        # Position: Let's put it below "Új vezérkártya" section.
+        # "Új vezérkártya" is at y=200 (label) and y=170 (button).
+        # Let's go down to y=300.
+        self.elements.append(Label((630, 350, 0, 0), "Gyűjtemény konfigurálása", font=BP))
+        
+        self.collection_btn = Button(
+            (880, 320, 70, 70), # Right of the label
+            self.toggle_collection_popup,
+            gear_icon,
+            image_offset=(5, 5)
+        )
+        self.elements.append(self.collection_btn)
+        
+        self.collection_popup = None
+
+        # --- KAZAMATÁK KEZELÉSE ---
+        # Label "Kazamaták kezelése"
+        # Position: Below Collection section. Collection label at y=350.
+        # Let's go down to y=450.
+        self.elements.append(Label((600, 500, 0, 0), "Kazamaták kezelése", font=BP))
+        
+        # New Dungeon (plus icon)
+        # Reusing new_icon
+        self.new_dungeon_btn = Button(
+            (800, 465, 75, 75),
+            self.toggle_new_dungeon_popup,
+            new_icon,
+            image_offset=(-13, -11),
+        )
+        self.elements.append(self.new_dungeon_btn)
+        
+        # Delete Dungeon (trash icon)
+        # Reusing delete_icon
+        self.delete_dungeon_btn = Button(
+            (873, 490, 75, 30),
+            self.toggle_delete_dungeon_popup,
+            delete_icon,
+            image_offset=(-5, -26),
+        )
+        self.elements.append(self.delete_dungeon_btn)
+        
+        self.new_dungeon_popup = None
+        self.delete_dungeon_popup = None
+
     def on_toggle(self):
         inventory.SHOP_ENABLED = not inventory.SHOP_ENABLED
 
@@ -171,6 +229,17 @@ class CONFIGURE:
         inventory.GAMECARDS.clear()
         inventory.PLAYERCARDS.clear()
         inventory.ENEMIES.clear()
+
+        # Remove the save button
+        if self.save_btn in self.elements:
+            self.elements.remove(self.save_btn)
+        
+        # Add the "kornyezet elmentve!" label
+        if self.saved_label not in self.elements:
+            self.elements.append(self.saved_label)
+        
+        # Set timer to 1 second
+        self.save_message_timer = 1.0
 
     # ---------- POPUP TOGGLES ----------
 
@@ -223,6 +292,61 @@ class CONFIGURE:
         else:
             self.leader_popup = NewLeaderCardPopup(close_callback=self.toggle_leader_popup)
 
+    def toggle_collection_popup(self):
+        # close others
+        if self.card_popup and getattr(self.card_popup, "active", False):
+            self.card_popup.close()
+        if self.delete_popup and getattr(self.delete_popup, "active", False):
+            self.delete_popup.close()
+        if self.leader_popup and getattr(self.leader_popup, "active", False):
+            self.leader_popup.close()
+            
+        if self.collection_popup:
+            if self.collection_popup.is_closed():
+                self.collection_popup.reopen()
+            else:
+                self.collection_popup.close()
+        else:
+            self.collection_popup = CollectionPopup(close_callback=self.toggle_collection_popup)
+
+    def toggle_new_dungeon_popup(self):
+        # Close others
+        self._close_all_popups_except("new_dungeon")
+        
+        if self.new_dungeon_popup:
+            if self.new_dungeon_popup.is_closed():
+                self.new_dungeon_popup.reopen()
+            else:
+                self.new_dungeon_popup.close()
+        else:
+            self.new_dungeon_popup = NewDungeonPopup(close_callback=self.toggle_new_dungeon_popup)
+
+    def toggle_delete_dungeon_popup(self):
+        # Close others
+        self._close_all_popups_except("delete_dungeon")
+        
+        if self.delete_dungeon_popup:
+            if self.delete_dungeon_popup.is_closed():
+                self.delete_dungeon_popup.reopen()
+            else:
+                self.delete_dungeon_popup.close()
+        else:
+            self.delete_dungeon_popup = DeleteDungeonPopup(close_callback=self.toggle_delete_dungeon_popup)
+
+    def _close_all_popups_except(self, keep):
+        if keep != "card" and self.card_popup and getattr(self.card_popup, "active", False):
+            self.card_popup.close()
+        if keep != "delete_card" and self.delete_popup and getattr(self.delete_popup, "active", False):
+            self.delete_popup.close()
+        if keep != "leader" and self.leader_popup and getattr(self.leader_popup, "active", False):
+            self.leader_popup.close()
+        if keep != "collection" and self.collection_popup and getattr(self.collection_popup, "active", False):
+            self.collection_popup.close()
+        if keep != "new_dungeon" and self.new_dungeon_popup and getattr(self.new_dungeon_popup, "active", False):
+            self.new_dungeon_popup.close()
+        if keep != "delete_dungeon" and self.delete_dungeon_popup and getattr(self.delete_dungeon_popup, "active", False):
+            self.delete_dungeon_popup.close()
+
     # ---------- EVENT HANDLING ----------
 
     def handle_event(self, e):
@@ -241,6 +365,24 @@ class CONFIGURE:
         # then leader popup
         if self.leader_popup and getattr(self.leader_popup, "active", False):
             handled = self.leader_popup.handle_event(e)
+            if handled:
+                return
+
+        # then collection popup
+        if self.collection_popup and getattr(self.collection_popup, "active", False):
+            handled = self.collection_popup.handle_event(e)
+            if handled:
+                return
+
+        # then new dungeon popup
+        if self.new_dungeon_popup and getattr(self.new_dungeon_popup, "active", False):
+            handled = self.new_dungeon_popup.handle_event(e)
+            if handled:
+                return
+
+        # then delete dungeon popup
+        if self.delete_dungeon_popup and getattr(self.delete_dungeon_popup, "active", False):
+            handled = self.delete_dungeon_popup.handle_event(e)
             if handled:
                 return
 
@@ -271,10 +413,39 @@ class CONFIGURE:
                 self.leader_popup = None
             return
 
+        if self.collection_popup and getattr(self.collection_popup, "active", False):
+            self.collection_popup.update(dt)
+            if getattr(self.collection_popup, "closing", False) and self.collection_popup.is_closed():
+                self.collection_popup = None
+            return
+
+        if self.new_dungeon_popup and getattr(self.new_dungeon_popup, "active", False):
+            self.new_dungeon_popup.update(dt)
+            if getattr(self.new_dungeon_popup, "closing", False) and self.new_dungeon_popup.is_closed():
+                self.new_dungeon_popup = None
+            return
+
+        if self.delete_dungeon_popup and getattr(self.delete_dungeon_popup, "active", False):
+            self.delete_dungeon_popup.update(dt)
+            if getattr(self.delete_dungeon_popup, "closing", False) and self.delete_dungeon_popup.is_closed():
+                self.delete_dungeon_popup = None
+            return
+
         # No active popup -> update normal UI
         for el in self.elements:
             el.update(dt)
         self.switch.update(dt)
+
+        # Handle save message timer
+        if self.save_message_timer > 0:
+            self.save_message_timer -= dt
+            if self.save_message_timer <= 0:
+                self.save_message_timer = 0
+                # Restore button
+                if self.saved_label in self.elements:
+                    self.elements.remove(self.saved_label)
+                if self.save_btn not in self.elements:
+                    self.elements.append(self.save_btn)
 
     # ---------- DRAW ----------
 
@@ -293,3 +464,9 @@ class CONFIGURE:
             self.delete_popup.draw(surf)
         if self.leader_popup:
             self.leader_popup.draw(surf)
+        if self.collection_popup:
+            self.collection_popup.draw(surf)
+        if self.new_dungeon_popup:
+            self.new_dungeon_popup.draw(surf)
+        if self.delete_dungeon_popup:
+            self.delete_dungeon_popup.draw(surf)
