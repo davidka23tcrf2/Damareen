@@ -7,6 +7,7 @@ from manual.inventory import inventory
 
 from manual.screens.configurepopups.newcard import CardPopup
 from manual.screens.configurepopups.deletecard import CardDeletePopup  # <-- new import
+from manual.screens.configurepopups.newleadercard import NewLeaderCardPopup
 
 from manual.saving import save as saving  # module with save_game()
 
@@ -55,6 +56,20 @@ class CONFIGURE:
             image_offset=(-5, -5),
         )
         self.elements.append(self.delete_card_btn)
+
+        # New Leader Card (plus icon, same as new card but with label)
+        # Label for "Új vezérkártya"
+        # Aligned with "Kártyák kezelése" at x=730, but lower down
+        # User requested "more right" -> let's try 850
+        self.elements.append(Label((710, 200, 0, 0), "Új vezérkártya", font=BP))
+        
+        self.new_leader_btn = Button(
+            (870, 170, 60, 60), # Next to the label (label ~200px wide? 680+200=880 -> 900 seems okay)
+            self.toggle_leader_popup,
+            new_icon, # reusing the same new icon
+            image_offset=(-20, -18), # Adjust offset for smaller button if needed, or keep same
+        )
+        self.elements.append(self.new_leader_btn)
 
         # --- SAVE & "LOAD" button (bottom) ---
         # (now: save + go to menu, no actual load, no clearing inv)
@@ -122,6 +137,7 @@ class CONFIGURE:
         # Popups
         self.card_popup = None        # new-card popup
         self.delete_popup = None      # delete-card popup
+        self.leader_popup = None      # new-leader-card popup
 
     def on_toggle(self):
         inventory.SHOP_ENABLED = not inventory.SHOP_ENABLED
@@ -163,6 +179,10 @@ class CONFIGURE:
         if self.delete_popup and getattr(self.delete_popup, "active", False):
             self.delete_popup.close()
             return
+        
+        if self.leader_popup and getattr(self.leader_popup, "active", False):
+            self.leader_popup.close()
+            return
 
         if self.card_popup:
             if self.card_popup.is_closed():
@@ -186,6 +206,23 @@ class CONFIGURE:
         else:
             self.delete_popup = CardDeletePopup(close_callback=self.toggle_delete_popup)
 
+    def toggle_leader_popup(self):
+        # close others
+        if self.card_popup and getattr(self.card_popup, "active", False):
+            self.card_popup.close()
+            return
+        if self.delete_popup and getattr(self.delete_popup, "active", False):
+            self.delete_popup.close()
+            return
+
+        if self.leader_popup:
+            if self.leader_popup.is_closed():
+                self.leader_popup.reopen()
+            else:
+                self.leader_popup.close()
+        else:
+            self.leader_popup = NewLeaderCardPopup(close_callback=self.toggle_leader_popup)
+
     # ---------- EVENT HANDLING ----------
 
     def handle_event(self, e):
@@ -198,6 +235,12 @@ class CONFIGURE:
         # then new-card popup
         if self.card_popup and getattr(self.card_popup, "active", False):
             handled = self.card_popup.handle_event(e)
+            if handled:
+                return
+
+        # then leader popup
+        if self.leader_popup and getattr(self.leader_popup, "active", False):
+            handled = self.leader_popup.handle_event(e)
             if handled:
                 return
 
@@ -222,6 +265,12 @@ class CONFIGURE:
                 self.card_popup = None
             return
 
+        if self.leader_popup and getattr(self.leader_popup, "active", False):
+            self.leader_popup.update(dt)
+            if getattr(self.leader_popup, "closing", False) and self.leader_popup.is_closed():
+                self.leader_popup = None
+            return
+
         # No active popup -> update normal UI
         for el in self.elements:
             el.update(dt)
@@ -242,3 +291,5 @@ class CONFIGURE:
             self.card_popup.draw(surf)
         if self.delete_popup:
             self.delete_popup.draw(surf)
+        if self.leader_popup:
+            self.leader_popup.draw(surf)
