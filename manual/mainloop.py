@@ -1,5 +1,6 @@
 import pygame, sys, json, os
 from manual.screens.configure import CONFIGURE
+from manual.screens.continue_game import ContinueGame
 from manual.screens.start import StartScreen
 from manual.ui.ui_manager import UIStateManager
 from manual.screens.shop import ShopScreen
@@ -20,13 +21,15 @@ def goto_menu(): ui.switch_to("MENU", duration=0.5)
 def goto_gameloader(): ui.switch_to("GAMELOADER", duration=0.5)
 def goto_configure(): ui.switch_to("CONFIGURE", duration=0.5)
 def goto_start(): ui.switch_to("START", duration=0.5)
+def goto_continuegame(): ui.switch_to("CONTINUEGAME", duration=0.5)
 
 ui.add("SHOP", ShopScreen(goto_arena))
 ui.add("ARENA", ArenaScreen(goto_shop))
 ui.add("MENU", MenuScreen(goto_arena, goto_shop))
-ui.add("START", StartScreen(goto_configure, goto_gameloader))
+ui.add("START", StartScreen(goto_configure, goto_gameloader, goto_continuegame))
 ui.add("GAMELOADER", GameLoader(goto_menu, goto_start))
 ui.add("CONFIGURE", CONFIGURE(goto_start, goto_menu))
+ui.add("CONTINUEGAME", ContinueGame(goto_menu))
 
 ui.set("START")
 

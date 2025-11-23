@@ -95,4 +95,4 @@ class Button:
                 start_y += self.font.size(line)[1]
 
         # debug outline (remove this line if you don’t want red borders)
-        pygame.draw.rect(surf, (255, 0, 0), self.rect, 2)
+        #pygame.draw.rect(surf, (255, 0, 0), self.rect, 2)

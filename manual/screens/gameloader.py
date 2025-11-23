@@ -42,7 +42,7 @@ class GameLoader:
                 enemies = s["enemies"]
                 filename = s["file"]
 
-                text = f"Mentés {save_num}\n\n\n{cards} Kártya\n\n\n{enemies} Kazamata"
+                text = f"Környezet {save_num}\n\n\n{cards} Kártya\n\n\n{enemies} Kazamata"
 
                 x = start_x + col_index * (button_width + x_spacing)
                 y = start_y + row_index * (button_height + y_spacing)
