@@ -124,19 +124,7 @@ def load_game_state(filename):
     inventory.COINS = game_state.get("coins", 0)
     inventory.SHOP_ENABLED = game_state.get("shop_enabled", False)
     inventory.VOLUME = game_state.get("volume", 50)
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
     inventory.SELECTED_DUNGEON_INDEX = game_state.get("selected_dungeon_index", 0)
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
     
     # Apply volume to pygame mixer
     try:

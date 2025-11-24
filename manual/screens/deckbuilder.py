@@ -17,22 +17,9 @@ class DeckBuilderScreen:
         self.goto_menu = goto_menu
         self.elements = []
         
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
         # Red vignette and particles
         self.particles = ParticleManager(mode="blood")
         self.vignette = create_red_vignette()
-        
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
         # Removed background for black background
         
         # Back Button
@@ -245,24 +232,11 @@ class DeckBuilderScreen:
 
     def draw(self, surf):
         surf.fill((0, 0, 0))  # Black background
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-        
         # Draw particles
         self.particles.draw(surf)
         
         # Draw vignette
         surf.blit(self.vignette, (0, 0))
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
         
         for el in self.elements:
             el.draw(surf)

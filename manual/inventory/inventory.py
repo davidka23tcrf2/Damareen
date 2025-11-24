@@ -11,21 +11,9 @@ DIFFICULTY_SELECTED = False
 # Volume setting (0-100)
 VOLUME = 50
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 # Selected Dungeon Index
 SELECTED_DUNGEON_INDEX = 0
 
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 #empty from the start
 PLAYERDECK = [
 

@@ -2,6 +2,7 @@
   "coins": 0,
   "shop_enabled": false,
   "volume": 77,
+  "selected_dungeon_index": 0,
   "playerdeck": [],
   "playercards": [
     "Arin",

@@ -6,20 +6,7 @@ from manual.screens.shop import ShopScreen
 from manual.screens.arena import ArenaScreen
 from manual.screens.menu import MenuScreen
 from manual.screens.gameloader import GameLoader
-<<<<<<< Updated upstream
-from manual.screens.inventory import InventoryScreen
-=======
 from manual.screens.deckbuilder import DeckBuilderScreen
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 from manual.screens.savedgames import SavedGamesScreen
 
 pygame.init()
@@ -46,7 +33,7 @@ def goto_savedgames():
 
 ui.add("SHOP", ShopScreen(goto_arena))
 ui.add("ARENA", ArenaScreen(goto_shop))
-ui.add("DECKBUILDER", InventoryScreen(goto_menu))
+ui.add("DECKBUILDER", DeckBuilderScreen(goto_menu))
 ui.add("MENU", MenuScreen(goto_arena, goto_shop, goto_deckbuilder))
 ui.add("START", StartScreen(goto_configure, goto_gameloader, goto_savedgames))
 ui.add("GAMELOADER", GameLoader(goto_menu, goto_start))

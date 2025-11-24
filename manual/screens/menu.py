@@ -5,19 +5,7 @@ from manual.assets.assets import load_asset, ASSETS_DIR
 from manual.inventory import inventory
 from manual.screens.difficultypopup import DifficultyPopup
 from manual.screens.settingspopup import SettingsPopup
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 from manual.screens.dungeonpopup import DungeonPopup
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 from manual.ui import theme
 from manual.ui.particles import ParticleManager
 
@@ -30,33 +18,9 @@ class MenuScreen:
         self.goto_shop = goto_shop
         self.goto_deckbuilder = goto_deckbuilder
         
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
         # Deck Builder Button (Bigger)
         self.elements.append(Button(
             (50, 300, 400, 80),
-=======
-        # Deck Builder Button
-        self.elements.append(Button(
-            (50, 300, 300, 60),
->>>>>>> Stashed changes
-=======
-        # Deck Builder Button
-        self.elements.append(Button(
-            (50, 300, 300, 60),
->>>>>>> Stashed changes
-=======
-        # Deck Builder Button
-        self.elements.append(Button(
-            (50, 300, 300, 60),
->>>>>>> Stashed changes
-=======
-        # Deck Builder Button
-        self.elements.append(Button(
-            (50, 300, 300, 60),
->>>>>>> Stashed changes
             self.goto_deckbuilder,
             None,
             text="Pakli összeállítása",
@@ -79,33 +43,9 @@ class MenuScreen:
         )
         self.elements.append(self.fight_btn)
         
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
         # Settings button (Bigger)
         self.settings_btn = Button(
             (1280 - 200, 20, 180, 60),
-=======
-        # Settings button (top-right)
-        self.settings_btn = Button(
-            (1280 - 160, 20, 140, 50),
->>>>>>> Stashed changes
-=======
-        # Settings button (top-right)
-        self.settings_btn = Button(
-            (1280 - 160, 20, 140, 50),
->>>>>>> Stashed changes
-=======
-        # Settings button (top-right)
-        self.settings_btn = Button(
-            (1280 - 160, 20, 140, 50),
->>>>>>> Stashed changes
-=======
-        # Settings button (top-right)
-        self.settings_btn = Button(
-            (1280 - 160, 20, 140, 50),
->>>>>>> Stashed changes
             self.open_settings,
             None,
             text="⚙ Beállítások",
@@ -117,10 +57,6 @@ class MenuScreen:
         )
         self.elements.append(self.settings_btn)
         
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
         # Dungeon Selector Button
         self.dungeon_btn = Button(
             (1280 - 350, 720 - 200, 300, 60),
@@ -153,22 +89,6 @@ class MenuScreen:
             
             dungeon_name = inventory.ENEMIES[idx].name
             self.dungeon_btn.text = f"{dungeon_name}"
-=======
-        self.difficulty_popup = None
-        self.settings_popup = None
->>>>>>> Stashed changes
-=======
-        self.difficulty_popup = None
-        self.settings_popup = None
->>>>>>> Stashed changes
-=======
-        self.difficulty_popup = None
-        self.settings_popup = None
->>>>>>> Stashed changes
-=======
-        self.difficulty_popup = None
-        self.settings_popup = None
->>>>>>> Stashed changes
 
     def try_goto_arena(self):
         if len(inventory.PLAYERDECK) > 0 and inventory.ENEMIES:
@@ -177,22 +97,10 @@ class MenuScreen:
     def open_settings(self):
         if not self.settings_popup:
             self.settings_popup = SettingsPopup(self.close_settings_popup)
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
             
     def open_dungeon_popup(self):
         if not self.dungeon_popup and inventory.ENEMIES:
             self.dungeon_popup = DungeonPopup(self.close_dungeon_popup)
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
     
     def handle_event(self, e):
         if self.settings_popup and self.settings_popup.active:
@@ -202,22 +110,10 @@ class MenuScreen:
         if self.difficulty_popup and self.difficulty_popup.active:
             handled = self.difficulty_popup.handle_event(e)
             if handled: return
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
             
         if self.dungeon_popup and self.dungeon_popup.active:
             handled = self.dungeon_popup.handle_event(e)
             if handled: return
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 
         for el in self.elements: el.handle_event(e)
         
@@ -234,10 +130,6 @@ class MenuScreen:
         if self.difficulty_popup and self.difficulty_popup.active:
             self.difficulty_popup.update(dt)
             return
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
             
         if self.dungeon_popup and self.dungeon_popup.active:
             self.dungeon_popup.update(dt)
@@ -245,33 +137,12 @@ class MenuScreen:
 
         # Update Fight Button State
         if len(inventory.PLAYERDECK) > 0 and inventory.ENEMIES:
-=======
-
-        # Update Fight Button State
-        if len(inventory.PLAYERDECK) > 0:
->>>>>>> Stashed changes
-=======
-
-        # Update Fight Button State
-        if len(inventory.PLAYERDECK) > 0:
->>>>>>> Stashed changes
-=======
-
-        # Update Fight Button State
-        if len(inventory.PLAYERDECK) > 0:
->>>>>>> Stashed changes
-=======
-
-        # Update Fight Button State
-        if len(inventory.PLAYERDECK) > 0:
->>>>>>> Stashed changes
             self.fight_btn.bg_color = theme.PRIMARY
             self.fight_btn.hover_bg_color = theme.PRIMARY_HOVER
         else:
             self.fight_btn.bg_color = theme.SECONDARY
             self.fight_btn.hover_bg_color = theme.SECONDARY
             
-<<<<<<< Updated upstream
         for el in self.elements:
             el.update(dt)
 
@@ -302,34 +173,3 @@ class MenuScreen:
     def close_dungeon_popup(self):
         self.dungeon_popup = None
         self.update_dungeon_label()
-=======
-        for el in self.elements: el.update(dt)
-        
-    def draw(self, surf):
-        # Fill with black
-        surf.fill((0, 0, 0))
-        
-        for el in self.elements:
-            el.draw(surf)
-            
-        if self.difficulty_popup and self.difficulty_popup.active:
-            self.difficulty_popup.draw(surf)
-        
-        if self.settings_popup and self.settings_popup.active:
-            self.settings_popup.draw(surf)
-
-    def close_difficulty_popup(self):
-        self.difficulty_popup = None
-    
-    def close_settings_popup(self):
-        self.settings_popup = None
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
