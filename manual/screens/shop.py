@@ -33,11 +33,15 @@ class ShopScreen:
         self.mx, self.my = pygame.mouse.get_pos()
         self.info = load_asset("info.png", "shop")
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         
         # Red vignette and particles
         self.particles = ParticleManager(mode="blood")
         self.vignette = create_red_vignette()
         
+=======
+        # Removed background image for black background
+>>>>>>> Stashed changes
 =======
         # Removed background image for black background
 >>>>>>> Stashed changes
@@ -104,6 +108,9 @@ class ShopScreen:
 
 
         surf.fill((0, 0, 0))  # Black background
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
         if self.InfoPanel:
