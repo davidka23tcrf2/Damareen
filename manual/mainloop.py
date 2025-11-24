@@ -6,7 +6,11 @@ from manual.screens.shop import ShopScreen
 from manual.screens.arena import ArenaScreen
 from manual.screens.menu import MenuScreen
 from manual.screens.gameloader import GameLoader
+<<<<<<< Updated upstream
 from manual.screens.inventory import InventoryScreen
+=======
+from manual.screens.deckbuilder import DeckBuilderScreen
+>>>>>>> Stashed changes
 from manual.screens.savedgames import SavedGamesScreen
 
 pygame.init()

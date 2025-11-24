@@ -5,8 +5,13 @@ from manual.assets.assets import load_asset, ASSETS_DIR
 from manual.inventory import inventory
 
 pygame.init()
+<<<<<<< Updated upstream
 BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 36)
 BP_TITLE = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 50)
+=======
+BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 20)
+BP_TITLE = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 30)
+>>>>>>> Stashed changes
 
 class DifficultyPopup:
     def __init__(self, close_callback, screen_size=(1280, 720)):
@@ -19,12 +24,21 @@ class DifficultyPopup:
         y = (self.screen_height - h) // 2
         self.rect = pygame.Rect(x, y, w, h)
         
+<<<<<<< Updated upstream
         self.bg_color = (0, 0, 0)
         self.border_color = (255, 50, 50)
+=======
+        self.bg_color = (40, 40, 50)
+        self.border_color = (200, 200, 200)
+>>>>>>> Stashed changes
         
         self.elements = []
         
         # Title
+<<<<<<< Updated upstream
+=======
+        # Store relative position
+>>>>>>> Stashed changes
         self.title_label = Label(
             (w // 2, 50, 0, 0), 
             "Válassz nehézséget", 
@@ -37,7 +51,11 @@ class DifficultyPopup:
         # Buttons 0-10
         btn_size = 60
         gap = 20
+<<<<<<< Updated upstream
         start_x = (w - (6 * btn_size + 5 * gap)) // 2  # 6 buttons per row
+=======
+        start_x = (w - (6 * btn_size + 5 * gap)) // 2  # 6 buttons per row (0-5, 6-10)
+>>>>>>> Stashed changes
         start_y = 150
         
         for i in range(0, 11):
@@ -47,6 +65,7 @@ class DifficultyPopup:
             bx = start_x + col * (btn_size + gap)
             by = start_y + row * (btn_size + gap)
             
+<<<<<<< Updated upstream
             # Create button
             btn = Button(
                 (bx, by, btn_size, btn_size),
@@ -59,6 +78,22 @@ class DifficultyPopup:
                 hover_bg_color=(50, 10, 10),
                 border_color=(255, 50, 50),
                 border_radius=0
+=======
+            # Create button surface
+            btn_surf = pygame.Surface((btn_size, btn_size))
+            btn_surf.fill((80, 80, 100))
+            pygame.draw.rect(btn_surf, (255, 255, 255), btn_surf.get_rect(), 2)
+            
+            # Render number
+            num_surf = BP.render(str(i), True, (255, 255, 255))
+            num_rect = num_surf.get_rect(center=(btn_size // 2, btn_size // 2))
+            btn_surf.blit(num_surf, num_rect)
+            
+            btn = Button(
+                (bx, by, btn_size, btn_size),
+                lambda val=i: self.select_difficulty(val),
+                btn_surf
+>>>>>>> Stashed changes
             )
             # Store relative position for drawing
             btn.base_pos = (bx, by)
@@ -78,13 +113,25 @@ class DifficultyPopup:
         
         # Absorb clicks inside popup
         if event.type in [pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP]:
+<<<<<<< Updated upstream
             if not self.rect.collidepoint(event.pos):
+=======
+            # Check if click is inside the popup rect
+            if not self.rect.collidepoint(event.pos):
+                # Block clicks outside (modal)
+>>>>>>> Stashed changes
                 return True
 
         for el in self.elements:
             # Update rect to be absolute before handling event
             if hasattr(el, 'base_pos'):
                 if isinstance(el, Label) and getattr(el, 'centered', False):
+<<<<<<< Updated upstream
+=======
+                     # For centered labels, base_pos is center
+                     # Label.rect is usually top-left. 
+                     # We need to re-center it based on absolute position.
+>>>>>>> Stashed changes
                      center_x = self.rect.x + el.base_pos[0]
                      center_y = self.rect.y + el.base_pos[1]
                      el.rect.center = (center_x, center_y)
@@ -105,12 +152,21 @@ class DifficultyPopup:
         
         # Draw overlay
         overlay = pygame.Surface((self.screen_width, self.screen_height), pygame.SRCALPHA)
+<<<<<<< Updated upstream
         overlay.fill((0, 0, 0, 200))
         surf.blit(overlay, (0, 0))
         
         # Draw popup background
         pygame.draw.rect(surf, self.bg_color, self.rect, border_radius=0)
         pygame.draw.rect(surf, self.border_color, self.rect, 3, border_radius=0)
+=======
+        overlay.fill((0, 0, 0, 180))
+        surf.blit(overlay, (0, 0))
+        
+        # Draw popup background
+        pygame.draw.rect(surf, self.bg_color, self.rect, border_radius=15)
+        pygame.draw.rect(surf, self.border_color, self.rect, 3, border_radius=15)
+>>>>>>> Stashed changes
         
         # Draw elements
         for el in self.elements:

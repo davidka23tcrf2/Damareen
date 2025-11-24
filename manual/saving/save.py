@@ -51,7 +51,11 @@ def save_game_state(save_name=None):
     """
     Save the current game state to the games folder.
     If save_name is None and CURRENT_SAVE_FILE exists, overwrite it.
+<<<<<<< Updated upstream
     Otherwise create a new save with sequential naming (jatek1, jatek2, etc.)
+=======
+    Otherwise create a new save with timestamp.
+>>>>>>> Stashed changes
     """
     global CURRENT_SAVE_FILE
     
@@ -63,6 +67,7 @@ def save_game_state(save_name=None):
         if CURRENT_SAVE_FILE:
             filename = CURRENT_SAVE_FILE
         else:
+<<<<<<< Updated upstream
             # Find existing jatek saves and get next number
             existing = [f for f in os.listdir(GAMES_DIR) if f.startswith("jatek") and f.endswith(".json")]
             if existing:
@@ -79,6 +84,78 @@ def save_game_state(save_name=None):
                 next_num = 1
             
             filename = f"jatek{next_num}.json"
+=======
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"game_{timestamp}.json"
+            CURRENT_SAVE_FILE = filename
+# cards amount, then cards line by line, enemies amount, then enemies line by line,
+
+from manual.inventory import inventory
+import os
+import json
+from datetime import datetime
+
+SAVES_DIR = os.path.join(os.path.dirname(__file__), "saves")
+GAMES_DIR = os.path.join(os.path.dirname(__file__), "games")
+
+# Track the currently loaded save file for overwriting
+CURRENT_SAVE_FILE = None
+
+def save_game():
+    existing = [f for f in os.listdir(SAVES_DIR) if f.startswith("save") and f.endswith(".txt")]
+
+    if existing:
+        numbers = [int(f.split("_")[0][4:]) for f in existing]
+        next_num = max(numbers) + 1
+    else:
+        next_num = 1
+
+    filename = f"save{next_num}_{len(inventory.GAMECARDS)}_{len(inventory.ENEMIES)}.txt"
+    path = os.path.join(SAVES_DIR, filename)
+
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(f'{len(inventory.GAMECARDS)}\n')
+        for i in inventory.GAMECARDS:
+            f.write(f'{i.type};')
+            f.write(f'{i.name};')
+            f.write(f'{i.dmg};')
+            f.write(f'{i.hp};')
+            f.write(f'{i.power}\n')
+        f.write(f'{len(inventory.ENEMIES)}\n')
+        for i in inventory.ENEMIES:
+            deck = ";".join([j.name for j in i.deck])
+            if i.reward:
+                f.write(f'{i.type};{i.name};{deck};{i.reward}\n')
+            else:
+                f.write(f'{i.type};{i.name};{deck}\n')
+        if inventory.SHOP_ENABLED:
+            f.write(f"1\n")
+        else:
+            f.write(f"0\n")
+        cards = []
+        for i in inventory.PLAYERCARDS:
+            cards.append(i.name)
+        f.write(f"{';'.join(cards)}\n")
+
+def save_game_state(save_name=None):
+    """
+    Save the current game state to the games folder.
+    If save_name is None and CURRENT_SAVE_FILE exists, overwrite it.
+    Otherwise create a new save with timestamp.
+    """
+    global CURRENT_SAVE_FILE
+    
+    # Ensure games directory exists
+    os.makedirs(GAMES_DIR, exist_ok=True)
+    
+    # Determine filename
+    if save_name is None:
+        if CURRENT_SAVE_FILE:
+            filename = CURRENT_SAVE_FILE
+        else:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"game_{timestamp}.json"
+>>>>>>> Stashed changes
             CURRENT_SAVE_FILE = filename
     else:
         filename = f"{save_name}.json" if not save_name.endswith(".json") else save_name
@@ -91,7 +168,10 @@ def save_game_state(save_name=None):
         "coins": inventory.COINS,
         "shop_enabled": inventory.SHOP_ENABLED,
         "volume": inventory.VOLUME,
+<<<<<<< Updated upstream
         "selected_dungeon_index": inventory.SELECTED_DUNGEON_INDEX,
+=======
+>>>>>>> Stashed changes
         "playerdeck": [card.name for card in inventory.PLAYERDECK],
         "playercards": [card.name for card in inventory.PLAYERCARDS],
         "playerarmor": [{"type": armor.type, "slot": armor.slot} for armor in inventory.PLAYERARMOR],

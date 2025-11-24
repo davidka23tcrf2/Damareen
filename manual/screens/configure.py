@@ -15,8 +15,8 @@ from manual.screens.configurepopups.deletedungeon import DeleteDungeonPopup
 from manual.saving import save as saving  # module with save_game()
 
 pygame.init()
-BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "PublicPixel.ttf"), 20)
-BP_SMALL = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "PublicPixel.ttf"), 12)
+BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 20)
+BP_SMALL = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 12)
 sf = "configure"
 
 
@@ -25,10 +25,7 @@ class CONFIGURE:
         self.elements = []
         self.goto_menu = goto_menu  # <-- store so we can jump to menu after saving
 
-        back = load_asset("backbutton.png", sf)
-        self.paper = load_asset("paper.png", sf)
-        self.paper = pygame.transform.scale(self.paper, (1000, 720))
-        self.bg = load_asset("bg.png", sf)
+        # Removed background for black background
 
         self.elements.append(Label((250, 150, 0, 0), "Bolt:", font=BP))
         self.elements.append(Label((730, 70, 0, 0), "Kártyák kezelése", font=BP))
@@ -36,7 +33,19 @@ class CONFIGURE:
         self.switch = Switch((325, 130, 120, 50), callback=self.on_toggle, initial=False)
 
         # back button
-        self.elements.append(Button((0, 0, 100, 100), goto_start, back))
+        back_btn = Button(
+            (30, 30, 180, 70),
+            goto_start,
+            None,
+            text="Vissza",
+            font=BP,
+            text_color=(200, 200, 200),
+            bg_color=None,
+            hover_bg_color=(30, 30, 30),
+            border_color=(200, 200, 200),
+            border_radius=8
+        )
+        self.elements.append(back_btn)
 
         # --- KÁRTYÁK KEZELÉSE BUTTONS ---
 
@@ -449,9 +458,9 @@ class CONFIGURE:
 
     # ---------- DRAW ----------
 
+
     def draw(self, surf):
-        surf.blit(self.bg, (0, 0))
-        surf.blit(self.paper, (140, 0))
+        surf.fill((0, 0, 0))  # Black background
 
         for el in self.elements:
             el.draw(surf)

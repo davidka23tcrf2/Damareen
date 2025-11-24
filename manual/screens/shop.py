@@ -9,7 +9,15 @@ from manual.ui.vignette import create_red_vignette
 import math
 import manual.mainloop
 
+<<<<<<< Updated upstream
 BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 30)
+=======
+
+BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 30)
+
+
+
+>>>>>>> Stashed changes
 
 class ShopScreen:
     def __init__(self, goto_arena):
@@ -24,11 +32,15 @@ class ShopScreen:
         self.item_labels = []
         self.mx, self.my = pygame.mouse.get_pos()
         self.info = load_asset("info.png", "shop")
+<<<<<<< Updated upstream
         
         # Red vignette and particles
         self.particles = ParticleManager(mode="blood")
         self.vignette = create_red_vignette()
         
+=======
+        # Removed background image for black background
+>>>>>>> Stashed changes
         normal = load_asset("armors.png", "shop")
         ExitMenu = load_asset("BackMenu.png", "shop")
 
@@ -78,6 +90,7 @@ class ShopScreen:
             el.update(dt)
 
     def draw(self, surf):
+<<<<<<< Updated upstream
         surf.fill((0, 0, 0))  # Black background
         
         # Draw particles
@@ -87,6 +100,11 @@ class ShopScreen:
         surf.blit(self.vignette, (0, 0))
         
         self.elements.append(self.LittleInfo)
+=======
+
+
+        surf.fill((0, 0, 0))  # Black background
+>>>>>>> Stashed changes
 
         if self.InfoPanel:
             surf.blit(self.info, (410.5, 100))

@@ -44,9 +44,15 @@ class StartScreen:
                 border_radius=8
             )
         
+<<<<<<< Updated upstream
         self.elements.append(make_outline_btn(350, "Kornyezetek", load_game))
         self.elements.append(make_outline_btn(440, "Uj kornyezet", config))
         self.elements.append(make_outline_btn(530, "Jatek folytatasa", continue_game))
+=======
+        self.elements.append(make_outline_btn(350, "LOAD GAME", load_game))
+        self.elements.append(make_outline_btn(440, "SETTINGS", config))
+        self.elements.append(make_outline_btn(530, "CONTINUE", continue_game))
+>>>>>>> Stashed changes
 
         # Lighting Setup
         self.light_mask = pygame.Surface((1280, 720))
