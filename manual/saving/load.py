@@ -127,7 +127,10 @@ def load_game_state(filename):
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     inventory.SELECTED_DUNGEON_INDEX = game_state.get("selected_dungeon_index", 0)
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======

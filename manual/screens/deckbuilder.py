@@ -20,10 +20,13 @@ class DeckBuilderScreen:
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         # Red vignette and particles
         self.particles = ParticleManager(mode="blood")
         self.vignette = create_red_vignette()
         
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======
@@ -245,12 +248,15 @@ class DeckBuilderScreen:
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         
         # Draw particles
         self.particles.draw(surf)
         
         # Draw vignette
         surf.blit(self.vignette, (0, 0))
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======

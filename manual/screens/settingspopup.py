@@ -83,7 +83,11 @@ class SettingsPopup:
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         # self.volume_value = 50  # Removed hardcoded reset
+=======
+        self.volume_value = 50  # 0-100
+>>>>>>> Stashed changes
 =======
         self.volume_value = 50  # 0-100
 >>>>>>> Stashed changes

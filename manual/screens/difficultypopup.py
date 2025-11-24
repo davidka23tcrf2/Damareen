@@ -8,8 +8,13 @@ pygame.init()
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 36)
 BP_TITLE = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 50)
+=======
+BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 20)
+BP_TITLE = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 30)
+>>>>>>> Stashed changes
 =======
 BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 20)
 BP_TITLE = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 30)
@@ -37,8 +42,13 @@ class DifficultyPopup:
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         self.bg_color = (0, 0, 0)
         self.border_color = (255, 50, 50)
+=======
+        self.bg_color = (40, 40, 50)
+        self.border_color = (200, 200, 200)
+>>>>>>> Stashed changes
 =======
         self.bg_color = (40, 40, 50)
         self.border_color = (200, 200, 200)
@@ -58,6 +68,10 @@ class DifficultyPopup:
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+        # Store relative position
+>>>>>>> Stashed changes
 =======
         # Store relative position
 >>>>>>> Stashed changes
@@ -82,7 +96,11 @@ class DifficultyPopup:
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         start_x = (w - (6 * btn_size + 5 * gap)) // 2  # 6 buttons per row
+=======
+        start_x = (w - (6 * btn_size + 5 * gap)) // 2  # 6 buttons per row (0-5, 6-10)
+>>>>>>> Stashed changes
 =======
         start_x = (w - (6 * btn_size + 5 * gap)) // 2  # 6 buttons per row (0-5, 6-10)
 >>>>>>> Stashed changes
@@ -104,6 +122,7 @@ class DifficultyPopup:
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             # Create button
             btn = Button(
                 (bx, by, btn_size, btn_size),
@@ -117,6 +136,8 @@ class DifficultyPopup:
                 border_color=(255, 50, 50),
                 border_radius=0
 =======
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======
@@ -137,6 +158,9 @@ class DifficultyPopup:
                 btn_surf
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
@@ -164,7 +188,13 @@ class DifficultyPopup:
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             if not self.rect.collidepoint(event.pos):
+=======
+            # Check if click is inside the popup rect
+            if not self.rect.collidepoint(event.pos):
+                # Block clicks outside (modal)
+>>>>>>> Stashed changes
 =======
             # Check if click is inside the popup rect
             if not self.rect.collidepoint(event.pos):
@@ -189,6 +219,12 @@ class DifficultyPopup:
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+                     # For centered labels, base_pos is center
+                     # Label.rect is usually top-left. 
+                     # We need to re-center it based on absolute position.
+>>>>>>> Stashed changes
 =======
                      # For centered labels, base_pos is center
                      # Label.rect is usually top-left. 
@@ -227,6 +263,7 @@ class DifficultyPopup:
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         overlay.fill((0, 0, 0, 200))
         surf.blit(overlay, (0, 0))
         
@@ -234,6 +271,8 @@ class DifficultyPopup:
         pygame.draw.rect(surf, self.bg_color, self.rect, border_radius=0)
         pygame.draw.rect(surf, self.border_color, self.rect, 3, border_radius=0)
 =======
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======
@@ -246,6 +285,9 @@ class DifficultyPopup:
         pygame.draw.rect(surf, self.border_color, self.rect, 3, border_radius=15)
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
