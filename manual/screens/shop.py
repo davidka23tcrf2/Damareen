@@ -70,7 +70,8 @@ class ShopScreen:
             hover_image=ExitMenuS,
             image_offset=(-35, -50)
         )
-        
+
+
         self.elements.append(ExitButton)
         self.elements.append(Armors)
 
@@ -139,7 +140,7 @@ class ShopScreen:
             callback="",
             hover_callback=lambda: self.CreateInfoPanel(num, percent),
             normal_image=ARMOR[num].img,
-            hover_image=ARMOR[num].img,
+
 
 
         )

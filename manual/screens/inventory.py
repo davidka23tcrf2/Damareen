@@ -3,15 +3,81 @@ import pygame, os
 from ..ui.button import Button
 from ..ui.label import Label
 from manual.assets.assets import load_asset, ASSETS_DIR
-
+from manual.inventory.inventory import PLAYERARMOR
 
 BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 80)
 class InventoryScreen:
-    def __init__(self, goto_shop):
+    def __init__(self, goto_mainmenu):
+        self.EquipedItems = []
         self.bg = load_asset("bg.png", "inventory")
+        self.item = load_asset("1.png", "inventory")
+        self.character = load_asset("body.png", "character")
+        self.boots = load_asset("boots(no).png", "inventory")
         self.elements = []
-        Inventtory = Label(rect=(600, 50, 100, 100), text="Inventory", font=BP)
+        Inventtory = Label(rect=(600, 0, 100, 100), text="Inventory", font=BP)
+
         self.elements.append(Inventtory)
+
+        self.slots = []
+        self._build_slots()
+        for i in self.EquipedItems:
+            if i[2] == "cipo":
+                self.BootsSlot = Button(rect=(300, 300), hover_image=self.item, callback=lambda: print("ds"))
+            self.elements.append(self.BootsSlot)
+
+
+
+
+
+    def _build_slots(self):
+        self.SlotsIndex = 0
+        inv_x = 750
+        inv_y = 100
+        cols = 5
+        total_slots = 30
+        slot_w = 9
+        slot_h = 90
+        x_gap = 100
+        y_gap = 10
+
+        for i in range(total_slots):
+            col = i % cols
+
+            row = i // cols
+            x = inv_x + col * (slot_w + x_gap)
+            y = inv_y + row * (slot_h + y_gap)
+            self.slots.append((x, y, slot_w, slot_h))
+
+        for index, (x, y, w, h) in enumerate(self.slots):
+            iw = int(self.item.get_width() * 1)
+            ih = int(self.item.get_height() * 1)
+            has_item = index < len(PLAYERARMOR) and len(PLAYERARMOR) > 0
+
+            if has_item:
+                slots = Button(
+                    rect=(x, y, iw, ih),
+                    callback=lambda dx=index: self.EquipedItems.append((PLAYERARMOR[dx].type, PLAYERARMOR[dx].what, PLAYERARMOR[dx].img)),
+                    normal_image=self.item,
+                    hover_image=self.item,
+                )
+                self.Items = Button(
+                    rect=(x, y, iw, ih),
+                    callback=lambda: print(),
+                    hover_callback=lambda: print('item'),
+                    normal_image=PLAYERARMOR[index].img,
+                    image_offset=(10, 20)
+
+                )
+
+            else:
+                slots = Button(
+                    rect=(x, y, iw, ih),
+                    callback=lambda: print('fasz'),
+                    normal_image=self.item,
+                    hover_image=self.item,
+                )
+            self.elements.append(slots)
+            self.elements.append(self.Items)
 
     def CreateItemSlot(self, surface, color, start, end, thickness=1, fill_color=None):
         x1, y1 = start
@@ -30,11 +96,10 @@ class InventoryScreen:
         if fill_color is None:
             fill_color = color
 
-        inner_left = left + thickness
-        inner_top = top + thickness
-        inner_width = (right - left) - thickness * 2
-        inner_height = (bottom - top) - thickness * 2
-
+        inner_left = left + thickness - 4
+        inner_top = top + thickness - 4
+        inner_width = (right - left) - thickness * 1
+        inner_height = (bottom - top) - thickness * 1
         if inner_width > 0 and inner_height > 0:
             pygame.draw.rect(surface, fill_color,
                              (inner_left, inner_top, inner_width, inner_height))
@@ -46,13 +111,10 @@ class InventoryScreen:
 
     def draw(self, surf):
         surf.blit(self.bg, (0,0))
-        self.CreateItemSlot(surf,
-                            color=(255, 255, 255),  # keret színe
-                            start=(900, 200),
-                            end=(950, 250),
-                            thickness=2,
-                            fill_color=(220, 220, 220))
 
-
+        self.CreateItemSlot(surf, color=(0,0,0), start=(200,150), end=(500,700), thickness=10, fill_color=(10,20,30))
+        character_s = pygame.transform.scale(self.character, (400, 400))
+        surf.blit(character_s, (150,200))
 
         for el in self.elements: el.draw(surf)
+
