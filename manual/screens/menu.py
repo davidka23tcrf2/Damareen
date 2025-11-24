@@ -6,7 +6,10 @@ from manual.inventory import inventory
 from manual.screens.difficultypopup import DifficultyPopup
 from manual.screens.settingspopup import SettingsPopup
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 from manual.screens.dungeonpopup import DungeonPopup
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 from manual.ui import theme
@@ -22,9 +25,15 @@ class MenuScreen:
         self.goto_deckbuilder = goto_deckbuilder
         
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         # Deck Builder Button (Bigger)
         self.elements.append(Button(
             (50, 300, 400, 80),
+=======
+        # Deck Builder Button
+        self.elements.append(Button(
+            (50, 300, 300, 60),
+>>>>>>> Stashed changes
 =======
         # Deck Builder Button
         self.elements.append(Button(
@@ -53,9 +62,15 @@ class MenuScreen:
         self.elements.append(self.fight_btn)
         
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         # Settings button (Bigger)
         self.settings_btn = Button(
             (1280 - 200, 20, 180, 60),
+=======
+        # Settings button (top-right)
+        self.settings_btn = Button(
+            (1280 - 160, 20, 140, 50),
+>>>>>>> Stashed changes
 =======
         # Settings button (top-right)
         self.settings_btn = Button(
@@ -72,6 +87,7 @@ class MenuScreen:
         )
         self.elements.append(self.settings_btn)
         
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
         # Dungeon Selector Button
         self.dungeon_btn = Button(
@@ -109,6 +125,10 @@ class MenuScreen:
         self.difficulty_popup = None
         self.settings_popup = None
 >>>>>>> Stashed changes
+=======
+        self.difficulty_popup = None
+        self.settings_popup = None
+>>>>>>> Stashed changes
 
     def try_goto_arena(self):
         if len(inventory.PLAYERDECK) > 0 and inventory.ENEMIES:
@@ -118,10 +138,13 @@ class MenuScreen:
         if not self.settings_popup:
             self.settings_popup = SettingsPopup(self.close_settings_popup)
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             
     def open_dungeon_popup(self):
         if not self.dungeon_popup and inventory.ENEMIES:
             self.dungeon_popup = DungeonPopup(self.close_dungeon_popup)
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
     
@@ -134,10 +157,13 @@ class MenuScreen:
             handled = self.difficulty_popup.handle_event(e)
             if handled: return
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             
         if self.dungeon_popup and self.dungeon_popup.active:
             handled = self.dungeon_popup.handle_event(e)
             if handled: return
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 
@@ -157,6 +183,7 @@ class MenuScreen:
             self.difficulty_popup.update(dt)
             return
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             
         if self.dungeon_popup and self.dungeon_popup.active:
             self.dungeon_popup.update(dt)
@@ -164,6 +191,11 @@ class MenuScreen:
 
         # Update Fight Button State
         if len(inventory.PLAYERDECK) > 0 and inventory.ENEMIES:
+=======
+
+        # Update Fight Button State
+        if len(inventory.PLAYERDECK) > 0:
+>>>>>>> Stashed changes
 =======
 
         # Update Fight Button State
@@ -227,4 +259,7 @@ class MenuScreen:
     
     def close_settings_popup(self):
         self.settings_popup = None
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes

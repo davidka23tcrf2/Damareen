@@ -10,6 +10,9 @@ from manual.screens.gameloader import GameLoader
 from manual.screens.inventory import InventoryScreen
 =======
 from manual.screens.deckbuilder import DeckBuilderScreen
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 from manual.screens.savedgames import SavedGamesScreen
 

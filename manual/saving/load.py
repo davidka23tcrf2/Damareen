@@ -125,7 +125,10 @@ def load_game_state(filename):
     inventory.SHOP_ENABLED = game_state.get("shop_enabled", False)
     inventory.VOLUME = game_state.get("volume", 50)
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     inventory.SELECTED_DUNGEON_INDEX = game_state.get("selected_dungeon_index", 0)
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
     

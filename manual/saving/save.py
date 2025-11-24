@@ -52,7 +52,11 @@ def save_game_state(save_name=None):
     Save the current game state to the games folder.
     If save_name is None and CURRENT_SAVE_FILE exists, overwrite it.
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     Otherwise create a new save with sequential naming (jatek1, jatek2, etc.)
+=======
+    Otherwise create a new save with timestamp.
+>>>>>>> Stashed changes
 =======
     Otherwise create a new save with timestamp.
 >>>>>>> Stashed changes
@@ -67,6 +71,7 @@ def save_game_state(save_name=None):
         if CURRENT_SAVE_FILE:
             filename = CURRENT_SAVE_FILE
         else:
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
             # Find existing jatek saves and get next number
             existing = [f for f in os.listdir(GAMES_DIR) if f.startswith("jatek") and f.endswith(".json")]
@@ -85,6 +90,8 @@ def save_game_state(save_name=None):
             
             filename = f"jatek{next_num}.json"
 =======
+=======
+>>>>>>> Stashed changes
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"game_{timestamp}.json"
             CURRENT_SAVE_FILE = filename
@@ -155,6 +162,9 @@ def save_game_state(save_name=None):
         else:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"game_{timestamp}.json"
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
             CURRENT_SAVE_FILE = filename
     else:
@@ -169,7 +179,10 @@ def save_game_state(save_name=None):
         "shop_enabled": inventory.SHOP_ENABLED,
         "volume": inventory.VOLUME,
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         "selected_dungeon_index": inventory.SELECTED_DUNGEON_INDEX,
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
         "playerdeck": [card.name for card in inventory.PLAYERDECK],
