@@ -1,6 +1,0 @@
-2
-kartya;asd;231;12;fold
-kartya;dsa;312;123;fold
-0
-0
-

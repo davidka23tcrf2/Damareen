@@ -1,24 +1,18 @@
 import random
-
 import pygame, os
 from ..ui.button import Button
 from ..ui.label import Label
 from manual.assets.assets import load_asset, ASSETS_DIR
 from manual.inventory.inventory import ARMOR
-
+from manual.ui.particles import ParticleManager
+from manual.ui.vignette import create_red_vignette
 import math
 import manual.mainloop
 
-
-
-BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 22)
-
-
-
+BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 30)
 
 class ShopScreen:
     def __init__(self, goto_arena):
-
         self.InfoPanel = False
         self.randnum = random.randint(0, len(ARMOR) - 1)
         self.randnum1 = random.randint(0, len(ARMOR) - 1)
@@ -30,12 +24,15 @@ class ShopScreen:
         self.item_labels = []
         self.mx, self.my = pygame.mouse.get_pos()
         self.info = load_asset("info.png", "shop")
-        self.bg_img = load_asset("WeaponMarket.png", "shop")
+        
+        # Red vignette and particles
+        self.particles = ParticleManager(mode="blood")
+        self.vignette = create_red_vignette()
+        
         normal = load_asset("armors.png", "shop")
         ExitMenu = load_asset("BackMenu.png", "shop")
 
-        
-        self.LittleInfo = Label(rect=(900, 650, 1, 1),text='Ahhoz, hogy vásárolj kattints rá a táblára \n ahhoz, hogy megnézd az információkat vidd a kurzort a tárgyak ikonjára. ',font=BP, color=(255, 255, 255))
+        self.LittleInfo = Label(rect=(900, 650, 1, 1), text='Ahhoz, hogy vasarolj kattints ra a tablara \\n ahhoz, hogy meznezd az informaciokat vidd a kurzort a targyak ikonjara.', font=BP, color=(255, 255, 255))
 
         self.item_img = load_asset("itemstable.png", "shop")
         self.iw = int(self.item_img.get_width() * 0.25)
@@ -51,9 +48,7 @@ class ShopScreen:
         normal_small = pygame.transform.scale(normal, (w, h))
         ExitMenuS = pygame.transform.scale(ExitMenu, (w, h))
 
-
         hover_small = normal_small
-
 
         Armors = Button(
             rect=(200, 1, w, h-40),
@@ -64,13 +59,11 @@ class ShopScreen:
 
         ExitButton = Button(
             rect=(1050, 1, w-60, h-100),
-            
             callback=lambda: manual.mainloop.ui.set("START"),
             normal_image=ExitMenuS,
             hover_image=ExitMenuS,
             image_offset=(-35, -50)
         )
-
 
         self.elements.append(ExitButton)
         self.elements.append(Armors)
@@ -80,57 +73,46 @@ class ShopScreen:
             el.handle_event(e)
 
     def update(self, dt):
+        self.particles.update(dt)
         for el in self.elements:
             el.update(dt)
 
-
     def draw(self, surf):
-
-        surf.blit(self.bg_img, (0, 0))
+        surf.fill((0, 0, 0))  # Black background
+        
+        # Draw particles
+        self.particles.draw(surf)
+        
+        # Draw vignette
+        surf.blit(self.vignette, (0, 0))
+        
         self.elements.append(self.LittleInfo)
-        self.bg_img = pygame.transform.scale(self.bg_img, (1283, 754))
 
         if self.InfoPanel:
-
             surf.blit(self.info, (410.5, 100))
             self.info = pygame.transform.scale(self.info, (500, 500))
 
         for el in self.elements:
             el.draw(surf)
 
-
-
-
-
     def CreateInfoPanel(self, num, percent):
-
-
         if not self.InfoPanel:
-
-
             self.InfoPanel = True
-            self.Name = Label(rect=(610, 250, 100, 100), text=f'{ARMOR[num].type} {ARMOR[num].what} \n védekezési aránya: {percent}% \n\n Ára: X pikely \n\n Ez tárgy védelmet \n nyűjt X fajta \n kártyák ellen '  , font=BP, color=(255, 255, 255))
-
+            self.Name = Label(rect=(610, 250, 100, 100), text=f'{ARMOR[num].type} {ARMOR[num].what} \\n vedekezesi aranya: {percent}% \\n\\n Ara: X pikely \\n\\n Ez targy vedelmet \\n nyujt X fajta \\n kartyak ellen', font=BP, color=(255, 255, 255))
             self.elements.append(self.Name)
         else:
             self.InfoPanel = False
             self.elements.remove(self.Name)
 
-
     def CaItemSlot(self, name, x, y, num, percent):
-        InfoH =  int(ARMOR[self.randnum].img.get_height())
+        InfoH = int(ARMOR[self.randnum].img.get_height())
         InfoW = int(ARMOR[self.randnum].img.get_width())
-
-
 
         self.button = Button(
             rect=(x+20, y + 35, self.iw-20, self.ih - 40),
             callback=lambda: print(ARMOR[num]),
             normal_image=self.item_img,
             hover_image=self.item_img,
-
-
-
         )
         icon_x = (x + 30) + ((self.iw - 20) - InfoW) // 2
         icon_y = (y + 85) + ((self.ih - 40) - InfoH) // 2
@@ -140,9 +122,6 @@ class ShopScreen:
             callback="",
             hover_callback=lambda: self.CreateInfoPanel(num, percent),
             normal_image=ARMOR[num].img,
-
-
-
         )
         self.elements.append(self.button)
         self.elements.append(self.button1)
@@ -152,20 +131,13 @@ class ShopScreen:
 
         return name
 
-
-
-
     def OpenMarket(self):
         if self.ThePanel:
             self.ThePanel = False
             for i in self.item_slots:
                 self.elements.remove(i)
                 self.item_slots = []
-
         else:
             self.CaItemSlot("Armor", 180, 180, self.randnum1, self.RandPercent)
             self.CaItemSlot("Armor1", 180, 400, self.randnum, self.RandPercent1)
-
             self.ThePanel = True
-
-

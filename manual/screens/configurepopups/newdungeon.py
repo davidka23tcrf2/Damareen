@@ -76,8 +76,8 @@ class NewDungeonPopup:
         
         # Simple Button
         simp_img = pygame.Surface((btn_w, btn_h), pygame.SRCALPHA)
-        pygame.draw.rect(simp_img, (50, 200, 50), simp_img.get_rect(), border_radius=10)
-        pygame.draw.rect(simp_img, (0,0,0), simp_img.get_rect(), width=2, border_radius=10)
+        pygame.draw.rect(simp_img, (50, 200, 50), simp_img.get_rect(), border_radius=0)
+        pygame.draw.rect(simp_img, (0,0,0), simp_img.get_rect(), width=2, border_radius=0)
         simp_txt = BP12.render("Egyszerű", True, (255,255,255))
         simp_img.blit(simp_txt, simp_txt.get_rect(center=(btn_w//2, btn_h//2)))
         
@@ -89,8 +89,8 @@ class NewDungeonPopup:
         
         # Normal Button
         norm_img = pygame.Surface((btn_w, btn_h), pygame.SRCALPHA)
-        pygame.draw.rect(norm_img, (50, 50, 200), norm_img.get_rect(), border_radius=10)
-        pygame.draw.rect(norm_img, (0,0,0), norm_img.get_rect(), width=2, border_radius=10)
+        pygame.draw.rect(norm_img, (50, 50, 200), norm_img.get_rect(), border_radius=0)
+        pygame.draw.rect(norm_img, (0,0,0), norm_img.get_rect(), width=2, border_radius=0)
         norm_txt = BP12.render("Normál", True, (255,255,255))
         norm_img.blit(norm_txt, norm_txt.get_rect(center=(btn_w//2, btn_h//2)))
         
@@ -102,8 +102,8 @@ class NewDungeonPopup:
         
         # Boss Button
         boss_img = pygame.Surface((btn_w, btn_h), pygame.SRCALPHA)
-        pygame.draw.rect(boss_img, (200, 50, 50), boss_img.get_rect(), border_radius=10)
-        pygame.draw.rect(boss_img, (0,0,0), boss_img.get_rect(), width=2, border_radius=10)
+        pygame.draw.rect(boss_img, (200, 50, 50), boss_img.get_rect(), border_radius=0)
+        pygame.draw.rect(boss_img, (0,0,0), boss_img.get_rect(), width=2, border_radius=0)
         boss_txt = BP12.render("Nagy", True, (255,255,255))
         boss_img.blit(boss_txt, boss_txt.get_rect(center=(btn_w//2, btn_h//2)))
         
@@ -122,8 +122,8 @@ class NewDungeonPopup:
         # Reward Buttons
         # Sebzes
         seb_img = pygame.Surface((btn_w, btn_h), pygame.SRCALPHA)
-        pygame.draw.rect(seb_img, (200, 50, 50), seb_img.get_rect(), border_radius=10)
-        pygame.draw.rect(seb_img, (0,0,0), seb_img.get_rect(), width=2, border_radius=10)
+        pygame.draw.rect(seb_img, (200, 50, 50), seb_img.get_rect(), border_radius=0)
+        pygame.draw.rect(seb_img, (0,0,0), seb_img.get_rect(), width=2, border_radius=0)
         seb_txt = BP12.render("Sebzés", True, (0,0,0))
         seb_img.blit(seb_txt, seb_txt.get_rect(center=(btn_w//2, btn_h//2)))
         
@@ -135,8 +135,8 @@ class NewDungeonPopup:
         
         # Eletero
         el_img = pygame.Surface((btn_w, btn_h), pygame.SRCALPHA)
-        pygame.draw.rect(el_img, (50, 200, 50), el_img.get_rect(), border_radius=10)
-        pygame.draw.rect(el_img, (0,0,0), el_img.get_rect(), width=2, border_radius=10)
+        pygame.draw.rect(el_img, (50, 200, 50), el_img.get_rect(), border_radius=0)
+        pygame.draw.rect(el_img, (0,0,0), el_img.get_rect(), width=2, border_radius=0)
         el_txt = BP12.render("Életerő", True, (0,0,0))
         el_img.blit(el_txt, el_txt.get_rect(center=(btn_w//2, btn_h//2)))
         
@@ -156,8 +156,8 @@ class NewDungeonPopup:
         create_y = 480
         
         create_surf = pygame.Surface((create_w, create_h), pygame.SRCALPHA)
-        pygame.draw.rect(create_surf, (50, 200, 50), create_surf.get_rect(), border_radius=20)
-        pygame.draw.rect(create_surf, (0, 0, 0), create_surf.get_rect(), width=3, border_radius=20)
+        pygame.draw.rect(create_surf, (50, 200, 50), create_surf.get_rect(), border_radius=0)
+        pygame.draw.rect(create_surf, (0, 0, 0), create_surf.get_rect(), width=3, border_radius=0)
         create_txt = BP.render("Létrehozás", True, (0,0,0))
         create_surf.blit(create_txt, create_txt.get_rect(center=(create_w//2, create_h//2)))
         

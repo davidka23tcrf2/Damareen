@@ -4,21 +4,39 @@ from manual.ui.label import Label
 from manual.assets.assets import load_asset, ASSETS_DIR
 from manual.inventory import inventory
 
+from manual.ui.particles import ParticleManager
+from manual.ui.vignette import create_red_vignette
+
 sf = "configure"
 pygame.init()
-BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "PublicPixel.ttf"), 20)
-BP12 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "PublicPixel.ttf"), 12)
+BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 20)
+BP12 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 12)
 
 class DeckBuilderScreen:
     def __init__(self, goto_menu):
         self.goto_menu = goto_menu
         self.elements = []
         
-        self.bg = load_asset("bg.png", sf)
-        back = load_asset("backbutton.png", sf)
+        # Red vignette and particles
+        self.particles = ParticleManager(mode="blood")
+        self.vignette = create_red_vignette()
+        
+        # Removed background for black background
         
         # Back Button
-        self.elements.append(Button((0, 0, 100, 100), self.exit_screen, back))
+        back_btn = Button(
+            (30, 30, 180, 70),
+            self.exit_screen,
+            None,
+            text="Vissza",
+            font=BP,
+            text_color=(200, 200, 200),
+            bg_color=None,
+            hover_bg_color=(30, 30, 30),
+            border_color=(200, 200, 200),
+            border_radius=8
+        )
+        self.elements.append(back_btn)
         
         # Title
         self.elements.append(Label((640, 50, 0, 0), "Pakli összeállítása", font=BP, color=(255, 255, 255)))
@@ -161,6 +179,8 @@ class DeckBuilderScreen:
                      btn.handle_event(event)
 
     def update(self, dt):
+        self.particles.update(dt)
+        
         for el in self.elements:
             el.update(dt)
             
@@ -212,7 +232,13 @@ class DeckBuilderScreen:
             surf.blit(s, btn.rect)
 
     def draw(self, surf):
-        surf.blit(self.bg, (0, 0))
+        surf.fill((0, 0, 0))  # Black background
+        
+        # Draw particles
+        self.particles.draw(surf)
+        
+        # Draw vignette
+        surf.blit(self.vignette, (0, 0))
         
         for el in self.elements:
             el.draw(surf)

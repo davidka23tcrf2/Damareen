@@ -1,7 +1,18 @@
 from manual.inventory import objects
 from manual.assets.assets import load_asset
+
 SHOP_ENABLED = False
 COINS = 0
+
+# Difficulty settings
+DIFFICULTY = 0
+DIFFICULTY_SELECTED = False
+
+# Volume setting (0-100)
+VOLUME = 50
+
+# Selected Dungeon Index
+SELECTED_DUNGEON_INDEX = 0
 
 #empty from the start
 PLAYERDECK = [

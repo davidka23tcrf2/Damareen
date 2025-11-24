@@ -87,7 +87,7 @@ class CONFIGURE:
             save_load_img,
             (80, 140, 255),
             save_load_img.get_rect(),
-            border_radius=18
+            border_radius=0
         )
         # black outline
         pygame.draw.rect(
@@ -95,7 +95,7 @@ class CONFIGURE:
             (0, 0, 0),
             save_load_img.get_rect(),
             width=3,
-            border_radius=18
+            border_radius=0
         )
         txt = BP.render("Mentés&Betöltés", True, (0, 0, 0))
         txt_rect = txt.get_rect(center=(save_load_w // 2, save_load_h // 2))
@@ -118,14 +118,14 @@ class CONFIGURE:
             save_img,
             (80, 140, 255),      # same blue
             save_img.get_rect(),
-            border_radius=18
+            border_radius=0
         )
         pygame.draw.rect(
             save_img,
             (0, 0, 0),
             save_img.get_rect(),
             width=3,
-            border_radius=18
+            border_radius=0
         )
         txt2 = BP.render("Mentés", True, (0, 0, 0))
         txt2_rect = txt2.get_rect(center=(save_w // 2, save_h // 2))

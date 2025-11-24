@@ -1,21 +1,18 @@
 import pygame
+from manual.ui import theme
 
 class TextEntry:
-    """Simple but full-featured text entry field for Pygame.
+    """Simple but full-featured text entry field for Pygame."""
 
-    - rect: (x,y,w,h)
-    - font: pygame.font.Font
-    - numeric_only / letters_only: filters input
-    - max_length: optional int
-    """
-
-    def __init__(self, rect, font, color=(0,0,0), bg_color=(255,255,255),
+    def __init__(self, rect, font, color=theme.TEXT_WHITE, bg_color=theme.BG_INPUT,
                  max_length=None, numeric_only=False, letters_only=False):
         self.rect = pygame.Rect(rect)
-        self.base_pos = self.rect.topleft  # useful for popup-relative placement
+        self.base_pos = self.rect.topleft
         self.font = font
         self.color = color
         self.bg_color = bg_color
+        self.border_color = theme.BORDER_COLOR
+        self.focus_color = theme.BORDER_FOCUS
 
         self.text = ""
         self.active = False
@@ -27,22 +24,18 @@ class TextEntry:
         # caret blinking
         self.caret_visible = True
         self.caret_timer = 0.0
-        self.caret_blink_interval = 0.5  # seconds
+        self.caret_blink_interval = 0.5
 
-        # padding for text inside box
-        self.padding_x = 6
+        # padding
+        self.padding_x = 10
         self.padding_y = max(0, (self.rect.height - self.font.get_height()) // 2)
 
-        # cached rendered surface
         self._rebuild_render()
 
-    # ---- internal helpers ----
     def _rebuild_render(self):
         self.text_surf = self.font.render(self.text, True, self.color)
-        # caret x position relative to rect
         self.caret_x = self.rect.x + self.padding_x + self.text_surf.get_width()
 
-    # ---- public API ----
     def focus(self):
         self.active = True
         self.caret_visible = True
@@ -64,32 +57,19 @@ class TextEntry:
         self.base_pos = (x, y)
         self._rebuild_render()
 
-    # ---- event handling ----
     def handle_event(self, event):
-        """
-        Handle a pygame event.
-
-        Returns:
-            True if the event was handled (should not propagate).
-            Or returns the string 'TAB' if user pressed Tab while focused (useful to move focus).
-            False if not handled.
-        """
-        # Mouse click: focus/unfocus
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             if self.rect.collidepoint(event.pos):
                 self.focus()
                 return True
             else:
-                # clicking outside unfocuses
                 if self.active:
                     self.unfocus()
                 return False
 
-        # If not focused, we generally don't handle keyboard events
         if not self.active:
             return False
 
-        # Keyboard while focused
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_BACKSPACE:
                 if len(self.text) > 0:
@@ -97,25 +77,22 @@ class TextEntry:
                     self._rebuild_render()
                 return True
             if event.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
-                # commit / unfocus on Enter (customize if you want different behaviour)
                 self.unfocus()
                 return True
             if event.key == pygame.K_TAB:
-                # signal to caller to focus next field
                 self.unfocus()
                 return "TAB"
-            # ordinary character input
+            
             ch = event.unicode
             if not ch:
-                return True  # swallow non-character keys
-            # filters
+                return True
+            
             if self.letters_only and not ch.isalpha():
                 return True
             if self.numeric_only:
-                # allow digits and leading '-' for negative numbers
                 if not (ch.isdigit() or (ch == '-' and len(self.text) == 0)):
                     return True
-            # max length
+            
             if self.max_length is None or len(self.text) < self.max_length:
                 self.text += ch
                 self._rebuild_render()
@@ -123,7 +100,6 @@ class TextEntry:
 
         return False
 
-    # ---- time-based updates (caret blink) ----
     def update(self, dt):
         if self.active:
             self.caret_timer += dt
@@ -133,15 +109,18 @@ class TextEntry:
         else:
             self.caret_visible = False
 
-    # ---- drawing ----
     def draw(self, surf):
-        # background
-        pygame.draw.rect(surf, self.bg_color, self.rect)
-        # border
-        pygame.draw.rect(surf, (0,0,0), self.rect, 2)
-        # text
+        # Background
+        pygame.draw.rect(surf, self.bg_color, self.rect, border_radius=theme.BORDER_RADIUS)
+        
+        # Border (highlight if active)
+        border_col = self.focus_color if self.active else self.border_color
+        pygame.draw.rect(surf, border_col, self.rect, 2, border_radius=theme.BORDER_RADIUS)
+        
+        # Text
         surf.blit(self.text_surf, (self.rect.x + self.padding_x, self.rect.y + self.padding_y))
-        # caret
+        
+        # Caret
         if self.active and self.caret_visible:
             caret_x = self.rect.x + self.padding_x + self.text_surf.get_width()
             top = self.rect.y + self.padding_y

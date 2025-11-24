@@ -79,8 +79,8 @@ class CollectionPopup:
             in_collection = card in inventory.PLAYERCARDS
             
             bg_color = (100, 200, 100) if in_collection else (200, 100, 100)
-            pygame.draw.rect(surf, bg_color, surf.get_rect(), border_radius=5)
-            pygame.draw.rect(surf, (0,0,0), surf.get_rect(), width=2, border_radius=5)
+            pygame.draw.rect(surf, bg_color, surf.get_rect(), border_radius=0)
+            pygame.draw.rect(surf, (0,0,0), surf.get_rect(), width=2, border_radius=0)
             
             # Text
             status = "[+]" if in_collection else "[-]"

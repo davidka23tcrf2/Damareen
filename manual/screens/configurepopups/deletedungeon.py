@@ -59,8 +59,8 @@ class DeleteDungeonPopup:
         del_x, del_y = 500, 350
 
         del_surface = pygame.Surface((del_w, del_h), pygame.SRCALPHA)
-        pygame.draw.rect(del_surface, (200, 50, 50), del_surface.get_rect(), border_radius=20)
-        pygame.draw.rect(del_surface, (0, 0, 0), del_surface.get_rect(), width=4, border_radius=20)
+        pygame.draw.rect(del_surface, (200, 50, 50), del_surface.get_rect(), border_radius=0)
+        pygame.draw.rect(del_surface, (0, 0, 0), del_surface.get_rect(), width=4, border_radius=0)
         del_label = BP26.render("Törlés", True, (0, 0, 0))
         del_label_rect = del_label.get_rect(center=(del_w // 2, del_h // 2))
         del_surface.blit(del_label, del_label_rect)

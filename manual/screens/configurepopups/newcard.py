@@ -51,7 +51,7 @@ class CardPopup:
             create_img,
             (50, 200, 50),                      # green fill
             create_img.get_rect(),
-            border_radius=25                    # rounded corners
+            border_radius=0                    # rounded corners
         )
 
         # black outline
@@ -60,7 +60,7 @@ class CardPopup:
             (0, 0, 0),                          # border color
             create_img.get_rect(),
             width=4,
-            border_radius=25
+            border_radius=0
         )
 
         label = BP26.render("létrehozás", True, (0, 0, 0))

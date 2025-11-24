@@ -51,8 +51,8 @@ class NewLeaderCardPopup:
         create_y = 350
 
         create_img = pygame.Surface((create_w, create_h), pygame.SRCALPHA)
-        pygame.draw.rect(create_img, (50, 200, 50), create_img.get_rect(), border_radius=25)
-        pygame.draw.rect(create_img, (0, 0, 0), create_img.get_rect(), width=4, border_radius=25)
+        pygame.draw.rect(create_img, (50, 200, 50), create_img.get_rect(), border_radius=0)
+        pygame.draw.rect(create_img, (0, 0, 0), create_img.get_rect(), width=4, border_radius=0)
         
         # User requested "smalles so text fits" -> Using BP12
         label = BP12.render("Vezérkártya létrehozása", True, (0, 0, 0))
@@ -115,8 +115,8 @@ class NewLeaderCardPopup:
         # Damage Button
         # Damage Button
         dmg_img = pygame.Surface((btn_w, btn_h), pygame.SRCALPHA)
-        pygame.draw.rect(dmg_img, (200, 50, 50), dmg_img.get_rect(), border_radius=10)
-        pygame.draw.rect(dmg_img, (0,0,0), dmg_img.get_rect(), width=2, border_radius=10)
+        pygame.draw.rect(dmg_img, (200, 50, 50), dmg_img.get_rect(), border_radius=0)
+        pygame.draw.rect(dmg_img, (0,0,0), dmg_img.get_rect(), width=2, border_radius=0)
         # Smaller font
         dmg_txt = BP15.render("Sebzés", True, (0,0,0)) 
         dmg_img.blit(dmg_txt, dmg_txt.get_rect(center=(btn_w//2, btn_h//2)))
@@ -127,8 +127,8 @@ class NewLeaderCardPopup:
         
         # HP Button
         hp_img = pygame.Surface((btn_w, btn_h), pygame.SRCALPHA)
-        pygame.draw.rect(hp_img, (50, 200, 50), hp_img.get_rect(), border_radius=10)
-        pygame.draw.rect(hp_img, (0,0,0), hp_img.get_rect(), width=2, border_radius=10)
+        pygame.draw.rect(hp_img, (50, 200, 50), hp_img.get_rect(), border_radius=0)
+        pygame.draw.rect(hp_img, (0,0,0), hp_img.get_rect(), width=2, border_radius=0)
         # Smaller font
         hp_txt = BP15.render("Életerő", True, (0,0,0))
         hp_img.blit(hp_txt, hp_txt.get_rect(center=(btn_w//2, btn_h//2)))

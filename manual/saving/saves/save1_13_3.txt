@@ -1,0 +1,20 @@
+13
+kartya;Arin;2;5;fold
+kartya;Liora;2;4;levegő
+kartya;Nerun;3;3;tuz
+kartya;Seila;2;6;viz
+kartya;Torak;3;4;fold
+kartya;Emera;2;5;levegő
+kartya;Vorn;2;7;viz
+kartya;Kael;3;5;tuz
+kartya;Myra;2;6;fold
+kartya;Thalen;3;5;levegő
+kartya;Isara;2;6;viz
+vezer;Lord Torak;6;4;fold
+vezer;Priestess Seila;2;12;viz
+3
+egyszeru;Barlangi Portya;Nerun;sebzes
+kis;Osi Szentely;Arin;Emera;Seila;Lord Torak;eletero
+nagy;A melyseg kiralynoje;Liora;Arin;Seila;Nerun;Torak;Priestess Seila
+0
+Arin;Liora;Nerun;Torak;Emera;Seila;Myra;Isara;Thalen;Kael

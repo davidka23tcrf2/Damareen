@@ -1,6 +1,7 @@
-import os, pygame
-from manual.assets.assets import load_asset, ASSETS_DIR
+import pygame
+import os
 from manual.ui.button import Button
+from manual.assets.assets import load_asset, ASSETS_DIR
 from manual.saving import load
 from manual.ui import theme
 
@@ -9,11 +10,11 @@ pygame.init()
 BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 24)
 TITLE_FONT = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 56)
 
-class GameLoader:
-    def __init__(self, goto_menu, goto_start):
+class SavedGamesScreen:
+    def __init__(self, goto_start, goto_menu):
         self.elements = []
-        self.goto_menu = goto_menu
         self.goto_start = goto_start
+        self.goto_menu = goto_menu
         
         # Selected save tracking
         self.selected_save = None
@@ -49,7 +50,7 @@ class GameLoader:
             border_color=(255, 50, 50),
             border_radius=8
         )
-
+        
         # Back button
         back_btn = Button(
             (30, 30, 180, 70),
@@ -74,7 +75,7 @@ class GameLoader:
         self.selected_save_index = -1
         self.action_buttons = []
         
-        saves = load.get_save_files()
+        saves = load.get_game_saves()
 
         start_y = 180
         cols = 4
@@ -90,12 +91,12 @@ class GameLoader:
             start_x = (1280 - total_width) // 2
 
             for col_index, s in enumerate(row_saves):
-                save_num = s["save_num"]
+                filename = s["filename"]
+                coins = s["coins"]
                 cards = s["cards"]
-                enemies = s["enemies"]
-                filename = s["file"]
 
-                text = f"Kornyezet {save_num}\n\n{cards} Kartya\n{enemies} Kazamata"
+                display_name = filename.replace("game_", "").replace(".json", "")
+                text = f"{display_name}\n\n{coins} Coins\n{cards} Cards"
 
                 x = start_x + col_index * (button_width + x_spacing)
                 y = start_y + row_index * (button_height + y_spacing)
@@ -130,12 +131,12 @@ class GameLoader:
 
     def load_selected_save(self):
         if self.selected_save:
-            load.load_game(self.selected_save["file"])
+            load.load_game_state(self.selected_save["filename"])
             self.goto_menu()
 
     def delete_selected_save(self):
         if self.selected_save:
-            filepath = os.path.join(load.SAVES_DIR, self.selected_save["file"])
+            filepath = os.path.join(load.GAMES_DIR, self.selected_save["filename"])
             try:
                 os.remove(filepath)
                 print(f"Deleted save: {filepath}")
@@ -155,7 +156,7 @@ class GameLoader:
     def draw(self, surf):
         surf.fill((0, 0, 0))
         
-        title_surf = TITLE_FONT.render("Kornyezet Betoltes", True, (255, 50, 50))
+        title_surf = TITLE_FONT.render("Mentett Jatekok", True, (255, 50, 50))
         title_rect = title_surf.get_rect(center=(640, 90))
         surf.blit(title_surf, title_rect)
         

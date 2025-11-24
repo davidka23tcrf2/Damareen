@@ -1,0 +1,147 @@
+{
+  "coins": 0,
+  "shop_enabled": false,
+  "volume": 77,
+  "playerdeck": [],
+  "playercards": [
+    "Arin",
+    "Liora",
+    "Nerun",
+    "Torak",
+    "Emera",
+    "Seila",
+    "Myra",
+    "Isara",
+    "Thalen",
+    "Kael"
+  ],
+  "playerarmor": [],
+  "playeraccessories": [],
+  "gamecards": [
+    {
+      "type": "kartya",
+      "name": "Arin",
+      "dmg": 2,
+      "hp": 5,
+      "power": "fold"
+    },
+    {
+      "type": "kartya",
+      "name": "Liora",
+      "dmg": 2,
+      "hp": 4,
+      "power": "levegő"
+    },
+    {
+      "type": "kartya",
+      "name": "Nerun",
+      "dmg": 3,
+      "hp": 3,
+      "power": "tuz"
+    },
+    {
+      "type": "kartya",
+      "name": "Seila",
+      "dmg": 2,
+      "hp": 6,
+      "power": "viz"
+    },
+    {
+      "type": "kartya",
+      "name": "Torak",
+      "dmg": 3,
+      "hp": 4,
+      "power": "fold"
+    },
+    {
+      "type": "kartya",
+      "name": "Emera",
+      "dmg": 2,
+      "hp": 5,
+      "power": "levegő"
+    },
+    {
+      "type": "kartya",
+      "name": "Vorn",
+      "dmg": 2,
+      "hp": 7,
+      "power": "viz"
+    },
+    {
+      "type": "kartya",
+      "name": "Kael",
+      "dmg": 3,
+      "hp": 5,
+      "power": "tuz"
+    },
+    {
+      "type": "kartya",
+      "name": "Myra",
+      "dmg": 2,
+      "hp": 6,
+      "power": "fold"
+    },
+    {
+      "type": "kartya",
+      "name": "Thalen",
+      "dmg": 3,
+      "hp": 5,
+      "power": "levegő"
+    },
+    {
+      "type": "kartya",
+      "name": "Isara",
+      "dmg": 2,
+      "hp": 6,
+      "power": "viz"
+    },
+    {
+      "type": "vezer",
+      "name": "Lord Torak",
+      "dmg": 6,
+      "hp": 4,
+      "power": "fold"
+    },
+    {
+      "type": "vezer",
+      "name": "Priestess Seila",
+      "dmg": 2,
+      "hp": 12,
+      "power": "viz"
+    }
+  ],
+  "enemies": [
+    {
+      "type": "egyszeru",
+      "name": "Barlangi Portya",
+      "deck": [
+        "Nerun"
+      ],
+      "reward": "sebzes"
+    },
+    {
+      "type": "kis",
+      "name": "Osi Szentely",
+      "deck": [
+        "Arin",
+        "Emera",
+        "Seila",
+        "Lord Torak"
+      ],
+      "reward": "eletero"
+    },
+    {
+      "type": "nagy",
+      "name": "A melyseg kiralynoje",
+      "deck": [
+        "Liora",
+        "Arin",
+        "Seila",
+        "Nerun",
+        "Torak",
+        "Priestess Seila"
+      ],
+      "reward": null
+    }
+  ]
+}
