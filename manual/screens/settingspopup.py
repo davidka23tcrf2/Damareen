@@ -82,7 +82,11 @@ class SettingsPopup:
         self.volume_slider_rect = pygame.Rect(btn_x, popup_y + 300, btn_width, 25)
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         # self.volume_value = 50  # Removed hardcoded reset
+=======
+        self.volume_value = 50  # 0-100
+>>>>>>> Stashed changes
 =======
         self.volume_value = 50  # 0-100
 >>>>>>> Stashed changes

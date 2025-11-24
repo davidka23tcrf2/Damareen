@@ -34,11 +34,15 @@ class ShopScreen:
         self.info = load_asset("info.png", "shop")
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         
         # Red vignette and particles
         self.particles = ParticleManager(mode="blood")
         self.vignette = create_red_vignette()
         
+=======
+        # Removed background image for black background
+>>>>>>> Stashed changes
 =======
         # Removed background image for black background
 >>>>>>> Stashed changes
@@ -109,6 +113,9 @@ class ShopScreen:
 
         surf.fill((0, 0, 0))  # Black background
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
