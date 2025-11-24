@@ -1,6 +1,5 @@
 import pygame, sys, json, os
 from manual.screens.configure import CONFIGURE
-from manual.screens.inventory import InventoryScreen
 from manual.screens.start import StartScreen
 from manual.ui.ui_manager import UIStateManager
 from manual.screens.shop import ShopScreen
@@ -28,9 +27,8 @@ ui.add("MENU", MenuScreen(goto_arena, goto_shop))
 ui.add("START", StartScreen(goto_configure, goto_gameloader))
 ui.add("GAMELOADER", GameLoader(goto_menu, goto_start))
 ui.add("CONFIGURE", CONFIGURE(goto_start, goto_menu))
-ui.add("INVENTORY", InventoryScreen(goto_menu))
 
-ui.set("INVENTORY")
+ui.set("START")
 
 def ml():
     while True:

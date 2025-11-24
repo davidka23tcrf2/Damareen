@@ -6,7 +6,7 @@ import os, pygame
 pygame.init()
 BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "PublicPixel.ttf"), 13)
 class StartScreen:
-    def __init__(self, config, load_game):
+    def __init__(self, config, load_game, continue_game):
         self.elements = []
 
         self.BG = load_asset("startbg.png", "start")
@@ -16,8 +16,9 @@ class StartScreen:
         btnhover = load_asset("buttonhover.png", "start")
 
         # Buttons
-        self.elements.append(Button((0, 300, 350, 125), load_game,btn, btnhover, "Környezet betöltése", font=BP, center_x=True))
-        self.elements.append(Button((0, 450, 350, 125), config,btn, btnhover, "Környezet konfigurálása", font=BP, center_x=True))
+        self.elements.append(Button((0, 250, 350, 125), load_game,btn, btnhover, "Környezet betöltése", font=BP, center_x=True))
+        self.elements.append(Button((0, 400, 350, 125), config,btn, btnhover, "Környezet konfigurálása", font=BP, center_x=True))
+        self.elements.append(Button((0, 550, 350, 125), continue_game, btn, btnhover, "Mentés folytatása", font=BP, center_x=True))
 
     def handle_event(self, e):
         for el in self.elements:

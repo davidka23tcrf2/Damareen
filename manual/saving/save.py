@@ -16,7 +16,7 @@ def save_game():
     filename = f"save{next_num}_{len(inventory.GAMECARDS)}_{len(inventory.ENEMIES)}.txt"
     path = os.path.join(SAVES_DIR, filename)
 
-    with open(path, "w") as f:
+    with open(path, "w", encoding="utf-8") as f:
         f.write(f'{len(inventory.GAMECARDS)}\n')
         for i in inventory.GAMECARDS:
             f.write(f'{i.type};')

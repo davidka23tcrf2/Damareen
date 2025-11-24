@@ -37,15 +37,16 @@ def parse_save_filename(filename):
     }
 
 def load_game(filename):
-    inventory.ENEMIES.clear()
-    inventory.PLAYERCARDS.clear()
-    inventory.GAMECARDS.clear()
+    # inventory.ENEMIES.clear()
+    # inventory.PLAYERCARDS.clear()
+    # inventory.GAMECARDS.clear()
     path = os.path.join(SAVES_DIR, filename)
     with open(path, "r", encoding="utf-8") as f:
         line = f.readline()
         for i in range(int(line)):
             line = f.readline().strip().split(";")
-            inventory.GAMECARDS.append(objects.Card(line[0], line[1], line[2], line[3], line[4]))
+            if len(line) >= 5:
+                inventory.GAMECARDS.append(objects.Card(line[0], line[1], line[2], line[3], line[4]))
         line = f.readline()
         for i in range(int(line)):
             line = f.readline().strip().split(";")
@@ -65,7 +66,7 @@ def load_game(filename):
         line = f.readline()
         if int(line):
             inventory.SHOP_ENABLED = True
-        line = f.readline().split(";")
+        line = f.readline().strip().split(";")
         if line[0] != '':
             for i in line:
                 for j in inventory.GAMECARDS:
