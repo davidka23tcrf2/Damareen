@@ -3,12 +3,12 @@ import pygame, os
 from ..ui.button import Button
 from ..ui.label import Label
 from manual.assets.assets import load_asset, ASSETS_DIR
-from manual.inventory.inventory import PLAYERARMOR
+from manual.inventory.inventory import PLAYERARMOR, EquipedItems
 
 BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 80)
 class InventoryScreen:
     def __init__(self, goto_mainmenu):
-        self.EquipedItems = []
+
         self.bg = load_asset("bg.png", "inventory")
         self.item = load_asset("1.png", "inventory")
         self.character = load_asset("body.png", "character")
@@ -19,15 +19,8 @@ class InventoryScreen:
         self.elements.append(Inventtory)
 
         self.slots = []
+
         self._build_slots()
-        for i in self.EquipedItems:
-            if i[2] == "cipo":
-                self.BootsSlot = Button(rect=(300, 300), hover_image=self.item, callback=lambda: print("ds"))
-            self.elements.append(self.BootsSlot)
-
-
-
-
 
     def _build_slots(self):
         self.SlotsIndex = 0
@@ -56,9 +49,8 @@ class InventoryScreen:
             if has_item:
                 slots = Button(
                     rect=(x, y, iw, ih),
-                    callback=lambda dx=index: self.EquipedItems.append((PLAYERARMOR[dx].type, PLAYERARMOR[dx].what, PLAYERARMOR[dx].img)),
+                    callback=lambda dx=index: self.AddItem(dx),
                     normal_image=self.item,
-                    hover_image=self.item,
                 )
                 self.Items = Button(
                     rect=(x, y, iw, ih),
@@ -68,7 +60,8 @@ class InventoryScreen:
                     image_offset=(10, 20)
 
                 )
-
+                self.elements.append(slots)
+                self.elements.append(self.Items)
             else:
                 slots = Button(
                     rect=(x, y, iw, ih),
@@ -76,8 +69,30 @@ class InventoryScreen:
                     normal_image=self.item,
                     hover_image=self.item,
                 )
-            self.elements.append(slots)
-            self.elements.append(self.Items)
+                self.elements.append(slots)
+
+    def AddItem(self, idx):
+        if len(EquipedItems) <= 0:
+            EquipedItems.append(PLAYERARMOR[idx])
+            return
+
+        for i in EquipedItems:
+            if i.what == PLAYERARMOR[idx].what:
+
+
+                print("Kiszedve")
+                if i.type == PLAYERARMOR[idx].type:
+                    EquipedItems.remove(i)
+
+                else:
+                    EquipedItems.remove(i)
+                    EquipedItems.append(PLAYERARMOR[idx])
+                return
+
+
+        EquipedItems.append(PLAYERARMOR[idx])
+        print("Betéve")
+
 
     def CreateItemSlot(self, surface, color, start, end, thickness=1, fill_color=None):
         x1, y1 = start
@@ -115,6 +130,20 @@ class InventoryScreen:
         self.CreateItemSlot(surf, color=(0,0,0), start=(200,150), end=(500,700), thickness=10, fill_color=(10,20,30))
         character_s = pygame.transform.scale(self.character, (400, 400))
         surf.blit(character_s, (150,200))
+        if len(EquipedItems) > 0:
+            for i in EquipedItems:
+                if i.what == "mellvert":
+                    img = pygame.transform.scale(i.img, (225, 150))
+                    surf.blit(img, (240, 351))
+                elif i.what == "sapka":
+                    img1 = pygame.transform.scale(i.img, (175, 130))
+                    surf.blit(img1, (270, 200))
+                elif i.what == "nadrag":
+                    img2 = pygame.transform.scale(i.img, (175, 100))
+                    surf.blit(img2, (270, 450))
+                elif i.what == "cipo":
+                    img3 = pygame.transform.scale(i.img, (175, 100))
+                    surf.blit(img3, (270, 500))
 
         for el in self.elements: el.draw(surf)
 

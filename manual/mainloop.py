@@ -1,5 +1,6 @@
 import pygame, sys, json, os
 from manual.screens.configure import CONFIGURE
+from manual.screens.inventory import InventoryScreen
 from manual.screens.start import StartScreen
 from manual.ui.ui_manager import UIStateManager
 from manual.screens.shop import ShopScreen
@@ -39,8 +40,9 @@ ui.add("START", StartScreen(goto_configure, goto_gameloader, goto_savedgames))
 ui.add("GAMELOADER", GameLoader(goto_menu, goto_start))
 ui.add("CONFIGURE", CONFIGURE(goto_start, goto_menu))
 ui.add("SAVEDGAMES", SavedGamesScreen(goto_start, goto_menu))
+ui.add("INVENTORY", InventoryScreen(goto_menu))
 
-ui.set("START")
+ui.set("SHOP")
 
 while True:
     dt = CLOCK.tick(60) / 1000.0

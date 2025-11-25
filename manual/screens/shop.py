@@ -3,11 +3,14 @@ import pygame, os
 from ..ui.button import Button
 from ..ui.label import Label
 from manual.assets.assets import load_asset, ASSETS_DIR
-from manual.inventory.inventory import ARMOR
+from manual.inventory.inventory import ARMOR, EquipedItems
 from manual.ui.particles import ParticleManager
 from manual.ui.vignette import create_red_vignette
 import math
 import manual.mainloop
+
+
+
 
 BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 30)
 
@@ -109,7 +112,7 @@ class ShopScreen:
 
         self.button = Button(
             rect=(x+20, y + 35, self.iw-20, self.ih - 40),
-            callback=lambda: print(ARMOR[num]),
+            callback=lambda: self.BuyItem(0, num, percent),
             normal_image=self.item_img,
             hover_image=self.item_img,
         )
@@ -140,3 +143,7 @@ class ShopScreen:
             self.CaItemSlot("Armor", 180, 180, self.randnum1, self.RandPercent)
             self.CaItemSlot("Armor1", 180, 400, self.randnum, self.RandPercent1)
             self.ThePanel = True
+
+    def BuyItem(self, money, num, percent):
+        EquipedItems.append((ARMOR[num].type, ARMOR[num].what, ARMOR[num].img, percent))
+        print("siker")

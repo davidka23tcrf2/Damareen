@@ -82,3 +82,7 @@ ACCESSORIES = [
 PLAYERACCESSORIES = [
 
 ]
+
+EquipedItems = [
+
+]
