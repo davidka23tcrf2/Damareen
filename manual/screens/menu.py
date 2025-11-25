@@ -9,7 +9,7 @@ from manual.screens.dungeonpopup import DungeonPopup
 from manual.ui import theme
 from manual.ui.particles import ParticleManager
 
-BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 20)
+BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "SELINCAH.ttf"), 20)
 
 class MenuScreen:
     def __init__(self, goto_arena, goto_shop, goto_deckbuilder):
@@ -42,20 +42,6 @@ class MenuScreen:
             hover_bg_color=theme.PRIMARY_HOVER
         )
         self.elements.append(self.fight_btn)
-        
-        # Settings button (Bigger)
-        self.settings_btn = Button(
-            (1280 - 200, 20, 180, 60),
-            self.open_settings,
-            None,
-            text="⚙ Beállítások",
-            font=BP,
-            text_color=theme.TEXT_WHITE,
-            bg_color=theme.SECONDARY,
-            hover_bg_color=theme.SECONDARY_HOVER,
-            border_radius=8
-        )
-        self.elements.append(self.settings_btn)
         
         # Dungeon Selector Button
         self.dungeon_btn = Button(

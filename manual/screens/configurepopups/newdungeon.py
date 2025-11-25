@@ -9,15 +9,17 @@ from manual.assets.assets import load_asset, ASSETS_DIR
 
 sf = "configure"
 pygame.init()
-BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 20)
-BP2 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 2)
-BP5 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 5)
-BP8 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 8)
-BP10 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 10)
-BP12 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 12)
-BP14 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 14)
-BP15 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 15)
-BP26 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 26)
+BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 24)
+BP2 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 4)
+BP5 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 7)
+BP8 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 10)
+BP10 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 12)
+BP12 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 14)
+BP14 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 16)
+BP18 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 18)
+BP24 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 24)
+BP26 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 30)
+BP36 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 36)
 
 class NewDungeonPopup:
     """Popup for creating a new Dungeon (Enemy) with manual card selection."""
@@ -51,13 +53,13 @@ class NewDungeonPopup:
         self.elements.append(self.close_btn)
 
         # Title
-        self.elements.append(Label((w // 2, 40, 0, 0), "Új kazamata", font=BP26, color=(255, 255, 255)))
+        self.elements.append(Label((w // 2, 50, 0, 0), "Új kazamata", font=BP36, color=(255, 255, 255)))
 
         # Name Input
-        self.elements.append(Label((left_x + 20, 120, 0, 0), "Név:", font=BP, color=(255, 255, 255)))
+        self.elements.append(Label((left_x + 160, 160, 0, 0), "Név:", font=BP36, color=(255, 255, 255)))
         # User requested: allow spaces, more chars, smaller font
         # User requested: allow spaces, more chars, smaller font
-        self.name_entry = TextEntry((left_x + 100, 100, 300, 40), font=BP14, max_length=20, letters_only=False)
+        self.name_entry = TextEntry((left_x + 200, 140, 300, 40), font=BP14, max_length=20, letters_only=False)
         self.name_entry.base_pos = self.name_entry.rect.topleft
         self.text_entries.append(self.name_entry)
         
@@ -69,7 +71,7 @@ class NewDungeonPopup:
         self.selected_type = "egyszeru" # egyszeru, kis, nagy
         
         type_y = 200
-        self.elements.append(Label((left_x + 20, type_y + 20, 0, 0), "Típus:", font=BP, color=(255, 255, 255)))
+        self.elements.append(Label((left_x + 50, type_y + 30, 0, 0), "Típus:", font=BP36, color=(255, 255, 255)))
         
         # Type Buttons
         btn_w, btn_h = 130, 55
@@ -78,7 +80,7 @@ class NewDungeonPopup:
         simp_img = pygame.Surface((btn_w, btn_h), pygame.SRCALPHA)
         pygame.draw.rect(simp_img, (50, 200, 50), simp_img.get_rect(), border_radius=0)
         pygame.draw.rect(simp_img, (0,0,0), simp_img.get_rect(), width=2, border_radius=0)
-        simp_txt = BP12.render("Egyszerű", True, (255,255,255))
+        simp_txt = BP24.render("Egyszerű", True, (255,255,255))
         simp_img.blit(simp_txt, simp_txt.get_rect(center=(btn_w//2, btn_h//2)))
         
         self.simp_btn = Button((left_x + 100, type_y, btn_w, btn_h), lambda: self.set_type("egyszeru"), simp_img)
@@ -91,7 +93,7 @@ class NewDungeonPopup:
         norm_img = pygame.Surface((btn_w, btn_h), pygame.SRCALPHA)
         pygame.draw.rect(norm_img, (50, 50, 200), norm_img.get_rect(), border_radius=0)
         pygame.draw.rect(norm_img, (0,0,0), norm_img.get_rect(), width=2, border_radius=0)
-        norm_txt = BP12.render("Normál", True, (255,255,255))
+        norm_txt = BP24.render("Normál", True, (255,255,255))
         norm_img.blit(norm_txt, norm_txt.get_rect(center=(btn_w//2, btn_h//2)))
         
         self.norm_btn = Button((left_x + 100 + 140, type_y, btn_w, btn_h), lambda: self.set_type("kis"), norm_img)
@@ -104,7 +106,7 @@ class NewDungeonPopup:
         boss_img = pygame.Surface((btn_w, btn_h), pygame.SRCALPHA)
         pygame.draw.rect(boss_img, (200, 50, 50), boss_img.get_rect(), border_radius=0)
         pygame.draw.rect(boss_img, (0,0,0), boss_img.get_rect(), width=2, border_radius=0)
-        boss_txt = BP12.render("Nagy", True, (255,255,255))
+        boss_txt = BP24.render("Nagy", True, (255,255,255))
         boss_img.blit(boss_txt, boss_txt.get_rect(center=(btn_w//2, btn_h//2)))
         
         self.boss_btn = Button((left_x + 100 + 280, type_y, btn_w, btn_h), lambda: self.set_type("nagy"), boss_img)
@@ -117,14 +119,14 @@ class NewDungeonPopup:
         self.selected_reward = "sebzes" # sebzes, eletero, None
         
         reward_y = 280
-        self.elements.append(Label((left_x + 70, reward_y + 20, 0, 0), "Jutalom:", font=BP, color=(255, 255, 255)))
+        self.elements.append(Label((left_x + 80, reward_y + 30, 0, 0), "Jutalom:", font=BP36, color=(255, 255, 255)))
         
         # Reward Buttons
         # Sebzes
         seb_img = pygame.Surface((btn_w, btn_h), pygame.SRCALPHA)
         pygame.draw.rect(seb_img, (200, 50, 50), seb_img.get_rect(), border_radius=0)
         pygame.draw.rect(seb_img, (0,0,0), seb_img.get_rect(), width=2, border_radius=0)
-        seb_txt = BP12.render("Sebzés", True, (0,0,0))
+        seb_txt = BP18.render("Sebzés", True, (0,0,0))
         seb_img.blit(seb_txt, seb_txt.get_rect(center=(btn_w//2, btn_h//2)))
         
         self.seb_btn = Button((left_x + 150, reward_y, btn_w, btn_h), lambda: self.set_reward("sebzes"), seb_img)
@@ -137,7 +139,7 @@ class NewDungeonPopup:
         el_img = pygame.Surface((btn_w, btn_h), pygame.SRCALPHA)
         pygame.draw.rect(el_img, (50, 200, 50), el_img.get_rect(), border_radius=0)
         pygame.draw.rect(el_img, (0,0,0), el_img.get_rect(), width=2, border_radius=0)
-        el_txt = BP12.render("Életerő", True, (0,0,0))
+        el_txt = BP24.render("Életerő", True, (0,0,0))
         el_img.blit(el_txt, el_txt.get_rect(center=(btn_w//2, btn_h//2)))
         
         self.el_btn = Button((left_x + 150 + 140, reward_y, btn_w, btn_h), lambda: self.set_reward("eletero"), el_img)
@@ -147,7 +149,7 @@ class NewDungeonPopup:
         self.reward_buttons.append(self.el_btn)
 
         # Requirements Label
-        self.req_label = Label((left_x + 250, 380, 0, 0), "", font=BP15, color=(255, 255, 0))
+        self.req_label = Label((left_x + 250, 400, 0, 0), "", font=BP36, color=(255, 255, 0))
         self.elements.append(self.req_label)
         
         # Create Button
@@ -452,7 +454,7 @@ class NewDungeonPopup:
             else:
                 s.fill((200, 200, 200))
             pygame.draw.rect(s, (0,0,0), s.get_rect(), 2)
-            txt = BP15.render(btn.label, True, (0,0,0))
+            txt = BP18.render(btn.label, True, (0,0,0))
             s.blit(txt, txt.get_rect(center=(btn.rect.width//2, btn.rect.height//2)))
             surf.blit(s, btn.rect)
             
@@ -465,7 +467,7 @@ class NewDungeonPopup:
                 else:
                     s.fill((200, 200, 200))
                 pygame.draw.rect(s, (0,0,0), s.get_rect(), 2)
-                txt = BP15.render(btn.label, True, (0,0,0))
+                txt = BP18.render(btn.label, True, (0,0,0))
                 s.blit(txt, txt.get_rect(center=(btn.rect.width//2, btn.rect.height//2)))
                 surf.blit(s, btn.rect)
 
@@ -513,12 +515,12 @@ class NewDungeonPopup:
                 power = getattr(card, "power", "")
                 
                 # Draw Name
-                txt_name = BP12.render(f"{name_str} ({type_str})", True, (0,0,0))
+                txt_name = BP18.render(f"{name_str} ({type_str})", True, (0,0,0))
                 s.blit(txt_name, txt_name.get_rect(topleft=(10, 5)))
                 
                 # Draw Stats
                 stats_str = f"S:{dmg} É:{hp} E:{power}"
-                txt_stats = BP10.render(stats_str, True, (50, 50, 50))
+                txt_stats = BP18.render(stats_str, True, (50, 50, 50))
                 s.blit(txt_stats, txt_stats.get_rect(bottomleft=(10, btn.rect.height - 5)))
                 
                 # Draw Selection Order Number
@@ -530,7 +532,7 @@ class NewDungeonPopup:
                     pygame.draw.circle(s, (255, 255, 0), circle_center, circle_radius)
                     pygame.draw.circle(s, (0, 0, 0), circle_center, circle_radius, 1)
                     
-                    num_txt = BP12.render(str(order_idx), True, (0, 0, 0))
+                    num_txt = BP18.render(str(order_idx), True, (0, 0, 0))
                     num_rect = num_txt.get_rect(center=circle_center)
                     s.blit(num_txt, num_rect)
                 

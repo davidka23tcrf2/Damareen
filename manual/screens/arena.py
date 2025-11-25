@@ -5,7 +5,7 @@ from manual.ui.particles import ParticleManager
 from manual.ui.vignette import create_red_vignette
 import os
 
-BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 24)
+BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "SELINCAH.ttf"), 24)
 
 class ArenaScreen:
     def __init__(self, goto_shop):

@@ -2,6 +2,7 @@ import pygame, os
 from manual.ui.button import Button
 from manual.ui.label import Label
 from manual.ui.switch import Switch
+from manual.ui.text_entry import TextEntry
 from manual.assets.assets import load_asset, ASSETS_DIR
 from manual.inventory import inventory
 
@@ -15,8 +16,13 @@ from manual.screens.configurepopups.deletedungeon import DeleteDungeonPopup
 from manual.saving import save as saving  # module with save_game()
 
 pygame.init()
-BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 20)
-BP_SMALL = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 12)
+pygame.mixer.init()
+BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 24)
+BP_SMALL = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 16)
+BP30 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 30)
+BP40 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 40)
+BP50 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 50)
+sf = "configure"
 sf = "configure"
 
 
@@ -24,28 +30,34 @@ class CONFIGURE:
     def __init__(self, goto_start, goto_menu):
         self.elements = []
         self.goto_menu = goto_menu  # <-- store so we can jump to menu after saving
+        
+        # Load and prepare elevator music
+        music_path = os.path.join(ASSETS_DIR, "sounds", "Elevator-music.mp3")
+        try:
+            pygame.mixer.music.load(music_path)
+            self.music_loaded = True
+        except Exception as e:
+            print(f"Failed to load elevator music: {e}")
+            self.music_loaded = False
 
-        # Removed background for black background
+        self.bg = load_asset("bg.png", sf)
+        self.bg = pygame.transform.scale(self.bg, (1280, 720))
 
-        self.elements.append(Label((250, 150, 0, 0), "Bolt:", font=BP))
-        self.elements.append(Label((730, 70, 0, 0), "Kártyák kezelése", font=BP))
+        self.elements.append(Label((260, 155, 0, 0), "Bolt:", font=BP40, color=(255, 255, 255)))
+        self.elements.append(Label((700, 70, 0, 0), "Kártyák kezelése", font=BP50, color=(255, 255, 255)))
+
+        self.switch = Switch((325, 130, 120, 50), callback=self.on_toggle, initial=False)
 
         self.switch = Switch((325, 130, 120, 50), callback=self.on_toggle, initial=False)
 
         # back button
-        back_btn = Button(
-            (30, 30, 180, 70),
+        back_img = load_asset("backbutton.png", sf)
+        self.back_btn = Button(
+            (30, 30, 98, 98),
             goto_start,
-            None,
-            text="Vissza",
-            font=BP,
-            text_color=(200, 200, 200),
-            bg_color=None,
-            hover_bg_color=(30, 30, 30),
-            border_color=(200, 200, 200),
-            border_radius=8
+            back_img
         )
-        self.elements.append(back_btn)
+        self.elements.append(self.back_btn)
 
         # --- KÁRTYÁK KEZELÉSE BUTTONS ---
 
@@ -74,7 +86,7 @@ class CONFIGURE:
         # Label for "Új vezérkártya"
         # Aligned with "Kártyák kezelése" at x=730, but lower down
         # User requested "more right" -> let's try 850
-        self.elements.append(Label((710, 200, 0, 0), "Új vezérkártya", font=BP))
+        self.elements.append(Label((720, 210, 0, 0), "Új vezérkártya", font=BP40, color=(255, 255, 255)))
         
         self.new_leader_btn = Button(
             (870, 170, 75, 75), # Next to the label (label ~200px wide? 680+200=880 -> 900 seems okay)
@@ -106,7 +118,7 @@ class CONFIGURE:
             width=3,
             border_radius=0
         )
-        txt = BP.render("Mentés&Betöltés", True, (0, 0, 0))
+        txt = BP40.render("Mentés&Betöltés", True, (255, 255, 255))
         txt_rect = txt.get_rect(center=(save_load_w // 2, save_load_h // 2))
         save_load_img.blit(txt, txt_rect)
 
@@ -136,7 +148,7 @@ class CONFIGURE:
             width=3,
             border_radius=0
         )
-        txt2 = BP.render("Mentés", True, (0, 0, 0))
+        txt2 = BP40.render("Mentés", True, (255, 255, 255))
         txt2_rect = txt2.get_rect(center=(save_w // 2, save_h // 2))
         save_img.blit(txt2, txt2_rect)
 
@@ -145,7 +157,22 @@ class CONFIGURE:
             self.on_save_only,
             save_img,
         )
+        self.save_btn = Button(
+            (save_x, save_y, save_w, save_h),
+            self.on_save_only,
+            save_img,
+        )
         self.elements.append(self.save_btn)
+
+        # Save Name Input
+        self.elements.append(Label((save_x + 50, save_y - 30, 0, 0), "Név:", font=BP40, color=(255, 255, 255)))
+        self.save_name_input = TextEntry(
+            (save_x + 100, save_y - 50, save_load_w + (save_load_x - save_x) - 100, 40),
+            font=BP40,
+            bg_color=(50, 50, 50),
+            color=(255, 255, 255)
+        )
+        self.elements.append(self.save_name_input)
 
         # Popups
         self.card_popup = None        # new-card popup
@@ -154,7 +181,7 @@ class CONFIGURE:
 
         # Timer for save message
         self.save_message_timer = 0
-        self.saved_label = Label((360, 630, 220, 80), "kornyezet elmentve!", font=BP_SMALL)
+        self.saved_label = Label((360, 630, 220, 80), "Környezet elmentve!", font=BP30, color=(0, 255, 0))
 
         # --- COLLECTION CONFIGURATION ---
         # Gear icon
@@ -165,7 +192,7 @@ class CONFIGURE:
         # Position: Let's put it below "Új vezérkártya" section.
         # "Új vezérkártya" is at y=200 (label) and y=170 (button).
         # Let's go down to y=300.
-        self.elements.append(Label((630, 350, 0, 0), "Gyűjtemény konfigurálása", font=BP))
+        self.elements.append(Label((650, 355, 0, 0), "Gyűjtemény konfigurálása", font=BP40, color=(255, 255, 255)))
         
         self.collection_btn = Button(
             (880, 320, 70, 70), # Right of the label
@@ -181,7 +208,7 @@ class CONFIGURE:
         # Label "Kazamaták kezelése"
         # Position: Below Collection section. Collection label at y=350.
         # Let's go down to y=450.
-        self.elements.append(Label((600, 500, 0, 0), "Kazamaták kezelése", font=BP))
+        self.elements.append(Label((600, 500, 0, 0), "Kazamaták kezelése", font=BP40, color=(255, 255, 255)))
         
         # New Dungeon (plus icon)
         # Reusing new_icon
@@ -205,6 +232,24 @@ class CONFIGURE:
         
         self.new_dungeon_popup = None
         self.delete_dungeon_popup = None
+        
+        self.hidden_btn = None # Track which button is hidden by feedback label
+    
+    def start_music(self):
+        """Start playing elevator music when entering the configure screen."""
+        if self.music_loaded:
+            try:
+                pygame.mixer.music.play(-1)  # -1 means loop indefinitely
+                pygame.mixer.music.set_volume(0.3)  # Set volume to 30%
+            except Exception as e:
+                print(f"Failed to play elevator music: {e}")
+    
+    def stop_music(self):
+        """Stop playing elevator music when leaving the configure screen."""
+        try:
+            pygame.mixer.music.stop()
+        except Exception as e:
+            print(f"Failed to stop elevator music: {e}")
 
     def on_toggle(self):
         inventory.SHOP_ENABLED = not inventory.SHOP_ENABLED
@@ -216,8 +261,24 @@ class CONFIGURE:
         Save current state and go to the menu.
         No load, no clearing inventory.
         """
+        name = self.save_name_input.get_text().strip()
+        if not name:
+            # Show error
+            self.saved_label.set_text("Adj meg egy nevet!")
+            self.saved_label.color = (255, 0, 0)
+            self.saved_label.rect = self.save_load_btn.rect.copy() # Match button size/pos
+            
+            self.hidden_btn = self.save_load_btn
+            if self.save_load_btn in self.elements:
+                self.elements.remove(self.save_load_btn)
+            if self.saved_label not in self.elements:
+                self.elements.append(self.saved_label)
+            
+            self.save_message_timer = 1.5
+            return
+
         try:
-            saving.save_game()
+            saving.save_game(name)
         except Exception as e:
             print("Error in save:", e)
 
@@ -229,8 +290,24 @@ class CONFIGURE:
         Save current state and then clear the inventory completely.
         (Only clear when saving-only, as requested.)
         """
+        name = self.save_name_input.get_text().strip()
+        if not name:
+            # Show error
+            self.saved_label.set_text("Adj meg egy nevet!")
+            self.saved_label.color = (255, 0, 0)
+            self.saved_label.rect = self.save_btn.rect.copy()
+            
+            self.hidden_btn = self.save_btn
+            if self.save_btn in self.elements:
+                self.elements.remove(self.save_btn)
+            if self.saved_label not in self.elements:
+                self.elements.append(self.saved_label)
+            
+            self.save_message_timer = 1.5
+            return
+
         try:
-            saving.save_game()
+            saving.save_game(name)
         except Exception as e:
             print("Error in save:", e)
 
@@ -239,11 +316,15 @@ class CONFIGURE:
         inventory.PLAYERCARDS.clear()
         inventory.ENEMIES.clear()
 
-        # Remove the save button
+        # Success feedback
+        self.saved_label.set_text("Környezet elmentve!")
+        self.saved_label.color = (0, 255, 0)
+        self.saved_label.rect = self.save_btn.rect.copy()
+
+        self.hidden_btn = self.save_btn
         if self.save_btn in self.elements:
             self.elements.remove(self.save_btn)
         
-        # Add the "kornyezet elmentve!" label
         if self.saved_label not in self.elements:
             self.elements.append(self.saved_label)
         
@@ -399,10 +480,24 @@ class CONFIGURE:
         for el in self.elements:
             el.handle_event(e)
         self.switch.handle_event(e)
+        self.save_name_input.handle_event(e)
 
     # ---------- UPDATE ----------
 
     def update(self, dt):
+        # Handle save message timer (always run, even with popups open)
+        if self.save_message_timer > 0:
+            self.save_message_timer -= dt
+            if self.save_message_timer <= 0:
+                self.save_message_timer = 0
+                # Restore button
+                if self.saved_label in self.elements:
+                    self.elements.remove(self.saved_label)
+                
+                if self.hidden_btn and self.hidden_btn not in self.elements:
+                    self.elements.append(self.hidden_btn)
+                    self.hidden_btn = None
+        
         # Prioritize popups; if any active, don't update base UI
         if self.delete_popup and getattr(self.delete_popup, "active", False):
             self.delete_popup.update(dt)
@@ -444,27 +539,18 @@ class CONFIGURE:
         for el in self.elements:
             el.update(dt)
         self.switch.update(dt)
-
-        # Handle save message timer
-        if self.save_message_timer > 0:
-            self.save_message_timer -= dt
-            if self.save_message_timer <= 0:
-                self.save_message_timer = 0
-                # Restore button
-                if self.saved_label in self.elements:
-                    self.elements.remove(self.saved_label)
-                if self.save_btn not in self.elements:
-                    self.elements.append(self.save_btn)
+        self.save_name_input.update(dt)
 
     # ---------- DRAW ----------
 
 
     def draw(self, surf):
-        surf.fill((0, 0, 0))  # Black background
+        surf.blit(self.bg, (0, 0))
 
         for el in self.elements:
             el.draw(surf)
         self.switch.draw(surf)
+        self.save_name_input.draw(surf)
 
         # Draw popups on top of UI
         if self.card_popup:

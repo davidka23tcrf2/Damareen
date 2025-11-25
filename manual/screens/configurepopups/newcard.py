@@ -8,10 +8,10 @@ from manual.assets.assets import load_asset, ASSETS_DIR
 
 sf = "configure"
 pygame.init()
-BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 20)
-BP26 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 26)
-BP_BIG = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 32)  # big dmg/hp
-
+BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 24)
+BP26 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 30)
+BP_BIG = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 36)  # big dmg/hp
+BP_50 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 50)
 
 class CardPopup:
     """Popup for creating a new card with text inputs and a 2x2 button grid (unique images)."""
@@ -63,7 +63,7 @@ class CardPopup:
             border_radius=0
         )
 
-        label = BP26.render("létrehozás", True, (0, 0, 0))
+        label = BP_BIG.render("Létrehozás", True, (0, 0, 0))
         label_rect = label.get_rect(center=(create_w // 2, create_h // 2))
         create_img.blit(label, label_rect)
 
@@ -83,17 +83,17 @@ class CardPopup:
         self.elements.append(self.close_btn)
 
         # Labels (positions are relative inside popup; their base_rect will be recorded)
-        self.elements.append(Label((450, 50, 0, 0), "Új kártya konfigurálása", font=BP26, color=(255, 255, 255)))
-        self.elements.append(Label((450, 170, 0, 0), "Név", font=BP26, color=(255, 255, 255)))
-        self.elements.append(Label((630, 220, 0, 0), "Sebzés", font=BP26, color=(255, 255, 255)))
-        self.elements.append(Label((630, 270, 0, 0), "Életerő", font=BP26, color=(255, 255, 255)))
+        self.elements.append(Label((450, 50, 0, 0), "Új kártya konfigurálása", font=BP_BIG, color=(255, 255, 255)))
+        self.elements.append(Label((450, 170, 0, 0), "Név", font=BP_BIG, color=(255, 255, 255)))
+        self.elements.append(Label((650, 220, 0, 0), "Sebzés", font=BP_BIG, color=(255, 255, 255)))
+        self.elements.append(Label((650, 270, 0, 0), "Életerő", font=BP_BIG, color=(255, 255, 255)))
 
         # --- NAME TAKEN LABEL (above name textbox) ---
         # starts empty / hidden
         self.name_taken_label = Label(
             (525, 125, 0, 0),  # slightly above the name TextEntry at y=150
             "",
-            font=BP,
+            font=BP26,
             color=(255, 50, 50),
         )
         self.name_taken_visible = False
@@ -116,7 +116,7 @@ class CardPopup:
         self.grid_cols = 2
         self.button_size = 50
         self.button_spacing = 5
-        grid_start_x = 410
+        grid_start_x = 460
         grid_start_y = 200
 
         # element images
@@ -393,7 +393,7 @@ class CardPopup:
             hp = "?"
 
         # --- name ---
-        name_surf = BP26.render(name, True, (0, 0, 0))
+        name_surf = BP_50.render(name, True, (0, 0, 0))
         base_y = card_rect.y + 80
         name_rect = name_surf.get_rect(midtop=(card_rect.centerx, base_y))
         surf.blit(name_surf, name_rect)

@@ -1,3 +1,4 @@
+from manual.screens.configurepopups.newdungeon import BP36
 from manual.inventory import inventory, objects
 import pygame
 import os
@@ -8,11 +9,11 @@ from manual.assets.assets import load_asset, ASSETS_DIR
 
 sf = "configure"
 pygame.init()
-BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 20)
-BP15 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 15)
-BP12 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 12)
-BP26 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 26)
-BP_BIG = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 32)
+BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 24)
+BP15 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 18)
+BP12 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 14)
+BP26 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 30)
+BP_BIG = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 36)
 
 class NewLeaderCardPopup:
     """Popup for creating a new LEADER card (vezérkártya)."""
@@ -75,7 +76,7 @@ class NewLeaderCardPopup:
         self.elements.append(self.close_btn)
 
         # Labels
-        self.elements.append(Label((400, 30, 0, 0), "Új vezérkártya", font=BP26, color=(255, 255, 255)))
+        self.elements.append(Label((400, 50, 0, 0), "Új vezérkártya", font=BP36, color=(255, 255, 255)))
         
         # Prefix input - moved to right side to avoid overlap
         # User requested "more right by more"
@@ -83,9 +84,9 @@ class NewLeaderCardPopup:
         # Label font BP (20). To center, y should be approx 140? 
         # User said "elonev til doesnt align up with the textentry".
         # Let's try moving label Y to 142 to center it better visually with the text entry text.
-        self.elements.append(Label((550, 150, 0, 0), "Előnév:", font=BP, color=(255, 255, 255)))
+        self.elements.append(Label((550, 150, 0, 0), "Előnév:", font=BP36, color=(255, 255, 255)))
         # User requested: more chars, smaller font, still no spaces
-        self.prefix_entry = TextEntry((620, 130, 180, 40), font=BP15, max_length=11, letters_only=True)
+        self.prefix_entry = TextEntry((620, 130, 180, 40), font=BP26, max_length=11, letters_only=True)
         self.prefix_entry.base_pos = self.prefix_entry.rect.topleft
         self.text_entries.append(self.prefix_entry)
         
@@ -118,7 +119,7 @@ class NewLeaderCardPopup:
         pygame.draw.rect(dmg_img, (200, 50, 50), dmg_img.get_rect(), border_radius=0)
         pygame.draw.rect(dmg_img, (0,0,0), dmg_img.get_rect(), width=2, border_radius=0)
         # Smaller font
-        dmg_txt = BP15.render("Sebzés", True, (0,0,0)) 
+        dmg_txt = BP26.render("Sebzés", True, (0,0,0)) 
         dmg_img.blit(dmg_txt, dmg_txt.get_rect(center=(btn_w//2, btn_h//2)))
         
         self.dmg_btn = Button((450, btn_y, btn_w, btn_h), lambda: self.set_type("damage"), dmg_img)
@@ -130,7 +131,7 @@ class NewLeaderCardPopup:
         pygame.draw.rect(hp_img, (50, 200, 50), hp_img.get_rect(), border_radius=0)
         pygame.draw.rect(hp_img, (0,0,0), hp_img.get_rect(), width=2, border_radius=0)
         # Smaller font
-        hp_txt = BP15.render("Életerő", True, (0,0,0))
+        hp_txt = BP26.render("Életerő", True, (0,0,0))
         hp_img.blit(hp_txt, hp_txt.get_rect(center=(btn_w//2, btn_h//2)))
 
         self.hp_btn = Button((450 + btn_w, btn_y, btn_w, btn_h), lambda: self.set_type("hp"), hp_img)
@@ -442,7 +443,7 @@ class NewLeaderCardPopup:
             # Show empty message if no cards
             # User requested: white and smaller
             # Use BP15
-            empty_text = BP15.render("Nincsenek kártyák!", True, (255, 255, 255)) # White text
+            empty_text = BP36.render("Nincsenek kártyák!", True, (255, 255, 255)) # White text
             empty_rect = empty_text.get_rect(center=list_bg_rect.center)
             surf.blit(empty_text, empty_rect)
         else:

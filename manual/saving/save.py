@@ -11,16 +11,20 @@ GAMES_DIR = os.path.join(os.path.dirname(__file__), "games")
 # Track the currently loaded save file for overwriting
 CURRENT_SAVE_FILE = None
 
-def save_game():
-    existing = [f for f in os.listdir(SAVES_DIR) if f.startswith("save") and f.endswith(".txt")]
-
-    if existing:
-        numbers = [int(f.split("_")[0][4:]) for f in existing]
-        next_num = max(numbers) + 1
+def save_game(save_name=None):
+    if save_name:
+        filename = f"{save_name}.txt" if not save_name.endswith(".txt") else save_name
     else:
-        next_num = 1
+        existing = [f for f in os.listdir(SAVES_DIR) if f.startswith("save") and f.endswith(".txt")]
 
-    filename = f"save{next_num}_{len(inventory.GAMECARDS)}_{len(inventory.ENEMIES)}.txt"
+        if existing:
+            numbers = [int(f.split("_")[0][4:]) for f in existing]
+            next_num = max(numbers) + 1
+        else:
+            next_num = 1
+
+        filename = f"save{next_num}_{len(inventory.GAMECARDS)}_{len(inventory.ENEMIES)}.txt"
+    
     path = os.path.join(SAVES_DIR, filename)
 
     with open(path, "w", encoding="utf-8") as f:
@@ -94,7 +98,7 @@ def save_game_state(save_name=None):
         "selected_dungeon_index": inventory.SELECTED_DUNGEON_INDEX,
         "playerdeck": [card.name for card in inventory.PLAYERDECK],
         "playercards": [card.name for card in inventory.PLAYERCARDS],
-        "playerarmor": [{"type": armor.type, "slot": armor.slot} for armor in inventory.PLAYERARMOR],
+        "playerarmor": [{"type": armor.type, "slot": armor.what} for armor in inventory.PLAYERARMOR],
         "playeraccessories": [],  # Will be populated when accessories have a name attribute
         "gamecards": [
             {

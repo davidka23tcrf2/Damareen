@@ -178,7 +178,7 @@ def load_game_state(filename):
     # Load player armor
     for armor_data in game_state.get("playerarmor", []):
         for armor in inventory.ARMOR:
-            if armor.type == armor_data["type"] and armor.slot == armor_data["slot"]:
+            if armor.type == armor_data["type"] and armor.what == armor_data["slot"]:
                 inventory.PLAYERARMOR.append(armor)
                 break
     

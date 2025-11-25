@@ -6,14 +6,17 @@ from manual.ui import theme
 
 pygame.init()
 
-BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 24)
-TITLE_FONT = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 56)
+BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "SELINCAH.ttf"), 24)
+TITLE_FONT = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "SELINCAH.ttf"), 56)
 
 class GameLoader:
     def __init__(self, goto_menu, goto_start):
         self.elements = []
         self.goto_menu = goto_menu
         self.goto_start = goto_start
+        
+        # Create gradient background
+        self.gradient_bg = self._create_gradient_background()
         
         # Selected save tracking
         self.selected_save = None
@@ -67,6 +70,19 @@ class GameLoader:
         
         self.save_buttons = []
         self.reload_saves()
+    
+    def _create_gradient_background(self):
+        """
+        Creates a vertical gradient from dark red at top to black at bottom.
+        """
+        gradient = pygame.Surface((1280, 720))
+        for y in range(720):
+            # Interpolate from dark red (30, 0, 0) at top to black (0, 0, 0) at bottom
+            t = y / 720.0
+            r = int(30 * (1 - t))
+            color = (r, 0, 0)
+            pygame.draw.line(gradient, color, (0, y), (1280, y))
+        return gradient
 
     def reload_saves(self):
         self.save_buttons = []
@@ -153,7 +169,8 @@ class GameLoader:
             el.update(dt)
 
     def draw(self, surf):
-        surf.fill((0, 0, 0))
+        # Draw gradient background
+        surf.blit(self.gradient_bg, (0, 0))
         
         title_surf = TITLE_FONT.render("Kornyezet Betoltes", True, (255, 50, 50))
         title_rect = title_surf.get_rect(center=(640, 90))

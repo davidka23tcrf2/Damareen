@@ -9,8 +9,9 @@ from manual.ui.vignette import create_red_vignette
 
 sf = "configure"
 pygame.init()
-BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 20)
-BP12 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 12)
+BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "SELINCAH.ttf"), 32)
+BP_TITLE = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "SELINCAH.ttf"), 48)
+BP_CARD = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "SELINCAH.ttf"), 18)
 
 class DeckBuilderScreen:
     def __init__(self, goto_menu):
@@ -38,27 +39,27 @@ class DeckBuilderScreen:
         self.elements.append(back_btn)
         
         # Title
-        self.elements.append(Label((640, 50, 0, 0), "Pakli összeállítása", font=BP, color=(255, 255, 255)))
+        self.elements.append(Label((640, 50, 0, 0), "Pakli osszealllitasa", font=BP_TITLE, color=(255, 255, 255)))
         
         # Stats Label
-        self.stats_label = Label((640, 90, 0, 0), "", font=BP, color=(255, 255, 0))
+        self.stats_label = Label((640, 110, 0, 0), "", font=BP, color=(255, 255, 0))
         self.elements.append(self.stats_label)
         
         # --- LEFT: Current Deck ---
-        self.deck_area = pygame.Rect(50, 150, 400, 500)
+        self.deck_area = pygame.Rect(50, 200, 400, 450)
         self.deck_scroll_y = 0
         self.deck_max_scroll = 0
         self.deck_buttons = []
         
-        self.elements.append(Label((250, 130, 0, 0), "Jelenlegi Pakli", font=BP, color=(255, 255, 255)))
+        self.elements.append(Label((250, 170, 0, 0), "Jelenlegi Pakli", font=BP, color=(255, 255, 255)))
 
         # --- RIGHT: Collection ---
-        self.coll_area = pygame.Rect(500, 150, 730, 500)
+        self.coll_area = pygame.Rect(500, 200, 730, 450)
         self.coll_scroll_y = 0
         self.coll_max_scroll = 0
         self.coll_buttons = []
         
-        self.elements.append(Label((865, 130, 0, 0), "Gyűjtemény", font=BP, color=(255, 255, 255)))
+        self.elements.append(Label((865, 170, 0, 0), "Gyujtemeny", font=BP, color=(255, 255, 255)))
 
         self.scroll_speed = 20
         
@@ -75,8 +76,8 @@ class DeckBuilderScreen:
     def refresh_deck_list(self):
         self.deck_buttons = []
         y_off = 0
-        card_h = 40
-        spacing = 5
+        card_h = 60  # Increased from 40
+        spacing = 8  # Increased from 5
         
         for i, card in enumerate(inventory.PLAYERDECK):
             # Button for deck item
@@ -101,8 +102,8 @@ class DeckBuilderScreen:
         # Grid layout for collection
         cols = 2
         card_w = (self.coll_area.width - (cols-1)*10) // cols
-        card_h = 40
-        spacing_x, spacing_y = 10, 5
+        card_h = 60  # Increased from 40
+        spacing_x, spacing_y = 10, 8  # Increased spacing_y from 5
         
         # Show ALL cards in collection
         # If in deck, we will grey them out in draw() or handle click differently
@@ -206,27 +207,47 @@ class DeckBuilderScreen:
             
             s = pygame.Surface((btn.rect.width, btn.rect.height))
             
-            # Different color if in deck (only for collection view?)
-            # But this method is used for both...
-            # If in deck area, it IS in deck.
-            # If in collection area, it MIGHT be in deck.
-            
+            # Color-code cards by type with better colors
+            card_type = getattr(card, "type", "")
             if area_rect == self.coll_area and in_deck:
-                s.fill((100, 100, 100)) # Darker/Greyed out
+                # Darker version if already in deck
+                if card_type == "viz":
+                    bg_color = (20, 60, 100)
+                elif card_type == "fold":
+                    bg_color = (60, 40, 20)
+                elif card_type == "tuz":
+                    bg_color = (100, 30, 30)
+                elif card_type == "levego":
+                    bg_color = (120, 120, 120)
+                else:
+                    bg_color = (80, 80, 80)
+                text_color = (150, 150, 150)
             else:
-                s.fill((200, 200, 200)) # Normal
-                
-            pygame.draw.rect(s, (0,0,0), s.get_rect(), 1)
+                # Bright colors for available cards
+                if card_type == "viz":
+                    bg_color = (40, 120, 200)  # Blue
+                elif card_type == "fold":
+                    bg_color = (120, 80, 40)  # Brown
+                elif card_type == "tuz":
+                    bg_color = (200, 60, 60)  # Red
+                elif card_type == "levego":
+                    bg_color = (180, 180, 180)  # Light grey
+                else:
+                    bg_color = (140, 140, 140)  # Default grey
+                text_color = (255, 255, 255)
             
-            # Render Text: Name DMG/HP Power
+            s.fill(bg_color)
+            pygame.draw.rect(s, (255, 255, 255), s.get_rect(), 2)  # White border
+            
+            # Render Text: Name DMG/HP Power - all on one line
             name = getattr(card, "name", "???")
             dmg = getattr(card, "dmg", "?")
             hp = getattr(card, "hp", "?")
             power = getattr(card, "power", "?")
             
-            txt_str = f"{name} {dmg}/{hp} {power}"
-            txt = BP12.render(txt_str, True, (0,0,0))
-            s.blit(txt, txt.get_rect(midleft=(10, btn.rect.height//2)))
+            txt_str = f"{name}  {dmg}/{hp}  {power}"
+            txt = BP_CARD.render(txt_str, True, text_color)
+            s.blit(txt, (10, (btn.rect.height - txt.get_height()) // 2))
             
             surf.blit(s, btn.rect)
 

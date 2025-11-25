@@ -7,10 +7,11 @@ import os, pygame, math
 
 pygame.init()
 
-# Load Saphifen Font
+# Load Fonts
 SAPHIFEN_PATH = os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf")
-BUTTON_FONT = pygame.font.Font(SAPHIFEN_PATH, 32)
-TITLE_FONT = pygame.font.Font(SAPHIFEN_PATH, 96)
+SELINCAH_PATH = os.path.join(ASSETS_DIR, "fonts", "SELINCAH.ttf")
+BUTTON_FONT = pygame.font.Font(SELINCAH_PATH, 32)
+TITLE_FONT = pygame.font.Font(SAPHIFEN_PATH, 180)
 
 
 class StartScreen:
@@ -19,6 +20,9 @@ class StartScreen:
         
         # Particles (Red Dust)
         self.particles = ParticleManager(mode="blood")  # Reusing blood mode for red particles
+        
+        # Create gradient background
+        self.gradient_bg = self._create_gradient_background()
 
         # Buttons with Red Outline Style
         btn_width = 350
@@ -53,6 +57,19 @@ class StartScreen:
         # Bigger radius for wide flashlight with long, smooth fade
         self.flashlight_img = self._create_flashlight_gradient(650)
 
+    def _create_gradient_background(self):
+        """
+        Creates a vertical gradient from dark red at top to black at bottom.
+        """
+        gradient = pygame.Surface((1280, 720))
+        for y in range(720):
+            # Interpolate from dark red (30, 0, 0) at top to black (0, 0, 0) at bottom
+            t = y / 720.0
+            r = int(30 * (1 - t))
+            color = (r, 0, 0)
+            pygame.draw.line(gradient, color, (0, y), (1280, y))
+        return gradient
+    
     def _create_flashlight_gradient(self, radius):
         """
         Creates a large, smooth radial gradient used as the flashlight mask.
@@ -96,8 +113,8 @@ class StartScreen:
             el.update(dt)
 
     def draw(self, surf):
-        # 1. Fill Background Black
-        surf.fill((0, 0, 0))
+        # 1. Draw Gradient Background
+        surf.blit(self.gradient_bg, (0, 0))
         
         # 2. Draw Particles
         self.particles.draw(surf)

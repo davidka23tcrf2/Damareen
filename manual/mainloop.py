@@ -9,6 +9,8 @@ from manual.screens.menu import MenuScreen
 from manual.screens.gameloader import GameLoader
 from manual.screens.deckbuilder import DeckBuilderScreen
 from manual.screens.savedgames import SavedGamesScreen
+from manual.ui.global_settings_popup import GlobalSettingsPopup
+from manual.screens.settingspopup import SettingsPopup
 
 pygame.init()
 SCREEN_SIZE = (1280, 720)
@@ -19,15 +21,21 @@ ui = UIStateManager(SCREEN_SIZE)
 
 def goto_shop(): ui.switch_to("SHOP", duration=0.5)
 def goto_arena(): ui.switch_to("ARENA", duration=0.5)
-def goto_menu(): ui.switch_to("MENU", duration=0.5)
+def goto_menu(): 
+    ui.screens["CONFIGURE"].stop_music()
+    ui.switch_to("MENU", duration=0.5)
 def goto_deckbuilder(): 
     ui.screens["DECKBUILDER"].refresh_list() # Refresh list when entering
     ui.switch_to("DECKBUILDER", duration=0.5)
 def goto_gameloader(): 
     ui.screens["GAMELOADER"].reload_saves()
     ui.switch_to("GAMELOADER", duration=0.5)
-def goto_configure(): ui.switch_to("CONFIGURE", duration=0.5)
-def goto_start(): ui.switch_to("START", duration=0.5)
+def goto_configure(): 
+    ui.screens["CONFIGURE"].start_music()
+    ui.switch_to("CONFIGURE", duration=0.5)
+def goto_start(): 
+    ui.screens["CONFIGURE"].stop_music()
+    ui.switch_to("START", duration=0.5)
 def goto_savedgames(): 
     ui.screens["SAVEDGAMES"].reload_saves()
     ui.switch_to("SAVEDGAMES", duration=0.5)
@@ -44,6 +52,35 @@ ui.add("INVENTORY", InventoryScreen(goto_menu))
 
 ui.set("SHOP")
 
+# Global settings popup
+global_settings_popup = None
+settings_popup = None  # Full settings popup for menu
+
+def toggle_global_settings():
+    global global_settings_popup, settings_popup
+    
+    # If in menu, use the full SettingsPopup
+    if ui.active == ui.screens.get("MENU"):
+        # Close any active popups first
+        menu_screen = ui.screens["MENU"]
+        if hasattr(menu_screen, 'difficulty_popup') and menu_screen.difficulty_popup and menu_screen.difficulty_popup.active:
+            menu_screen.difficulty_popup.active = False
+            menu_screen.difficulty_popup = None
+        if hasattr(menu_screen, 'dungeon_popup') and menu_screen.dungeon_popup and menu_screen.dungeon_popup.active:
+            menu_screen.dungeon_popup.active = False
+            menu_screen.dungeon_popup = None
+        
+        if settings_popup and settings_popup.active:
+            settings_popup.close()
+        else:
+            settings_popup = SettingsPopup(close_callback=lambda: None)
+    else:
+        # Otherwise use the simplified global settings
+        if global_settings_popup and global_settings_popup.active:
+            global_settings_popup.close()
+        else:
+            global_settings_popup = GlobalSettingsPopup(close_callback=lambda: None)
+
 while True:
     dt = CLOCK.tick(60) / 1000.0
     
@@ -51,8 +88,33 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-        ui.handle_event(event)
+        
+        # Global ESC key for settings
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+            toggle_global_settings()
+            continue
+        
+        # If global settings is active, it handles events
+        if global_settings_popup and global_settings_popup.active:
+            global_settings_popup.handle_event(event)
+        elif settings_popup and settings_popup.active:
+            settings_popup.handle_event(event)
+        else:
+            ui.handle_event(event)
+    
+    # Update global settings if active
+    if global_settings_popup and global_settings_popup.active:
+        global_settings_popup.update(dt)
+    if settings_popup and settings_popup.active:
+        settings_popup.update(dt)
     
     ui.update(dt)
     ui.draw(SCREEN)
+    
+    # Draw global settings on top of everything
+    if global_settings_popup and global_settings_popup.active:
+        global_settings_popup.draw(SCREEN)
+    if settings_popup and settings_popup.active:
+        settings_popup.draw(SCREEN)
+    
     pygame.display.flip()

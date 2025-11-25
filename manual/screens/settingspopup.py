@@ -3,6 +3,7 @@ import os
 import sys
 from manual.ui.button import Button
 from manual.ui.label import Label
+from manual.ui.text_entry import TextEntry
 from manual.assets.assets import ASSETS_DIR
 from manual.ui import theme
 from manual.saving import save
@@ -10,8 +11,8 @@ from manual.inventory import inventory
 
 pygame.init()
 
-BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 28)
-TITLE_FONT = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 48)
+BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "SELINCAH.ttf"), 28)
+TITLE_FONT = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "SELINCAH.ttf"), 48)
 
 class SettingsPopup:
     def __init__(self, close_callback, screen_size=(1280, 720)):
@@ -55,9 +56,38 @@ class SettingsPopup:
         # Red theme colors
         RED_BRIGHT = (255, 50, 50)
         
+        # Name Label
+        self.name_label = Label(
+            (btn_x, popup_y + 80, btn_width, 30),
+            "Név:",
+            font=BP,
+            color=(255, 255, 255)
+        )
+        
+        # Save Name Input
+        self.save_name_input = TextEntry(
+            (btn_x, popup_y + 110, btn_width, 35),
+            font=BP,
+            bg_color=(50, 50, 50),
+            color=(255, 255, 255)
+        )
+
+        # Save Feedback Label
+        self.save_feedback_label = Label(
+            (btn_x, popup_y + 225, btn_width, 30),
+            "",
+            font=BP,
+            color=(0, 255, 0)
+        )
+        self.feedback_timer = 0.0
+        
+        # Overwrite confirmation state
+        self.pending_overwrite_name = None
+        self.save_success = False  # Track if save was successful to hide button
+
         # Save Game button
         self.save_btn = Button(
-            (btn_x, popup_y + 140, btn_width, btn_height),
+            (btn_x, popup_y + 150, btn_width, btn_height),
             self.save_game,
             None,
             text="Jatek mentese",  # English-only
@@ -66,6 +96,34 @@ class SettingsPopup:
             bg_color=None,  # Transparent
             hover_bg_color=(50, 10, 10),
             border_color=RED_BRIGHT,
+            border_radius=8
+        )
+        
+        # Confirm Overwrite button (hidden by default)
+        self.confirm_btn = Button(
+            (btn_x, popup_y + 150, btn_width // 2 - 10, btn_height),
+            self.confirm_overwrite,
+            None,
+            text="Igen",
+            font=BP,
+            text_color=(0, 255, 0),
+            bg_color=None,
+            hover_bg_color=(10, 50, 10),
+            border_color=(0, 255, 0),
+            border_radius=8
+        )
+        
+        # Cancel Overwrite button (hidden by default)
+        self.cancel_btn = Button(
+            (btn_x + btn_width // 2 + 10, popup_y + 150, btn_width // 2 - 10, btn_height),
+            self.cancel_overwrite,
+            None,
+            text="Nem",
+            font=BP,
+            text_color=(255, 50, 50),
+            bg_color=None,
+            hover_bg_color=(50, 10, 10),
+            border_color=(255, 50, 50),
             border_radius=8
         )
         
@@ -114,12 +172,58 @@ class SettingsPopup:
         self.buttons = [self.save_btn, self.quit_btn, self.close_btn]
     
     def save_game(self):
+        save_name = self.save_name_input.get_text().strip()
+        
+        # Check if name is provided
+        if not save_name:
+            self.save_feedback_label.text = "Adj meg egy nevet!"
+            self.save_feedback_label.color = (255, 0, 0)
+            self.feedback_timer = 2.0
+            return
+        
+        # Check if file already exists
+        filename = f"{save_name}.json" if not save_name.endswith(".json") else save_name
+        filepath = os.path.join(save.GAMES_DIR, filename)
+        
+        if os.path.exists(filepath):
+            # Ask for confirmation
+            self.pending_overwrite_name = save_name
+            self.save_feedback_label.text = "Biztos felulirod a mar letezo fajlt?"
+            self.save_feedback_label.color = (255, 255, 0)
+            self.feedback_timer = 0  # Keep showing
+            return
+        
+        # Save the game
+        self._do_save(save_name)
+    
+    def _do_save(self, save_name):
         try:
-            filename = save.save_game_state()
+            filename = save.save_game_state(save_name)
             print(f"Game saved: {filename}")
-            # Could show a success message here
+            
+            # Show feedback
+            self.save_feedback_label.text = "Jatek elmentve!"
+            self.save_feedback_label.color = (0, 255, 0)
+            self.feedback_timer = 1.5
+            self.pending_overwrite_name = None
+            self.save_success = True
+            
         except Exception as e:
             print(f"Error saving game: {e}")
+            self.save_feedback_label.text = "Hiba a mentesnel!"
+            self.save_feedback_label.color = (255, 0, 0)
+            self.feedback_timer = 2.0
+            self.pending_overwrite_name = None
+            self.save_success = False
+    
+    def confirm_overwrite(self):
+        if self.pending_overwrite_name:
+            self._do_save(self.pending_overwrite_name)
+    
+    def cancel_overwrite(self):
+        self.pending_overwrite_name = None
+        self.save_feedback_label.text = ""
+        self.feedback_timer = 0
     
     def quit_game(self):
         pygame.quit()
@@ -145,9 +249,19 @@ class SettingsPopup:
                 self.update_volume_from_mouse(e.pos[0])
                 return True
         
+        # Handle text entry
+        if self.save_name_input.handle_event(e):
+            return True
+
         # Handle button events
-        for btn in self.buttons:
-            btn.handle_event(e)
+        if self.pending_overwrite_name:
+            # Show confirmation buttons
+            self.confirm_btn.handle_event(e)
+            self.cancel_btn.handle_event(e)
+        else:
+            # Show normal buttons
+            for btn in self.buttons:
+                btn.handle_event(e)
         
         # Block events from passing through
         if e.type in (pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP, pygame.KEYDOWN):
@@ -182,6 +296,14 @@ class SettingsPopup:
         
         for btn in self.buttons:
             btn.update(dt)
+            
+        self.save_name_input.update(dt)
+        
+        if self.feedback_timer > 0:
+            self.feedback_timer -= dt
+            if self.feedback_timer <= 0:
+                self.save_feedback_label.text = ""
+                self.save_success = False  # Reset success state
     
     def draw(self, surf):
         # Determine animation progress based on state
@@ -236,9 +358,36 @@ class SettingsPopup:
             # Create a temporary surface for buttons with alpha
             button_surf = pygame.Surface(self.screen_size, pygame.SRCALPHA)
             
+            # Draw name label
+            name_surf = BP.render(self.name_label.text, True, (255, 255, 255))
+            name_surf.set_alpha(content_alpha)
+            surf.blit(name_surf, self.name_label.rect.topleft)
+            
             # Draw buttons to temporary surface
-            for btn in self.buttons:
-                btn.draw(button_surf)
+            if self.pending_overwrite_name:
+                # During confirmation, show confirmation buttons but keep other UI visible
+                self.confirm_btn.draw(button_surf)
+                self.cancel_btn.draw(button_surf)
+                # Draw quit and close buttons
+                self.quit_btn.draw(button_surf)
+                self.close_btn.draw(button_surf)
+            elif self.save_success:
+                # During success message, hide save button but show others
+                self.quit_btn.draw(button_surf)
+                self.close_btn.draw(button_surf)
+            else:
+                # Normal state - draw all buttons
+                for btn in self.buttons:
+                    btn.draw(button_surf)
+            
+            self.save_name_input.draw(button_surf)
+            
+            # Draw feedback label with alpha
+            if self.save_feedback_label.text:
+                feedback_surf = BP.render(self.save_feedback_label.text, True, self.save_feedback_label.color)
+                feedback_surf.set_alpha(content_alpha)
+                feedback_rect = feedback_surf.get_rect(topleft=self.save_feedback_label.rect.topleft)
+                surf.blit(feedback_surf, feedback_rect)
             
             # Apply alpha to button surface
             button_surf.set_alpha(content_alpha)

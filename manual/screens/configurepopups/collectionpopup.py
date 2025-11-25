@@ -7,8 +7,9 @@ from manual.assets.assets import load_asset, ASSETS_DIR
 
 sf = "configure"
 pygame.init()
-BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 20)
-BP15 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 15)
+BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 24)
+BP15 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 18)
+BP40 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "BoldPixels.ttf"), 40)
 
 class CollectionPopup:
     """Popup for configuring the player's card collection."""
@@ -37,7 +38,7 @@ class CollectionPopup:
         self.elements.append(self.close_btn)
 
         # Title
-        self.elements.append(Label((w // 2, 40, 0, 0), "Gyűjtemény konfigurálása", font=BP, color=(255, 255, 255)))
+        self.elements.append(Label((w // 2, 40, 0, 0), "Gyűjtemény konfigurálása", font=BP40, color=(255, 255, 255)))
 
         # List Area
         # Move down to avoid close button (height 98)
