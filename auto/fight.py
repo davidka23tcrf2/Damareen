@@ -1,12 +1,24 @@
 from auto import card
 import math
+import random
 
-def attack(Enemy, Player, file):
+def attack(Enemy, Player, file, difficulty=1):
+    """
+    Combat function with randomized damage.
+    
+    Args:
+        Enemy: List of enemy cards
+        Player: List of player cards
+        file: Output file for combat log
+        difficulty: Difficulty level (affects damage variance)
+    """
     Round = 1
     i = 0  # Játékos index
     j = 0  # Enemy index
     playedoutP = False
     playedoutE = False
+    n = difficulty  # Use difficulty for damage variance
+    
     while i < len(Player) and j < len(Enemy):
 
         if Round == 1:
@@ -25,11 +37,13 @@ def attack(Enemy, Player, file):
             continue
 
         if not playedoutE:
-            damge = card.get_type_multiplier(Enemy[j].power, Player[i].power)
-            Player[i].hp -= math.floor(Enemy[j].dmg * damge)
+            damage = card.get_type_multiplier(Enemy[j].power, Player[i].power)
+            # Kazamata damage: round(base_damage * (1 + rnd() * n/10))
+            final_damage = round(Enemy[j].dmg * damage * (1 + random.random() * n / 10))
+            Player[i].hp -= final_damage
             file.write(
                 f"{Round}.kor;kazamata;tamad;{Enemy[j].name};"
-                f"{damge * Enemy[j].dmg};{Player[i].name};{max(0, Player[i].hp)}\n"
+                f"{final_damage};{Player[i].name};{max(0, Player[i].hp)}\n"
             )
             if Player[i].hp <= 0:
                 i += 1
@@ -45,11 +59,13 @@ def attack(Enemy, Player, file):
             playedoutE = False
 
         if not playedoutP:
-            damge = card.get_type_multiplier(Enemy[j].power, Player[i].power)
-            Enemy[j].hp -= math.floor(damge * Player[i].dmg)
+            damage = card.get_type_multiplier(Enemy[j].power, Player[i].power)
+            # Jatekos damage: round(base_damage * (1 - rnd() * n/20))
+            final_damage = round(Player[i].dmg * damage * (1 - random.random() * n / 20))
+            Enemy[j].hp -= final_damage
             file.write(
                 f"{Round}.kor;jatekos;tamad;{Player[i].name};"
-                f"{damge * Player[i].dmg};{Enemy[j].name};{max(0, Enemy[j].hp)}\n"
+                f"{final_damage};{Enemy[j].name};{max(0, Enemy[j].hp)}\n"
             )
 
             if Enemy[j].hp <= 0:

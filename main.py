@@ -10,11 +10,10 @@ def main():
         sys.exit(1)
 
     if sys.argv[1] == "--ui":
-        run_ui()
+        mainloop.ml()
     else:
         run_automated_test(sys.argv[1])
-def run_ui():
-    mainloop.ml()
+
 def run_automated_test(test_dir_path):
     world_cards = []  # jatekban levo kartyak
     enemies = []  # kazamata
@@ -147,5 +146,6 @@ def run_automated_test(test_dir_path):
                     jatekosxp.write('\n')
                     for i in playerpack:
                         jatekosxp.write(f'pakli;{i.name}\n')
+
 if __name__ == "__main__":
     main()

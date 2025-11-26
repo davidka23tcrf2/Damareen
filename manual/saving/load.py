@@ -1,4 +1,4 @@
-import os, re, json
+import os, re, json, copy
 from manual.inventory import inventory
 from manual.inventory import objects
 from manual.inventory.inventory import SHOP_ENABLED
@@ -16,12 +16,33 @@ def get_save_files():
     parsed = []
     for f in files:
         name = f.replace(".txt","")
-        m = re.match(r"^save(\d+)_(\d+)_(\d+)$", name)
-        if m:
+        # Extract all numbers from the filename
+        numbers = re.findall(r'\d+', name)
+        if len(numbers) >= 4:
+            # Use first 4 numbers as save_num, cards, enemies, shop
             parsed.append({
-                "save_num": int(m.group(1)),
-                "cards": int(m.group(2)),
-                "enemies": int(m.group(3)),
+                "save_num": int(numbers[0]),
+                "cards": int(numbers[1]),
+                "enemies": int(numbers[2]),
+                "shop": int(numbers[3]),
+                "file": f
+            })
+        elif len(numbers) >= 3:
+            # Use first 3 numbers as save_num, cards, enemies (shop = 0)
+            parsed.append({
+                "save_num": int(numbers[0]),
+                "cards": int(numbers[1]),
+                "enemies": int(numbers[2]),
+                "shop": 0,
+                "file": f
+            })
+        elif len(numbers) == 2:
+            # If only 2 numbers, assume it's cards and enemies (save_num = 0, shop = 0)
+            parsed.append({
+                "save_num": 0,
+                "cards": int(numbers[0]),
+                "enemies": int(numbers[1]),
+                "shop": 0,
                 "file": f
             })
     parsed.sort(key=lambda x: x["save_num"])
@@ -85,13 +106,13 @@ def load_game(filename):
                 for ci in range(2, len(line)):
                     for wc in inventory.GAMECARDS:
                         if line[ci] == wc.name:
-                            deck.append(wc)
+                            deck.append(copy.deepcopy(wc))
                 inventory.ENEMIES.append(objects.Enemy(line[0], line[1], deck))
             else:
                 for ci in range(2, len(line)-1):
                     for wc in inventory.GAMECARDS:
                         if line[ci] == wc.name:
-                            deck.append(wc)
+                            deck.append(copy.deepcopy(wc))
                 inventory.ENEMIES.append(objects.Enemy(line[0], line[1], deck, line[len(line)-1]))
         line = f.readline()
         if int(line):
@@ -101,7 +122,7 @@ def load_game(filename):
             for i in line:
                 for j in inventory.GAMECARDS:
                     if j.name == i:
-                        inventory.PLAYERCARDS.append(j)
+                        inventory.PLAYERCARDS.append(copy.deepcopy(j))
 
 def load_game_state(filename):
     """
@@ -150,7 +171,7 @@ def load_game_state(filename):
         for card_name in enemy_data["deck"]:
             for card in inventory.GAMECARDS:
                 if card.name == card_name:
-                    deck.append(card)
+                    deck.append(copy.deepcopy(card))
                     break
         
         enemy = objects.Enemy(
@@ -165,14 +186,14 @@ def load_game_state(filename):
     for card_name in game_state.get("playercards", []):
         for card in inventory.GAMECARDS:
             if card.name == card_name:
-                inventory.PLAYERCARDS.append(card)
+                inventory.PLAYERCARDS.append(copy.deepcopy(card))
                 break
     
     # Load player deck
     for card_name in game_state.get("playerdeck", []):
         for card in inventory.GAMECARDS:
             if card.name == card_name:
-                inventory.PLAYERDECK.append(card)
+                inventory.PLAYERDECK.append(copy.deepcopy(card))
                 break
     
     # Load player armor

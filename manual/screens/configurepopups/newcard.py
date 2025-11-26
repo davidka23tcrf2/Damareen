@@ -227,7 +227,7 @@ class CardPopup:
         hp = int(hp_txt) if hp_txt.isdigit() else 0
 
         # Hungarian element names according to index:
-        element_names = ["fold", "viz", "levegő", "tuz"]
+        element_names = ["fold", "viz", "levego", "tuz"]
         element_name = element_names[self.selected_index] if 0 <= self.selected_index < len(element_names) else "fold"
 
         data = {

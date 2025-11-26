@@ -3,147 +3,154 @@ import pygame, os
 from ..ui.button import Button
 from ..ui.label import Label
 from manual.assets.assets import load_asset, ASSETS_DIR
-from manual.inventory.inventory import ARMOR, EquipedItems
+from manual.inventory.inventory import ARMOR, PLAYERARMOR, COINS
 from manual.ui.particles import ParticleManager
 from manual.ui.vignette import create_red_vignette
-import math
-import manual.mainloop
 
-
-
-
-BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf"), 30)
+# Fonts used in the shop UI
+BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "SELINCAH.ttf"), 32)
+BP_SMALL = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "SELINCAH.ttf"), 24)
+BP_50 = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "SELINCAH.ttf"), 50)
 
 class ShopScreen:
-    def __init__(self, goto_arena):
-        self.InfoPanel = False
-        self.randnum = random.randint(0, len(ARMOR) - 1)
-        self.randnum1 = random.randint(0, len(ARMOR) - 1)
-        self.RandPercent = random.randint(10, 25)
-        self.RandPercent1 = random.randint(10, 25)
-
-        self.elements = []
-        self.item_slots = []
-        self.item_labels = []
-        self.mx, self.my = pygame.mouse.get_pos()
-        self.info = load_asset("info.png", "shop")
-        
-        # Red vignette and particles
+    def __init__(self, goto_menu):
+        self.goto_menu = goto_menu
+        # Visual effects
         self.particles = ParticleManager(mode="blood")
         self.vignette = create_red_vignette()
-        
-        normal = load_asset("armors.png", "shop")
-        ExitMenu = load_asset("BackMenu.png", "shop")
-
-        self.LittleInfo = Label(rect=(900, 650, 1, 1), text='Ahhoz, hogy vasarolj kattints ra a tablara \\n ahhoz, hogy meznezd az informaciokat vidd a kurzort a targyak ikonjara.', font=BP, color=(255, 255, 255))
-
-        self.item_img = load_asset("itemstable.png", "shop")
-        self.iw = int(self.item_img.get_width() * 0.25)
-        self.ih = int(self.item_img.get_height() * 0.25)
-
-        self.item_img = pygame.transform.scale(self.item_img, (self.iw, self.ih))
-        self.item_pos = (200, 200)
-
-        self.ThePanel = False
-
-        w = int(normal.get_width() * 0.25)
-        h = int(normal.get_height() * 0.25)
-        normal_small = pygame.transform.scale(normal, (w, h))
-        ExitMenuS = pygame.transform.scale(ExitMenu, (w, h))
-
-        hover_small = normal_small
-
-        Armors = Button(
-            rect=(200, 1, w, h-40),
-            callback=self.OpenMarket,
-            normal_image=normal_small,
-            hover_image=hover_small
+        self.elements = []
+        # Coins display
+        self.coins_label = Label(rect=(1000, 50, 100, 100), text=f"Pikelyeid: {COINS}", font=BP_50, color=(255, 255, 0))
+        self.elements.append(self.coins_label)
+        # Back button
+        back_btn = Button(
+            (30, 30, 180, 70),
+            self.goto_menu,
+            None,
+            text="Vissza",
+            font=BP_SMALL,
+            text_color=(200, 200, 200),
+            bg_color=None,
+            hover_bg_color=(30, 30, 30),
+            border_color=(200, 200, 200),
+            border_radius=8,
         )
+        self.elements.append(back_btn)
+        # Prepare shop data and UI slots
+        self.shop_items = []
+        self.item_buttons = []
+        self.generate_shop_items()
+        self.create_item_slots()
 
-        ExitButton = Button(
-            rect=(1050, 1, w-60, h-100),
-            callback=lambda: manual.mainloop.ui.set("START"),
-            normal_image=ExitMenuS,
-            hover_image=ExitMenuS,
-            image_offset=(-35, -50)
-        )
+    def generate_shop_items(self):
+        """Create four random armor entries with a defense percentage and cost.
+        Defense is between 10‑20 %.
+        Cost is linearly mapped: 10 % → 1 coin, 20 % → 5 coins.
+        """
+        self.shop_items = []
+        for _ in range(4):
+            armor = random.choice(ARMOR)
+            defense = random.randint(10, 20)
+            cost = 1 + int((defense - 10) * 0.4)  # 10→1, 20→5
+            self.shop_items.append({
+                "armor": armor,
+                "defense": defense,
+                "cost": cost,
+                "sold": False,
+            })
 
-        self.elements.append(ExitButton)
-        self.elements.append(Armors)
-        self.elements.append(self.LittleInfo)
+    def create_item_slots(self):
+        """Create four button slots, smaller than before and positioned a bit higher.
+        Layout: 2 × 2 grid centered horizontally.
+        """
+        self.item_buttons = []
+        slot_w = 200  # smaller width
+        slot_h = 250  # smaller height
+        gap_x = 20
+        gap_y = 20
+        total_w = 2 * slot_w + gap_x
+        total_h = 2 * slot_h + gap_y
+        start_x = (1280 - total_w) // 2
+        # Move the grid up (original was +50, now shift up by 30)
+        start_y = (720 - total_h) // 2 - 30
+        for i in range(4):
+            row = i // 2
+            col = i % 2
+            x = start_x + col * (slot_w + gap_x)
+            y = start_y + row * (slot_h + gap_y)
+            btn = Button(
+                (x, y, slot_w, slot_h),
+                lambda idx=i: self.buy_item(idx),
+                None,
+                text="",
+                bg_color=(40, 40, 50),
+                hover_bg_color=(60, 60, 70),
+                border_color=(255, 255, 255),
+                border_radius=10,
+            )
+            btn.rect_pos = (x, y, slot_w, slot_h)
+            self.item_buttons.append(btn)
+
+    def buy_item(self, idx):
+        """Purchase the item at *idx*.
+        The item is removed from the shop (marked as sold) and added to the player's armor list.
+        """
+        import manual.inventory.inventory as inv
+        item = self.shop_items[idx]
+        if item["sold"]:
+            print("Item already sold!")
+            return
+        if inv.COINS < item["cost"]:
+            print(f"Not enough coins! Need {item['cost']}, have {inv.COINS}")
+            return
+        # Deduct coins and add armor to the player's collection
+        inv.COINS -= item["cost"]
+        PLAYERARMOR.append(item["armor"])
+        item["sold"] = True
+        # Update the displayed coin count
+        self.coins_label.set_text(f"Pikelyek: {inv.COINS}")
+        print(f"Purchased {item['armor'].type} {item['armor'].what} for {item['cost']} coins!")
 
     def handle_event(self, e):
         for el in self.elements:
             el.handle_event(e)
+        for btn in self.item_buttons:
+            btn.handle_event(e)
 
     def update(self, dt):
         self.particles.update(dt)
         for el in self.elements:
             el.update(dt)
+        for btn in self.item_buttons:
+            btn.update(dt)
 
     def draw(self, surf):
-        surf.fill((0, 0, 0))  # Black background
-        
-        # Draw particles
+        surf.fill((0, 0, 0))
         self.particles.draw(surf)
-        
-        # Draw vignette
         surf.blit(self.vignette, (0, 0))
-        
-        if self.InfoPanel:
-            surf.blit(self.info, (410.5, 100))
-            self.info = pygame.transform.scale(self.info, (500, 500))
-
         for el in self.elements:
             el.draw(surf)
-
-    def CreateInfoPanel(self, num, percent):
-        if not self.InfoPanel:
-            self.InfoPanel = True
-            self.Name = Label(rect=(610, 250, 100, 100), text=f'{ARMOR[num].type} {ARMOR[num].what} \\n vedekezesi aranya: {percent}% \\n\\n Ara: X pikely \\n\\n Ez targy vedelmet \\n nyujt X fajta \\n kartyak ellen', font=BP, color=(255, 255, 255))
-            self.elements.append(self.Name)
-        else:
-            self.InfoPanel = False
-            self.elements.remove(self.Name)
-
-    def CaItemSlot(self, name, x, y, num, percent):
-        InfoH = int(ARMOR[self.randnum].img.get_height())
-        InfoW = int(ARMOR[self.randnum].img.get_width())
-
-        self.button = Button(
-            rect=(x+20, y + 35, self.iw-20, self.ih - 40),
-            callback=lambda: self.BuyItem(0, num, percent),
-            normal_image=self.item_img,
-            hover_image=self.item_img,
-        )
-        icon_x = (x + 30) + ((self.iw - 20) - InfoW) // 2
-        icon_y = (y + 85) + ((self.ih - 40) - InfoH) // 2
-
-        self.button1 = Button(
-            rect=(icon_x, icon_y, InfoW, InfoH),
-            callback="",
-            hover_callback=lambda: self.CreateInfoPanel(num, percent),
-            normal_image=ARMOR[num].img,
-        )
-        self.elements.append(self.button)
-        self.elements.append(self.button1)
-
-        self.item_slots.append(self.button)
-        self.item_slots.append(self.button1)
-
-        return name
-
-    def OpenMarket(self):
-        if self.ThePanel:
-            self.ThePanel = False
-            for i in self.item_slots:
-                self.elements.remove(i)
-                self.item_slots = []
-        else:
-            self.CaItemSlot("Armor", 180, 180, self.randnum1, self.RandPercent)
-            self.CaItemSlot("Armor1", 180, 400, self.randnum, self.RandPercent1)
-            self.ThePanel = True
-
-    def BuyItem(self, money, num, percent):
-        EquipedItems.append((ARMOR[num].type, ARMOR[num].what, ARMOR[num].img, percent))
-        print("siker")
+        # Draw each shop slot
+        for i, btn in enumerate(self.item_buttons):
+            item = self.shop_items[i]
+            x, y, w, h = btn.rect_pos
+            btn.draw(surf)
+            if item["sold"]:
+                overlay = pygame.Surface((w, h), pygame.SRCALPHA)
+                overlay.fill((0, 0, 0, 180))
+                surf.blit(overlay, (x, y))
+                sold_text = BP.render("ELADVA", True, (255, 50, 50))
+                text_rect = sold_text.get_rect(center=(x + w // 2, y + h // 2))
+                surf.blit(sold_text, text_rect)
+            else:
+                armor_img = pygame.transform.scale(item["armor"].img, (120, 120))
+                surf.blit(armor_img, (x + (w - 120) // 2, y + 20))
+                type_text = BP_SMALL.render(f"{item['armor'].type} {item['armor'].what}", True, (255, 255, 255))
+                type_rect = type_text.get_rect(center=(x + w // 2, y + 160))
+                surf.blit(type_text, type_rect)
+                def_text = BP_SMALL.render(f"Vedelem: {item['defense']}%", True, (100, 255, 100))
+                def_rect = def_text.get_rect(center=(x + w // 2, y + 200))
+                surf.blit(def_text, def_rect)
+                cost_text = BP.render(f"{item['cost']} Pikely", True, (255, 255, 0))
+                cost_rect = cost_text.get_rect(center=(x + w // 2, y + 250))
+                surf.blit(cost_text, cost_rect)

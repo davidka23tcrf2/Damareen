@@ -480,7 +480,6 @@ class CONFIGURE:
         for el in self.elements:
             el.handle_event(e)
         self.switch.handle_event(e)
-        self.save_name_input.handle_event(e)
 
     # ---------- UPDATE ----------
 

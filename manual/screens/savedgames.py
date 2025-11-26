@@ -23,6 +23,10 @@ class SavedGamesScreen:
         self.selected_save = None
         self.selected_save_index = -1
         
+        # Scrolling
+        self.scroll_offset = 0
+        self.max_scroll = 0
+        
         # Action buttons (Load / Delete)
         self.action_buttons = []
         
@@ -162,6 +166,11 @@ class SavedGamesScreen:
             self.reload_saves()
 
     def handle_event(self, e):
+        # Handle mouse wheel scrolling
+        if e.type == pygame.MOUSEWHEEL:
+            self.scroll_offset -= e.y * 30  # Scroll speed
+            self.scroll_offset = max(0, min(self.scroll_offset, self.max_scroll))
+        
         for el in self.elements + self.save_buttons + self.action_buttons:
             el.handle_event(e)
 
@@ -177,11 +186,51 @@ class SavedGamesScreen:
         title_rect = title_surf.get_rect(center=(640, 90))
         surf.blit(title_surf, title_rect)
         
+        # Calculate max scroll based on content height
+        if self.save_buttons:
+            last_btn = self.save_buttons[-1]
+            content_height = last_btn.rect.bottom - 180
+            visible_height = 720 - 180 - 100  # Screen height - start_y - bottom margin
+            self.max_scroll = max(0, content_height - visible_height)
+        
+        # Create a clipping surface for scrollable area
+        clip_rect = pygame.Rect(0, 150, 1280, 470)
+        surf.set_clip(clip_rect)
+        
         for i, btn in enumerate(self.save_buttons):
-            if i == self.selected_save_index:
-                pygame.draw.rect(surf, (255, 50, 50), btn.rect.inflate(10, 10), 4, border_radius=10)
+            # Adjust button position based on scroll offset
+            original_y = btn.rect.y
+            btn.rect.y -= self.scroll_offset
             
-            btn.draw(surf)
+            # Only draw if visible
+            if btn.rect.bottom > 150 and btn.rect.top < 620:
+                if i == self.selected_save_index:
+                    pygame.draw.rect(surf, (255, 50, 50), btn.rect.inflate(10, 10), 4, border_radius=10)
+                btn.draw(surf)
             
+            # Restore original position
+            btn.rect.y = original_y
+        
+        # Remove clipping
+        surf.set_clip(None)
+        
+        # Draw scrollbar if content is scrollable
+        if self.max_scroll > 0:
+            scrollbar_x = 1250
+            scrollbar_y = 150
+            scrollbar_height = 470
+            scrollbar_width = 8
+            
+            # Background track
+            pygame.draw.rect(surf, (50, 50, 50), (scrollbar_x, scrollbar_y, scrollbar_width, scrollbar_height), border_radius=4)
+            
+            # Calculate thumb size and position
+            visible_ratio = scrollbar_height / (scrollbar_height + self.max_scroll)
+            thumb_height = max(30, int(scrollbar_height * visible_ratio))
+            thumb_y = scrollbar_y + int((scrollbar_height - thumb_height) * (self.scroll_offset / self.max_scroll))
+            
+            # Scrollbar thumb
+            pygame.draw.rect(surf, (255, 50, 50), (scrollbar_x, thumb_y, scrollbar_width, thumb_height), border_radius=4)
+        
         for el in self.elements + self.action_buttons:
             el.draw(surf)

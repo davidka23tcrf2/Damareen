@@ -16,72 +16,7 @@
     "Thalen",
     "Kael"
   ],
-  "playerarmor": [
-    {
-      "type": "fold",
-      "slot": "sapka"
-    },
-    {
-      "type": "viz",
-      "slot": "sapka"
-    },
-    {
-      "type": "tuz",
-      "slot": "sapka"
-    },
-    {
-      "type": "levego",
-      "slot": "sapka"
-    },
-    {
-      "type": "fold",
-      "slot": "mellvert"
-    },
-    {
-      "type": "viz",
-      "slot": "mellvert"
-    },
-    {
-      "type": "tuz",
-      "slot": "mellvert"
-    },
-    {
-      "type": "levego",
-      "slot": "mellvert"
-    },
-    {
-      "type": "fold",
-      "slot": "nadrag"
-    },
-    {
-      "type": "viz",
-      "slot": "nadrag"
-    },
-    {
-      "type": "tuz",
-      "slot": "nadrag"
-    },
-    {
-      "type": "levego",
-      "slot": "nadrag"
-    },
-    {
-      "type": "fold",
-      "slot": "cipo"
-    },
-    {
-      "type": "viz",
-      "slot": "cipo"
-    },
-    {
-      "type": "tuz",
-      "slot": "cipo"
-    },
-    {
-      "type": "levego",
-      "slot": "cipo"
-    }
-  ],
+  "playerarmor": [],
   "playeraccessories": [],
   "gamecards": [
     {

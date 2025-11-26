@@ -12,11 +12,12 @@ from manual.ui.particles import ParticleManager
 BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "SELINCAH.ttf"), 20)
 
 class MenuScreen:
-    def __init__(self, goto_arena, goto_shop, goto_deckbuilder):
+    def __init__(self, goto_arena, goto_shop, goto_deckbuilder, goto_inventory):
         self.elements = []
         self.goto_arena = goto_arena
         self.goto_shop = goto_shop
         self.goto_deckbuilder = goto_deckbuilder
+        self.goto_inventory = goto_inventory
         
         # Deck Builder Button (Bigger)
         self.elements.append(Button(
@@ -57,15 +58,44 @@ class MenuScreen:
         )
         self.elements.append(self.dungeon_btn)
         
+        # Shop Button
+        self.shop_btn = Button(
+            (50, 400, 400, 60),
+            self.goto_shop,
+            None,
+            text="Bolt",
+            font=BP,
+            text_color=theme.TEXT_WHITE,
+            bg_color=theme.SECONDARY,
+            hover_bg_color=theme.SECONDARY_HOVER,
+            border_radius=8
+        )
+        self.elements.append(self.shop_btn)
+        
+        # Inventory Button
+        self.inventory_btn = Button(
+            (50, 480, 400, 60),
+            self.goto_inventory,
+            None,
+            text="Targyak",
+            font=BP,
+            text_color=theme.TEXT_WHITE,
+            bg_color=theme.SECONDARY,
+            hover_bg_color=theme.SECONDARY_HOVER,
+            border_radius=8
+        )
+        self.elements.append(self.inventory_btn)
+        
         self.difficulty_popup = None
         self.settings_popup = None
         self.dungeon_popup = None
-        
+    
+        self.particle_manager = ParticleManager(screen_width=1280, screen_height=720)
         self.update_dungeon_label()
 
     def update_dungeon_label(self):
         if not inventory.ENEMIES:
-            self.dungeon_btn.text = "Nincs elérhető kazamata"
+            self.dungeon_btn.text = "Nincs kivalasztott kazamata"
         else:
             idx = inventory.SELECTED_DUNGEON_INDEX
             # Ensure index is valid
@@ -129,12 +159,31 @@ class MenuScreen:
             self.fight_btn.bg_color = theme.SECONDARY
             self.fight_btn.hover_bg_color = theme.SECONDARY
             
+        self.particle_manager.update(dt)
         for el in self.elements:
             el.update(dt)
 
+    def _ensure_gradient(self, width, height):
+        if not hasattr(self, '_gradient_surf') or self._gradient_surf.get_size() != (width, height):
+            top_color = theme.BG_DARK
+            bottom_color = (5, 5, 10)
+            
+            # Create a 1xHeight surface for the gradient
+            grad_strip = pygame.Surface((1, height))
+            for y in range(height):
+                t = y / height
+                r = top_color[0] * (1 - t) + bottom_color[0] * t
+                g = top_color[1] * (1 - t) + bottom_color[1] * t
+                b = top_color[2] * (1 - t) + bottom_color[2] * t
+                grad_strip.set_at((0, y), (int(r), int(g), int(b)))
+                
+            self._gradient_surf = pygame.transform.scale(grad_strip, (width, height))
+
     def draw(self, surf):
-        # Draw background (black)
-        surf.fill((0, 0, 0))
+        self._ensure_gradient(surf.get_width(), surf.get_height())
+        surf.blit(self._gradient_surf, (0, 0))
+        
+        self.particle_manager.draw(surf)
         
         # Draw elements
         for el in self.elements:

@@ -12,8 +12,14 @@ GAMES_DIR = os.path.join(os.path.dirname(__file__), "games")
 CURRENT_SAVE_FILE = None
 
 def save_game(save_name=None):
+    # Determine shop status (1 or 0)
+    shop_status = 1 if inventory.SHOP_ENABLED else 0
+    
     if save_name:
-        filename = f"{save_name}.txt" if not save_name.endswith(".txt") else save_name
+        # Format: name_cards_enemies_shop.txt
+        cards_count = len(inventory.GAMECARDS)
+        enemies_count = len(inventory.ENEMIES)
+        filename = f"{save_name}_{cards_count}_{enemies_count}_{shop_status}.txt"
     else:
         existing = [f for f in os.listdir(SAVES_DIR) if f.startswith("save") and f.endswith(".txt")]
 
@@ -23,7 +29,7 @@ def save_game(save_name=None):
         else:
             next_num = 1
 
-        filename = f"save{next_num}_{len(inventory.GAMECARDS)}_{len(inventory.ENEMIES)}.txt"
+        filename = f"save{next_num}_{len(inventory.GAMECARDS)}_{len(inventory.ENEMIES)}_{shop_status}.txt"
     
     path = os.path.join(SAVES_DIR, filename)
 
@@ -94,18 +100,20 @@ def save_game_state(save_name=None):
     game_state = {
         "coins": inventory.COINS,
         "shop_enabled": inventory.SHOP_ENABLED,
+        "difficulty": inventory.DIFFICULTY,
         "volume": inventory.VOLUME,
         "selected_dungeon_index": inventory.SELECTED_DUNGEON_INDEX,
         "playerdeck": [card.name for card in inventory.PLAYERDECK],
         "playercards": [card.name for card in inventory.PLAYERCARDS],
-        "playerarmor": [{"type": armor.type, "slot": armor.what} for armor in inventory.PLAYERARMOR],
+        "playerarmor": [{"type": armor.type, "what": armor.what, "defense": getattr(armor, 'defense', 0)} for armor in inventory.PLAYERARMOR],
+        "equippeditems": [],
         "playeraccessories": [],  # Will be populated when accessories have a name attribute
         "gamecards": [
             {
                 "type": card.type,
                 "name": card.name,
                 "dmg": card.dmg,
-                "hp": card.hp,
+                "hp": card.basehp,
                 "power": card.power
             } for card in inventory.GAMECARDS
         ],
@@ -124,3 +132,21 @@ def save_game_state(save_name=None):
         json.dump(game_state, f, indent=2, ensure_ascii=False)
     
     return filename
+
+def delete_current_save():
+    """
+    Delete the currently loaded save file.
+    Used when the player loses a battle.
+    """
+    global CURRENT_SAVE_FILE
+    
+    if CURRENT_SAVE_FILE:
+        path = os.path.join(GAMES_DIR, CURRENT_SAVE_FILE)
+        if os.path.exists(path):
+            try:
+                os.remove(path)
+                print(f"Deleted save file: {path}")
+            except Exception as e:
+                print(f"Error deleting save file: {e}")
+        
+        CURRENT_SAVE_FILE = None

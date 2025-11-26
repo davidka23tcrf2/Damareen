@@ -1,14 +1,14 @@
 13
 kartya;Arin;2;5;fold
-kartya;Liora;2;4;levegő
+kartya;Liora;2;4;levego
 kartya;Nerun;3;3;tuz
 kartya;Seila;2;6;viz
 kartya;Torak;3;4;fold
-kartya;Emera;2;5;levegő
+kartya;Emera;2;5;levego
 kartya;Vorn;2;7;viz
 kartya;Kael;3;5;tuz
 kartya;Myra;2;6;fold
-kartya;Thalen;3;5;levegő
+kartya;Thalen;3;5;levego
 kartya;Isara;2;6;viz
 vezer;Lord Torak;6;4;fold
 vezer;Priestess Seila;2;12;viz
