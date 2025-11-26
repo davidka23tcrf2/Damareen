@@ -112,11 +112,14 @@ class SavedGamesScreen:
 
             for col_index, s in enumerate(row_saves):
                 filename = s["filename"]
+                save_name = s["name"]
                 coins = s["coins"]
                 cards = s["cards"]
+                enemies = s.get("enemies", 0)
+                shop = s.get("shop", 0)
 
-                display_name = filename.replace("game_", "").replace(".json", "")
-                text = f"{display_name}\n\n{coins} Coins\n{cards} Cards"
+                shop_text = "Bolt: Be" if shop == 1 else "Bolt: Ki"
+                text = f"{save_name}\n{coins} Coins\n{cards} Kartya\n{enemies} Kazamata\n{shop_text}"
 
                 x = start_x + col_index * (button_width + x_spacing)
                 y = start_y + row_index * (button_height + y_spacing)

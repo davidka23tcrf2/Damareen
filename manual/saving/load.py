@@ -10,46 +10,53 @@ GAMES_DIR = os.path.join(os.path.dirname(__file__), "games")
 SAVE_PATTERN = re.compile(r"(\d+)_(\d+)_(\d+)\.txt")
 
 def get_save_files():
+    """Get all environment save files from the saves folder.
+    Expected format: name_cards_enemies_shop.txt
+    Example: Alap_13_3_1.txt means name="Alap", 13 cards, 3 enemies, shop=1
+    """
     if not os.path.isdir(SAVES_DIR):
         return []
     files = [f for f in os.listdir(SAVES_DIR) if f.lower().endswith(".txt")]
     parsed = []
+    
     for f in files:
-        name = f.replace(".txt","")
-        # Extract all numbers from the filename
-        numbers = re.findall(r'\d+', name)
-        if len(numbers) >= 4:
-            # Use first 4 numbers as save_num, cards, enemies, shop
-            parsed.append({
-                "save_num": int(numbers[0]),
-                "cards": int(numbers[1]),
-                "enemies": int(numbers[2]),
-                "shop": int(numbers[3]),
-                "file": f
-            })
-        elif len(numbers) >= 3:
-            # Use first 3 numbers as save_num, cards, enemies (shop = 0)
-            parsed.append({
-                "save_num": int(numbers[0]),
-                "cards": int(numbers[1]),
-                "enemies": int(numbers[2]),
-                "shop": 0,
-                "file": f
-            })
-        elif len(numbers) == 2:
-            # If only 2 numbers, assume it's cards and enemies (save_num = 0, shop = 0)
-            parsed.append({
-                "save_num": 0,
-                "cards": int(numbers[0]),
-                "enemies": int(numbers[1]),
-                "shop": 0,
-                "file": f
-            })
-    parsed.sort(key=lambda x: x["save_num"])
+        name_without_ext = f.replace(".txt", "")
+        # Split by underscore
+        parts = name_without_ext.split("_")
+        
+        # The last 3 parts should be: cards, enemies, shop (if they're numbers)
+        # Everything before that is the save name
+        if len(parts) >= 3:
+            try:
+                # Try to parse the last 3 parts as numbers
+                shop = int(parts[-1])
+                enemies = int(parts[-2])
+                cards = int(parts[-3])
+                
+                # Everything else is the name
+                name_parts = parts[:-3]
+                save_name = "_".join(name_parts) if name_parts else "Save"
+                
+                parsed.append({
+                    "name": save_name,
+                    "cards": cards,
+                    "enemies": enemies,
+                    "shop": shop,
+                    "file": f
+                })
+            except ValueError:
+                # If parsing fails, skip this file
+                print(f"Warning: Could not parse save file: {f}")
+                continue
+    
+    # Sort by filename for consistent ordering
+    parsed.sort(key=lambda x: x["file"])
     return parsed
 
 def get_game_saves():
-    """Get all saved games from the games folder"""
+    """Get all saved games from the games folder.
+    Returns list of save data including name, cards, enemies, shop status, etc.
+    """
     if not os.path.isdir(GAMES_DIR):
         return []
     
@@ -63,13 +70,21 @@ def get_game_saves():
                 data = json.load(file)
                 # Get file modification time
                 mod_time = os.path.getmtime(path)
+                
+                # Extract save name from filename (remove .json extension)
+                save_name = f.replace(".json", "")
+                
                 saves.append({
                     "filename": f,
+                    "name": save_name,
                     "coins": data.get("coins", 0),
                     "cards": len(data.get("playercards", [])),
+                    "enemies": len(data.get("enemies", [])),
+                    "shop": 1 if data.get("shop_enabled", False) else 0,
                     "mod_time": mod_time
                 })
-        except:
+        except Exception as e:
+            print(f"Warning: Could not load save file {f}: {e}")
             pass
     
     # Sort by modification time (newest first)

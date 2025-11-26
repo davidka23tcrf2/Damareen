@@ -111,24 +111,11 @@ class GameLoader:
             start_x = (1280 - total_width) // 2
 
             for col_index, s in enumerate(row_saves):
-                save_num = s["save_num"]
+                save_name = s["name"]
                 cards = s["cards"]
                 enemies = s["enemies"]
                 shop = s.get("shop", 0)
                 filename = s["file"]
-                
-                # Extract name from filename (everything before the numbers)
-                # Format: name_cards_enemies_shop.txt
-                name_without_ext = filename.replace(".txt", "")
-                # Remove all numbers and underscores from the end to get the name
-                parts = name_without_ext.split("_")
-                # Find where numbers start
-                name_parts = []
-                for part in parts:
-                    if part.isdigit():
-                        break
-                    name_parts.append(part)
-                save_name = "_".join(name_parts) if name_parts else f"Save {save_num}"
 
                 shop_text = "Bolt: Be" if shop == 1 else "Bolt: Ki"
                 text = f"{save_name}\n\n{cards} Kartya\n{enemies} Kazamata\n{shop_text}"
