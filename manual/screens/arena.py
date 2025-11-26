@@ -14,6 +14,7 @@ from manual.ui import theme
 BP = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "SELINCAH.ttf"), 24)
 SMALL_FONT = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "SELINCAH.ttf"), 18)
 DMG_FONT = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "SELINCAH.ttf"), 32)
+TITLE_FONT = pygame.font.Font(os.path.join(ASSETS_DIR, "fonts", "SELINCAH.ttf"), 64)  # Bigger for WIN/LOSE
 
 # Layout Constants
 DECK_PLAYER_POS = (150, 360)
@@ -94,7 +95,7 @@ class ArenaScreen:
             (1280 - 250, 720 - 100, 200, 60),
             self.finish_combat,
             None,
-            text="Tovább",
+            text="Tovabb",
             font=BP,
             text_color=theme.TEXT_WHITE,
             bg_color=theme.PRIMARY,
@@ -231,7 +232,7 @@ class ArenaScreen:
             if self.anim_timer >= 0.15: # Quick pause on impact
                 self.anim_phase = "RETURN"
                 self.anim_timer = 0
-                
+                 
         elif self.anim_phase == "RETURN":
             t = min(1.0, self.anim_timer / 0.2) # Even faster return
             
@@ -268,11 +269,11 @@ class ArenaScreen:
             attacker = self.current_dungeon_card
             defender = self.current_player_card
             attacker_name = "Kazamata"
-            defender_name = "Játékos"
+            defender_name = "Jatekos"
         else:
             attacker = self.current_player_card
             defender = self.current_dungeon_card
-            attacker_name = "Játékos"
+            attacker_name = "Jatekos"
             defender_name = "Kazamata"
             
         # Calculate base damage with elemental multiplier
@@ -302,7 +303,7 @@ class ArenaScreen:
         color = theme.DANGER if multiplier > 1 else (theme.WARNING if multiplier < 1 else theme.TEXT_WHITE)
         self.floating_texts.append(FloatingText(target_pos[0], target_pos[1] - 100, f"-{damage}", color))
         
-        self.log(f"{attacker_name} támad: {damage} ({multiplier}x)")
+        self.log(f"{attacker_name} tamad: {damage} ({multiplier}x)")
         
         self.anim_phase = "IMPACT"
         self.anim_timer = 0
@@ -347,23 +348,17 @@ class ArenaScreen:
         
         if self.state == "FIGHT":
             # Start ENTER animation for the new card(s)
-            # If one survived, it should stay in center?
-            # Or maybe both retreat and re-enter?
-            # Let's make the survivor stay in center, and new one enters.
-            # But my ENTER logic moves BOTH from current pos to center.
-            # If survivor is already at center, it just stays there (start=center, target=center).
-            # So setting pos to DECK for the new one is enough.
             self.anim_phase = "ENTER"
             self.anim_timer = 0
 
     def check_win_condition(self):
         if not self.current_player_card:
             self.state = "LOSE"
-            self.log("VESZTETTÉL!")
+            self.log("VESZTEL!")
             save.delete_current_save()
         elif not self.current_dungeon_card:
             self.state = "WIN"
-            self.log("NYERTÉL!")
+            self.log("NYERTEL!")
             self.handle_rewards()
 
     def handle_rewards(self):
@@ -378,7 +373,7 @@ class ArenaScreen:
         else: scales = 1
             
         inventory.COINS += scales
-        self.log(f"Kaptál {scales} pikkelyt!")
+        self.log(f"Kaptal {scales} pikkelyt!")
         
         winning_card = None
         if self.current_player_card:
@@ -394,23 +389,23 @@ class ArenaScreen:
                     break
             if new_card:
                 inventory.PLAYERCARDS.append(new_card)
-                self.log(f"Új kártya: {new_card.name}")
+                self.log(f"Uj kartya: {new_card.name}")
             else:
-                self.log("Minden kártyát megszereztél!")
+                self.log("Minden kartyat megszereztel!")
                 
         elif dungeon_type == "kis" or dungeon_type == "egyszeru":
             if winning_card:
                 if reward_type == "eletero":
                     winning_card.basehp += 2
                     winning_card.hp += 2
-                    self.log(f"{winning_card.name} +2 Életerő")
+                    self.log(f"{winning_card.name} +2 Eletero")
                 elif reward_type == "sebzes":
                     winning_card.dmg += 1
-                    self.log(f"{winning_card.name} +1 Sebzés")
+                    self.log(f"{winning_card.name} +1 Sebzes")
                 else:
                     winning_card.basehp += 1
                     winning_card.hp += 1
-                    self.log(f"{winning_card.name} +1 Életerő")
+                    self.log(f"{winning_card.name} +1 Eletero")
 
     def finish_combat(self):
         # Reset all card HP after battle
@@ -432,11 +427,6 @@ class ArenaScreen:
         
         # Draw Deck Stacks (Visual only)
         # Player Deck (Left)
-        # Cards waiting to enter are from idx+1 onwards?
-        # No, current card is at idx. So waiting are idx+1.
-        # But if current is entering, it's not in stack.
-        # If current is fighting, it's not in stack.
-        # So stack is len - idx - 1.
         self.draw_deck_stack(surf, DECK_PLAYER_POS[0], DECK_PLAYER_POS[1], len(inventory.PLAYERDECK) - self.player_card_idx - 1)
         
         # Dungeon Deck (Right)
@@ -453,7 +443,7 @@ class ArenaScreen:
                     alpha = 255
                     if self.anim_phase == "DEATH" and self.current_player_card.hp <= 0:
                         alpha = int(255 * (1.0 - min(1.0, self.anim_timer)))
-                    self.draw_card(surf, self.current_player_card, self.player_card_pos[0], self.player_card_pos[1], "Játékos", alpha)
+                    self.draw_card(surf, self.current_player_card, self.player_card_pos[0], self.player_card_pos[1], "Jatekos", alpha)
                 
                 if self.current_dungeon_card:
                     alpha = 255
@@ -472,14 +462,14 @@ class ArenaScreen:
                     alpha = 255
                     if self.anim_phase == "DEATH" and self.current_player_card.hp <= 0:
                         alpha = int(255 * (1.0 - min(1.0, self.anim_timer)))
-                    self.draw_card(surf, self.current_player_card, self.player_card_pos[0], self.player_card_pos[1], "Játékos", alpha)
+                    self.draw_card(surf, self.current_player_card, self.player_card_pos[0], self.player_card_pos[1], "Jatekos", alpha)
         else:
             # Normal order for other phases
             if self.current_player_card:
                 alpha = 255
                 if self.anim_phase == "DEATH" and self.current_player_card.hp <= 0:
                     alpha = int(255 * (1.0 - min(1.0, self.anim_timer)))
-                self.draw_card(surf, self.current_player_card, self.player_card_pos[0], self.player_card_pos[1], "Játékos", alpha)
+                self.draw_card(surf, self.current_player_card, self.player_card_pos[0], self.player_card_pos[1], "Jatekos", alpha)
             
             if self.current_dungeon_card:
                 alpha = 255
@@ -498,14 +488,14 @@ class ArenaScreen:
             surf.blit(text, (1280//2 - text.get_width()//2, y))
             y += 30
             
-        # Draw State Message
+        # Draw State Message (now way bigger)
         if self.state == "WIN":
-            text = BP.render("GYŐZELEM!", True, theme.SUCCESS)
-            surf.blit(text, (1280//2 - text.get_width()//2, 300))
+            text = TITLE_FONT.render("GYOZELEM!", True, theme.SUCCESS)
+            surf.blit(text, (1280//2 - text.get_width()//2, 260))
             self.next_btn.draw(surf)
         elif self.state == "LOSE":
-            text = BP.render("VERESÉG!", True, theme.DANGER)
-            surf.blit(text, (1280//2 - text.get_width()//2, 300))
+            text = TITLE_FONT.render("VERSEG!", True, theme.DANGER)
+            surf.blit(text, (1280//2 - text.get_width()//2, 260))
             self.next_btn.draw(surf)
 
     def draw_deck_stack(self, surf, x, y, count):
@@ -513,8 +503,6 @@ class ArenaScreen:
         # Draw up to 3 cards
         for i in range(min(count, 3), 0, -1):
             offset = i * 5
-            # Stack goes slightly up/left or just centered?
-            # Let's make it look like a pile
             rect = pygame.Rect(x - 100 - offset, y - 150 - offset, 200, 300)
             pygame.draw.rect(surf, (30, 30, 40), rect, border_radius=12)
             pygame.draw.rect(surf, theme.BORDER_COLOR, rect, 2, border_radius=12)
