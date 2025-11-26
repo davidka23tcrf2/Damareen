@@ -56,7 +56,7 @@ class NewLeaderCardPopup:
         pygame.draw.rect(create_img, (0, 0, 0), create_img.get_rect(), width=4, border_radius=0)
         
         # User requested "smalles so text fits" -> Using BP12
-        label = BP12.render("Vezérkártya létrehozása", True, (0, 0, 0))
+        label = BP26.render("Vezérkártya létrehozása", True, (0, 0, 0))
         label_rect = label.get_rect(center=(create_w // 2, create_h // 2))
         create_img.blit(label, label_rect)
 

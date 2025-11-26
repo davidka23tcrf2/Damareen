@@ -134,8 +134,17 @@ class ShopScreen:
         for btn in self.item_buttons:
             btn.handle_event(e)
 
+    def reset_shop(self):
+        """Regenerate shop items and slots."""
+        self.generate_shop_items()
+        self.create_item_slots()
+
     def update(self, dt):
         self.particles.update(dt)
+        
+        # Update coin display
+        import manual.inventory.inventory as inv
+        self.coins_label.set_text(f"Pikelyek: {inv.COINS}")
         
         # Handle message timer
         if self.message_timer > 0:

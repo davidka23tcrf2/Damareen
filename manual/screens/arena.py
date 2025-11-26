@@ -101,6 +101,14 @@ class ArenaScreen:
             bg_color=theme.PRIMARY,
             hover_bg_color=theme.PRIMARY_HOVER
         )
+        
+        # Load Sound
+        try:
+            self.hit_sound = pygame.mixer.Sound(os.path.join(ASSETS_DIR, "sounds", "hit.wav"))
+            self.hit_sound.set_volume(0.5)
+        except Exception as e:
+            print(f"Failed to load hit sound: {e}")
+            self.hit_sound = None
 
     def setup_combat(self):
         # Clear previous state
@@ -298,6 +306,10 @@ class ArenaScreen:
         defender.hp -= damage
         defender.hp = max(0, defender.hp)
         
+        # Play sound
+        if self.hit_sound:
+            self.hit_sound.play()
+        
         # Floating Text
         target_pos = CENTER_PLAYER_POS if self.turn == "DUNGEON" else CENTER_DUNGEON_POS
         color = theme.DANGER if multiplier > 1 else (theme.WARNING if multiplier < 1 else theme.TEXT_WHITE)
@@ -494,7 +506,7 @@ class ArenaScreen:
             surf.blit(text, (1280//2 - text.get_width()//2, 260))
             self.next_btn.draw(surf)
         elif self.state == "LOSE":
-            text = TITLE_FONT.render("VERSEG!", True, theme.DANGER)
+            text = TITLE_FONT.render("VERESEG!", True, theme.DANGER)
             surf.blit(text, (1280//2 - text.get_width()//2, 260))
             self.next_btn.draw(surf)
 

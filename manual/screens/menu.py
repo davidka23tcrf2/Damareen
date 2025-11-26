@@ -91,7 +91,9 @@ class MenuScreen:
         self.dungeon_popup = None
     
         self.particle_manager = ParticleManager(screen_width=1280, screen_height=720)
-        self.update_dungeon_label()
+        self.warning_label = Label((1280 - 350, 720 - 150, 300, 30), "", font=BP, color=(255, 50, 50))
+        self.elements.append(self.warning_label)
+        self.warning_timer = 0
 
     def update_dungeon_label(self):
         if not inventory.ENEMIES:
@@ -107,6 +109,11 @@ class MenuScreen:
             self.dungeon_btn.text = f"{dungeon_name}"
 
     def try_goto_arena(self):
+        if len(inventory.PLAYERDECK) == 0:
+            self.warning_label.set_text("A paklid ures!")
+            self.warning_timer = 2.0
+            return
+            
         if len(inventory.PLAYERDECK) > 0 and inventory.ENEMIES:
             self.goto_arena()
 
@@ -160,6 +167,12 @@ class MenuScreen:
             self.fight_btn.hover_bg_color = theme.SECONDARY
             
         self.particle_manager.update(dt)
+        
+        if self.warning_timer > 0:
+            self.warning_timer -= dt
+            if self.warning_timer <= 0:
+                self.warning_label.set_text("")
+                
         for el in self.elements:
             el.update(dt)
 

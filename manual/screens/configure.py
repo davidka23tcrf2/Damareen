@@ -31,15 +31,6 @@ class CONFIGURE:
         self.elements = []
         self.goto_menu = goto_menu  # <-- store so we can jump to menu after saving
         
-        # Load and prepare elevator music
-        music_path = os.path.join(ASSETS_DIR, "sounds", "Elevator-music.mp3")
-        try:
-            pygame.mixer.music.load(music_path)
-            self.music_loaded = True
-        except Exception as e:
-            print(f"Failed to load elevator music: {e}")
-            self.music_loaded = False
-
         self.bg = load_asset("bg.png", sf)
         self.bg = pygame.transform.scale(self.bg, (1280, 720))
 
@@ -237,12 +228,13 @@ class CONFIGURE:
     
     def start_music(self):
         """Start playing elevator music when entering the configure screen."""
-        if self.music_loaded:
-            try:
-                pygame.mixer.music.play(-1)  # -1 means loop indefinitely
-                pygame.mixer.music.set_volume(0.3)  # Set volume to 30%
-            except Exception as e:
-                print(f"Failed to play elevator music: {e}")
+        music_path = os.path.join(ASSETS_DIR, "sounds", "Elevator-music.mp3")
+        try:
+            pygame.mixer.music.load(music_path)
+            pygame.mixer.music.play(-1)  # -1 means loop indefinitely
+            pygame.mixer.music.set_volume(0.3)  # Set volume to 30%
+        except Exception as e:
+            print(f"Failed to play elevator music: {e}")
     
     def stop_music(self):
         """Stop playing elevator music when leaving the configure screen."""
