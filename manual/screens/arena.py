@@ -123,7 +123,7 @@ class ArenaScreen:
         self.dungeon_card_idx = 0
         
         self.update_current_cards()
-        self.log("Harc kezdődik!")
+        self.log("Harc kezdodik!")
         self.state = "FIGHT"
         self.turn = "DUNGEON"
         

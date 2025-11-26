@@ -213,9 +213,19 @@ def load_game_state(filename):
     
     # Load player armor
     for armor_data in game_state.get("playerarmor", []):
+        # Support both old 'slot' and new 'what' keys
+        target_slot = armor_data.get("what", armor_data.get("slot"))
+        
         for armor in inventory.ARMOR:
-            if armor.type == armor_data["type"] and armor.what == armor_data["slot"]:
-                inventory.PLAYERARMOR.append(armor)
+            if armor.type == armor_data["type"] and armor.what == target_slot:
+                # Create a copy to store specific instance data
+                new_armor = copy.deepcopy(armor)
+                # Load saved defense if available, otherwise default
+                if "defense" in armor_data:
+                    new_armor.defense = armor_data["defense"]
+                else:
+                    new_armor.defense = 15
+                inventory.PLAYERARMOR.append(new_armor)
                 break
     
     # Set current save file

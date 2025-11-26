@@ -36,6 +36,12 @@ class ShopScreen:
             border_radius=8,
         )
         self.elements.append(back_btn)
+        
+        # Message label for feedback (e.g. not enough coins)
+        self.message_label = Label(rect=(640, 650, 100, 50), text="", font=BP_SMALL, color=(255, 50, 50))
+        self.elements.append(self.message_label)
+        self.message_timer = 0
+        
         # Prepare shop data and UI slots
         self.shop_items = []
         self.item_buttons = []
@@ -101,15 +107,26 @@ class ShopScreen:
             print("Item already sold!")
             return
         if inv.COINS < item["cost"]:
+            self.message_label.set_text("Nincs eleg pikkelyed!")
+            self.message_timer = 2.0
             print(f"Not enough coins! Need {item['cost']}, have {inv.COINS}")
             return
+        
+        # Clear message if successful
+        self.message_label.set_text("")
         # Deduct coins and add armor to the player's collection
+        import copy
         inv.COINS -= item["cost"]
-        PLAYERARMOR.append(item["armor"])
+        
+        # Create a unique instance of the armor and set its specific defense
+        new_armor = copy.deepcopy(item["armor"])
+        new_armor.defense = item["defense"]
+        
+        PLAYERARMOR.append(new_armor)
         item["sold"] = True
         # Update the displayed coin count
         self.coins_label.set_text(f"Pikelyek: {inv.COINS}")
-        print(f"Purchased {item['armor'].type} {item['armor'].what} for {item['cost']} coins!")
+        print(f"Purchased {new_armor.type} {new_armor.what} for {item['cost']} coins with {new_armor.defense}% defense!")
 
     def handle_event(self, e):
         for el in self.elements:
@@ -119,6 +136,12 @@ class ShopScreen:
 
     def update(self, dt):
         self.particles.update(dt)
+        
+        # Handle message timer
+        if self.message_timer > 0:
+            self.message_timer -= dt
+            if self.message_timer <= 0:
+                self.message_label.set_text("")
         for el in self.elements:
             el.update(dt)
         for btn in self.item_buttons:

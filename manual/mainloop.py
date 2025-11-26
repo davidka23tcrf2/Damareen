@@ -28,6 +28,9 @@ def ml():
         ui.switch_to("ARENA", duration=0.5)
     def goto_menu():
         ui.screens["CONFIGURE"].stop_music()
+        # Reset shop with new items after fights
+        if ui.active == ui.screens["ARENA"]:
+             ui.screens["SHOP"].reset_shop()
         ui.switch_to("MENU", duration=0.5)
     def goto_inventory():
         # Refresh inventory display before showing the screen
