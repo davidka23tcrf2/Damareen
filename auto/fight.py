@@ -1,23 +1,20 @@
 from auto import card
-import math
-import random
 
-def attack(Enemy, Player, file, difficulty=1):
+def attack(Enemy, Player, file):
     """
-    Combat function with randomized damage.
+    Combat function.
     
     Args:
         Enemy: List of enemy cards
         Player: List of player cards
         file: Output file for combat log
-        difficulty: Difficulty level (affects damage variance)
+        difficulty: Difficulty level (unused, kept for compatibility)
     """
     Round = 1
     i = 0  # Játékos index
     j = 0  # Enemy index
     playedoutP = False
     playedoutE = False
-    n = difficulty  # Use difficulty for damage variance
     
     while i < len(Player) and j < len(Enemy):
 
@@ -38,8 +35,7 @@ def attack(Enemy, Player, file, difficulty=1):
 
         if not playedoutE:
             damage = card.get_type_multiplier(Enemy[j].power, Player[i].power)
-            # Kazamata damage: round(base_damage * (1 + rnd() * n/10))
-            final_damage = round(Enemy[j].dmg * damage * (1 + random.random() * n / 10))
+            final_damage = round(Enemy[j].dmg * damage)
             Player[i].hp -= final_damage
             file.write(
                 f"{Round}.kor;kazamata;tamad;{Enemy[j].name};"
@@ -60,8 +56,7 @@ def attack(Enemy, Player, file, difficulty=1):
 
         if not playedoutP:
             damage = card.get_type_multiplier(Enemy[j].power, Player[i].power)
-            # Jatekos damage: round(base_damage * (1 - rnd() * n/20))
-            final_damage = round(Player[i].dmg * damage * (1 - random.random() * n / 20))
+            final_damage = round(Player[i].dmg * damage)
             Enemy[j].hp -= final_damage
             file.write(
                 f"{Round}.kor;jatekos;tamad;{Player[i].name};"
