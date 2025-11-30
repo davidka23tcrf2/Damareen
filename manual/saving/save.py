@@ -76,7 +76,6 @@ def save_game_state(save_name=None):
             # Find existing jatek saves and get next number
             existing = [f for f in os.listdir(GAMES_DIR) if f.startswith("jatek") and f.endswith(".json")]
             if existing:
-                # Extract numbers from filenames like "jatek1.json", "jatek2.json"
                 numbers = []
                 for f in existing:
                     try:
@@ -96,26 +95,17 @@ def save_game_state(save_name=None):
     
     path = os.path.join(GAMES_DIR, filename)
     
-    # Collect all game state
+    # ✅ FIXED game_state dictionary
     game_state = {
-        "coins": inventory.COINS,
-        "shop_enabled": inventory.SHOP_ENABLED,
-        "difficulty": inventory.DIFFICULTY,
-        "volume": inventory.VOLUME,
-        "selected_dungeon_index": inventory.SELECTED_DUNGEON_INDEX,
-        "playerdeck": [card.name for card in inventory.PLAYERDECK],
-        "playercards": [card.name for card in inventory.PLAYERCARDS],
-        "playerarmor": [{"type": armor.type, "what": armor.what, "defense": getattr(armor, 'defense', 0)} for armor in inventory.PLAYERARMOR],
-        "equippeditems": [],
-        "playeraccessories": [],  # Will be populated when accessories have a name attribute
-        "gamecards": [
+        "cards": [
             {
                 "type": card.type,
                 "name": card.name,
                 "dmg": card.dmg,
                 "hp": card.basehp,
                 "power": card.power
-            } for card in inventory.GAMECARDS
+            }
+            for card in inventory.GAMECARDS
         ],
         "enemies": [
             {
@@ -123,15 +113,41 @@ def save_game_state(save_name=None):
                 "name": enemy.name,
                 "deck": [card.name for card in enemy.deck],
                 "reward": enemy.reward if hasattr(enemy, 'reward') else None
-            } for enemy in inventory.ENEMIES
-        ]
+            }
+            for enemy in inventory.ENEMIES
+        ],
+        "player_cards": [card.name for card in inventory.PLAYERCARDS],
+        "player_armor": [
+            {
+                "type": arm.type,
+                "what": arm.what,
+                "image_name": arm.image_name,
+                "defense": arm.defense
+            }
+            for arm in inventory.PLAYERARMOR
+        ],
+        "equipped_armor": [
+            {
+                "type": arm.type,
+                "what": arm.what,
+                "image_name": arm.image_name,
+                "defense": arm.defense
+            }
+            for arm in inventory.EQUIPPED_ARMOR
+        ],
+        "shop_enabled": inventory.SHOP_ENABLED,
+        "coins": inventory.COINS,
+        "volume": inventory.VOLUME,
+        "difficulty": inventory.DIFFICULTY,
+        "selected_dungeon": inventory.SELECTED_DUNGEON_INDEX
     }
-    
+
     # Save as JSON
     with open(path, "w", encoding="utf-8") as f:
         json.dump(game_state, f, indent=2, ensure_ascii=False)
     
     return filename
+
 
 def delete_current_save():
     """

@@ -55,6 +55,34 @@ def ml():
             print(f"Failed to play horrorbg: {e}")
             current_music = None
 
+    def start_fight_music():
+        """Ensure fight music is playing in a loop."""
+        nonlocal current_music
+        if current_music == "fight":
+            return
+        try:
+            pygame.mixer.music.load(os.path.join("manual", "assets", "sounds", "fight.mp3"))
+            pygame.mixer.music.play(-1)
+            pygame.mixer.music.set_volume(0.3)
+            current_music = "fight"
+        except Exception as e:
+            print(f"Failed to play fight music: {e}")
+            current_music = None
+
+    def start_menu_music():
+        """Ensure menu music is playing in a loop."""
+        nonlocal current_music
+        if current_music == "menu":
+            return
+        try:
+            pygame.mixer.music.load(os.path.join("manual", "assets", "sounds", "menu.mp3"))
+            pygame.mixer.music.play(-1)
+            pygame.mixer.music.set_volume(0.3)
+            current_music = "menu"
+        except Exception as e:
+            print(f"Failed to play menu music: {e}")
+            current_music = None
+
     def stop_any_music():
         """Stop whatever music is currently playing."""
         nonlocal current_music
@@ -70,8 +98,9 @@ def ml():
 
         Rules:
         - CONFIGURE: stop horror, configure screen handles its own music.
-        - ARENA: stop all music (silence or arena-only sounds).
-        - Everything else (START, MENU, SHOP, INVENTORY, etc.): ensure horror music is playing.
+        - ARENA: play fight music.
+        - MENU, SHOP, INVENTORY, DECKBUILDER: play menu music.
+        - Everything else (START, GAMELOADER, SAVEDGAMES): ensure horror music is playing.
         """
         nonlocal current_music
 
@@ -92,9 +121,14 @@ def ml():
             if configure_screen and hasattr(configure_screen, "stop_music"):
                 configure_screen.stop_music()
 
-        # Handle ARENA (silence or arena-specific audio only)
+        # Handle ARENA
         if target_screen_name == "ARENA":
-            stop_any_music()
+            start_fight_music()
+            return
+
+        # Handle Menu-related screens
+        if target_screen_name in ["MENU", "SHOP", "INVENTORY", "DECKBUILDER"]:
+            start_menu_music()
             return
 
         # For all other screens, keep horror bg music

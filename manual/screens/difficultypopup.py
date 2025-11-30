@@ -28,12 +28,12 @@ class DifficultyPopup:
         
         # Title
         self.title_label = Label(
-            (w // 2, 60, 0, 0), 
+            (w // 2, 120, 0, 0), 
             "Válassz nehézséget!", 
             font=BP_TITLE, 
             color=(255, 200, 200)  # Light red tint
         )
-        self.title_label.base_pos = (w // 2, 60)
+        self.title_label.base_pos = (w // 2, 120)
         self.title_label.centered = True
         self.elements.append(self.title_label)
         

@@ -16,5 +16,5 @@ vezer;Priestess Seila;2;12;viz
 egyszeru;Barlangi Portya;Nerun;sebzes
 kis;Osi Szentely;Arin;Emera;Seila;Lord Torak;eletero
 nagy;A melyseg kiralynoje;Liora;Arin;Seila;Nerun;Torak;Priestess Seila
-0
-Arin;Liora;Nerun;Torak;Emera;Seila;Myra;Isara;Thalen;Kael
+1
+Arin;Liora;Seila;Nerun;Torak;Emera;Kael;Myra;Thalen;Isara

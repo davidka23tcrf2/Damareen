@@ -78,7 +78,7 @@ def get_game_saves():
                     "filename": f,
                     "name": save_name,
                     "coins": data.get("coins", 0),
-                    "cards": len(data.get("playercards", [])),
+                    "cards": len(data.get("player_cards", [])),
                     "enemies": len(data.get("enemies", [])),
                     "shop": 1 if data.get("shop_enabled", False) else 0,
                     "mod_time": mod_time
@@ -103,9 +103,10 @@ def parse_save_filename(filename):
     }
 
 def load_game(filename):
-    # inventory.ENEMIES.clear()
-    # inventory.PLAYERCARDS.clear()
-    # inventory.GAMECARDS.clear()
+    inventory.ENEMIES.clear()
+    inventory.PLAYERCARDS.clear()
+    inventory.GAMECARDS.clear()
+    inventory.PLAYERARMOR.clear()
     path = os.path.join(SAVES_DIR, filename)
     with open(path, "r", encoding="utf-8") as f:
         line = f.readline()
@@ -144,33 +145,33 @@ def load_game_state(filename):
     Load game state from the games folder.
     """
     path = os.path.join(GAMES_DIR, filename)
-    
+
     with open(path, "r", encoding="utf-8") as f:
         game_state = json.load(f)
-    
+
     # Clear existing inventory
     inventory.PLAYERDECK.clear()
     inventory.PLAYERCARDS.clear()
     inventory.GAMECARDS.clear()
     inventory.ENEMIES.clear()
     inventory.PLAYERARMOR.clear()
-    inventory.PLAYERACCESSORIES.clear()
-    
+    # ❌ REMOVED accessories completely
+
     # Load basic values
     inventory.COINS = game_state.get("coins", 0)
     inventory.SHOP_ENABLED = game_state.get("shop_enabled", False)
     inventory.VOLUME = game_state.get("volume", 50)
-    inventory.SELECTED_DUNGEON_INDEX = game_state.get("selected_dungeon_index", 0)
-    
+    inventory.SELECTED_DUNGEON_INDEX = game_state.get("selected_dungeon", 0)
+
     # Apply volume to pygame mixer
     try:
         import pygame
         pygame.mixer.music.set_volume(inventory.VOLUME / 100.0)
     except:
         pass
-    
-    # Load game cards first
-    for card_data in game_state.get("gamecards", []):
+
+    # Load game cards
+    for card_data in game_state.get("cards", []):
         card = objects.Card(
             card_data["type"],
             card_data["name"],
@@ -179,7 +180,7 @@ def load_game_state(filename):
             card_data["power"]
         )
         inventory.GAMECARDS.append(card)
-    
+
     # Load enemies
     for enemy_data in game_state.get("enemies", []):
         deck = []
@@ -188,7 +189,7 @@ def load_game_state(filename):
                 if card.name == card_name:
                     deck.append(copy.deepcopy(card))
                     break
-        
+
         enemy = objects.Enemy(
             enemy_data["type"],
             enemy_data["name"],
@@ -196,39 +197,42 @@ def load_game_state(filename):
             enemy_data.get("reward")
         )
         inventory.ENEMIES.append(enemy)
-    
+
     # Load player cards
-    for card_name in game_state.get("playercards", []):
+    for card_name in game_state.get("player_cards", []):
         for card in inventory.GAMECARDS:
             if card.name == card_name:
                 inventory.PLAYERCARDS.append(copy.deepcopy(card))
                 break
-    
+
     # Load player deck
     for card_name in game_state.get("playerdeck", []):
         for card in inventory.GAMECARDS:
             if card.name == card_name:
                 inventory.PLAYERDECK.append(copy.deepcopy(card))
                 break
-    
+
     # Load player armor
-    for armor_data in game_state.get("playerarmor", []):
-        # Support both old 'slot' and new 'what' keys
-        target_slot = armor_data.get("what", armor_data.get("slot"))
-        
+    # Load player armor
+    for armor_data in game_state.get("player_armor", []):
+        new_armor = objects.Armor(
+            armor_data["type"],
+            armor_data["what"],
+            armor_data["image_name"],
+            armor_data.get("defense", 0)
+        )
+        inventory.PLAYERARMOR.append(new_armor) 
+
+
+    # Load equipped armor
+    for armor_slot in game_state.get("equipped_armor", []):
         for armor in inventory.ARMOR:
-            if armor.type == armor_data["type"] and armor.what == target_slot:
-                # Create a copy to store specific instance data
-                new_armor = copy.deepcopy(armor)
-                # Load saved defense if available, otherwise default
-                if "defense" in armor_data:
-                    new_armor.defense = armor_data["defense"]
-                else:
-                    new_armor.defense = 15
-                inventory.PLAYERARMOR.append(new_armor)
+            if armor.what == armor_slot:
+                inventory.EQUIPPED_ARMOR.append(copy.deepcopy(armor))
                 break
-    
+
     # Set current save file
     save.CURRENT_SAVE_FILE = filename
-    
+
     return game_state
+

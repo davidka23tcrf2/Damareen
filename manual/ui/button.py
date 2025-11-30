@@ -1,7 +1,26 @@
 import pygame
+import os
 from manual.ui import theme
+from manual.assets.assets import ASSETS_DIR
 
 class Button:
+    # Load button press sound once for all buttons
+    _button_sound = None
+    _sound_loaded = False
+    
+    @classmethod
+    def _load_sound(cls):
+        """Load the button press sound once"""
+        if not cls._sound_loaded:
+            try:
+                sound_path = os.path.join(ASSETS_DIR, "sounds", "button_press.mp3")
+                cls._button_sound = pygame.mixer.Sound(sound_path)
+                cls._button_sound.set_volume(0.3)  # Set volume to 30%
+                cls._sound_loaded = True
+            except Exception as e:
+                print(f"Warning: Could not load button press sound: {e}")
+                cls._sound_loaded = True  # Mark as loaded to avoid repeated attempts
+    
     def __init__(
         self,
         rect,
@@ -46,6 +65,9 @@ class Button:
         self.hover = False
         self._prev_hover = False
         
+        # Load button press sound (only happens once for all buttons)
+        Button._load_sound()
+        
         # Setup font
         if isinstance(font, pygame.font.Font):
             self.font = font
@@ -64,6 +86,13 @@ class Button:
     def handle_event(self, e):
         if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
             if self.rect.collidepoint(e.pos):
+                # Play button press sound
+                if Button._button_sound:
+                    try:
+                        Button._button_sound.play()
+                    except Exception as e:
+                        print(f"Warning: Could not play button press sound: {e}")
+                
                 if self.callback:
                     self.callback()
 

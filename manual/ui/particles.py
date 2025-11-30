@@ -18,6 +18,7 @@ class Particle:
         self.age = 0.0  # seconds
 
         if self.mode == "blood":
+            # ORIGINAL BLOOD MODE (unchanged)
             # Cinematic red dust: slow drift downward, soft glow, long fade
             self.size = random.randint(6, 14)  # logical radius
             self.color = random.choice([
@@ -37,6 +38,38 @@ class Particle:
             # Gentle side sway
             self.sway_amp = random.uniform(3.0, 10.0)
             self.sway_freq = random.uniform(0.8, 2.0)
+
+        elif self.mode == "horror":
+            # NEW HORROR MODE: no circles – just jagged, flickering scratches
+            self.size = random.randint(5, 12)
+
+            # Desaturated, nasty tones
+            self.color = random.choice([
+                (180, 40, 40),   # dried blood
+                (140, 140, 150), # ghost grey
+                (90, 0, 0),      # deep red
+            ])
+
+            # Slow drifting motion
+            self.vx = random.uniform(-20.0, 20.0)
+            self.vy = random.uniform(-10.0, 15.0)
+
+            self.max_life = random.uniform(3.0, 6.0)
+            self.life = self.max_life
+
+            # Wobbly / nervous movement
+            self.sway_amp = random.uniform(8.0, 20.0)
+            self.sway_freq = random.uniform(0.7, 1.8)
+
+            # Scratch parameters
+            self.length = random.uniform(30.0, 90.0)
+            self.thickness = random.randint(1, 3)
+            self.angle = random.uniform(-math.pi, math.pi)
+            self.spin = random.uniform(-1.5, 1.5)
+
+            # Flicker
+            self.flicker_speed = random.uniform(3.0, 6.0)
+
         else:
             # Default: soft ambient floaty particles
             self.size = random.randint(4, 10)
@@ -63,6 +96,7 @@ class Particle:
         """
         Returns a soft, glowing circular texture for the given size + color.
         Cached so we only build each combination once.
+        Used by blood + default modes only.
         """
         key = (size, color)
         if key in cls._texture_cache:
@@ -89,6 +123,10 @@ class Particle:
         self.age += dt
         self.life -= dt
 
+        # Spin only for horror scratches
+        if self.mode == "horror":
+            self.angle += self.spin * dt
+
         # Basic movement
         self.x += self.vx * dt
         self.y += self.vy * dt
@@ -100,18 +138,54 @@ class Particle:
         # Normalized life (1 at birth, 0 near death)
         life_ratio = max(self.life / self.max_life, 0.0)
 
+        # --- SPECIAL CASE: HORROR SCRATCHES (no circles) ---
+        if self.mode == "horror":
+            # base position with sway
+            sway_offset_x = math.sin(self.age * self.sway_freq) * self.sway_amp
+            x = self.x + sway_offset_x
+            y = self.y
+
+            # Flickering alpha
+            alpha = int(255 * life_ratio)
+            flick = 0.6 + 0.4 * math.sin(self.age * self.flicker_speed)
+            alpha = int(alpha * flick)
+            alpha = max(0, min(255, alpha))
+
+            # Line endpoints
+            dx = math.cos(self.angle) * self.length
+            dy = math.sin(self.angle) * self.length
+
+            start = (int(x - dx * 0.5), int(y - dy * 0.5))
+            end   = (int(x + dx * 0.5), int(y + dy * 0.5))
+
+            # Main scratch
+            color = (self.color[0], self.color[1], self.color[2], alpha)
+            pygame.draw.line(surf, color, start, end, self.thickness)
+
+            # Second fainter scratch offset a bit (like claw marks)
+            offset_dx = -dy * 0.15
+            offset_dy = dx * 0.15
+            start2 = (start[0] + offset_dx, start[1] + offset_dy)
+            end2   = (end[0] + offset_dx, end[1] + offset_dy)
+            color2 = (self.color[0], self.color[1], self.color[2], max(0, alpha // 2))
+            pygame.draw.line(surf, color2, start2, end2, max(1, self.thickness - 1))
+
+            return
+
+        # --- BLOOD + DEFAULT: original circular glow rendering ---
         tex = self._get_texture(self.size, self.color)
 
-        # Sway / flutter for a more organic feel
         sway_offset_x = math.sin(self.age * self.sway_freq) * self.sway_amp
 
         draw_x = self.x + sway_offset_x - tex.get_width() // 2
         draw_y = self.y - tex.get_height() // 2
 
         # Fade alpha over lifetime
-        # Copy the texture alpha via a temporary surface with overall fade
+        alpha = int(255 * life_ratio)
+        alpha = max(0, min(255, alpha))
+
         temp = tex.copy()
-        temp.set_alpha(int(255 * life_ratio))
+        temp.set_alpha(alpha)
 
         surf.blit(temp, (int(draw_x), int(draw_y)))
 
@@ -125,16 +199,48 @@ class ParticleManager:
         self.spawn_timer = 0.0
 
         # Faster spawn for blood mode to feel denser and more atmospheric
-        self.spawn_rate = 0.03 if mode == "blood" else 0.08  # seconds between spawns
+        if mode == "blood":
+            self.spawn_rate = 0.03
+        elif mode == "horror":
+            # Medium dense ghosty scratches
+            self.spawn_rate = 0.04
+        else:
+            self.spawn_rate = 0.08  # default
 
     def _spawn_particle(self):
         if self.mode == "blood":
+            # ORIGINAL BLOOD SPAWN (unchanged)
             # Spawn just above the top edge so they drift into view
             x = random.randint(0, self.screen_width)
             y = random.uniform(-40, -10)
             self.particles.append(
                 Particle(x, y, self.screen_width, self.screen_height, mode="blood")
             )
+
+        elif self.mode == "horror":
+            # Horror scratches: spawn from edges and inside
+            spawn_edge = random.choice(["top", "bottom", "left", "right", "inside"])
+
+            if spawn_edge == "top":
+                x = random.randint(0, self.screen_width)
+                y = random.uniform(-20, 40)
+            elif spawn_edge == "bottom":
+                x = random.randint(0, self.screen_width)
+                y = random.uniform(self.screen_height - 40, self.screen_height + 20)
+            elif spawn_edge == "left":
+                x = random.uniform(-20, 40)
+                y = random.randint(0, self.screen_height)
+            elif spawn_edge == "right":
+                x = random.uniform(self.screen_width - 40, self.screen_width + 20)
+                y = random.randint(0, self.screen_height)
+            else:  # inside
+                x = random.randint(0, self.screen_width)
+                y = random.randint(0, self.screen_height)
+
+            self.particles.append(
+                Particle(x, y, self.screen_width, self.screen_height, mode="horror")
+            )
+
         else:
             x = random.randint(0, self.screen_width)
             y = random.randint(0, self.screen_height)

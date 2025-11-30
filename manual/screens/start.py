@@ -12,6 +12,7 @@ SAPHIFEN_PATH = os.path.join(ASSETS_DIR, "fonts", "Saphifen.ttf")
 SELINCAH_PATH = os.path.join(ASSETS_DIR, "fonts", "SELINCAH.ttf")
 BUTTON_FONT = pygame.font.Font(SELINCAH_PATH, 32)
 TITLE_FONT = pygame.font.Font(SAPHIFEN_PATH, 180)
+HINT_FONT = pygame.font.Font(SELINCAH_PATH, 16)
 
 
 class StartScreen:
@@ -126,6 +127,11 @@ class StartScreen:
         shadow_surf = TITLE_FONT.render("DAMAREEN", True, (100, 0, 0))
         surf.blit(shadow_surf, title_rect.move(4, 4))
         surf.blit(title_surf, title_rect)
+        
+        # 3.5. Draw Hint Text (ESC for settings) - centered below title
+        hint_text = HINT_FONT.render("ESC a beállításokhoz", True, (150, 50, 50))
+        hint_rect = hint_text.get_rect(center=(640, 310))
+        surf.blit(hint_text, hint_rect)
         
         # 4. Draw Elements
         for el in self.elements:
