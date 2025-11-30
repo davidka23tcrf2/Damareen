@@ -2,7 +2,6 @@ import sys
 from pathlib import Path
 from auto import card, enemy, fight
 import copy
-from manual import mainloop
 
 def main():
     if len(sys.argv) == 1:
@@ -10,6 +9,7 @@ def main():
         sys.exit(1)
 
     if sys.argv[1] == "--ui":
+        from manual import mainloop
         mainloop.ml()
     else:
         run_automated_test(sys.argv[1])
